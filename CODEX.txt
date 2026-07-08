@@ -1,0 +1,1458 @@
+انسخ البرومبت التالي كاملًا إلى **Codex AI Agent**.
+مصمم ليعمل كبرومبت تنفيذي شامل بعد تحليل متطلبات SMARS + واجهات السوق السعودي.
+
+You are a senior **Laravel HRMS/ERP Architect**, **Saudi HR System Analyst**, **Database Architect**, **Enterprise UI/UX Engineer**, **Arabic RTL UI Specialist**, and **Attendance/Biometric Integration Specialist**.
+
+You are working as a coding agent inside a Laravel project.
+
+Your task is to build a custom HR system named **SMARS**.
+
+The system must be built phase by phase. Do not build everything at once. Each phase must be stable, testable, and safely integrated before moving to the next phase.
+
+# 0. Critical Codex Execution Rules
+
+Before changing any file:
+
+1. Inspect the existing project structure.
+2. Detect whether this is a fresh Laravel project or an existing Laravel project.
+3. Inspect:
+
+   * `composer.json`
+   * `.env`
+   * `routes/web.php`
+   * `app/Models`
+   * `app/Http/Controllers`
+   * `app/Http/Middleware`
+   * `database/migrations`
+   * `database/seeders`
+   * `resources/views`
+   * `resources/lang`
+   * `public`
+   * frontend asset structure
+4. Do not overwrite working files blindly.
+5. Do not remove existing functionality unless explicitly required.
+6. Do not add modules outside this prompt.
+7. Do not jump to future phases.
+8. Implement only the requested phase.
+9. Maintain backward compatibility with completed phases.
+10. Keep Laravel syntax correct.
+11. Avoid breaking existing routes, layouts, authentication, assets, or database structure.
+12. Use local assets only. Do not depend on internet/CDN for core UI.
+13. Keep the Arabic RTL interface stable and professional.
+14. Keep the English LTR interface stable and professional.
+15. Solve root causes, not symptoms.
+16. Store sensitive credentials securely.
+17. Validate on both frontend and backend.
+18. Use database constraints in addition to Laravel validation.
+19. Use seeders for stable reference data.
+20. After completing the requested phase, stop and wait for the next instruction.
+
+# 1. System Name
+
+The system name is:
+
+**SMARS**
+
+# 2. Main Goal
+
+Build a complete enterprise-grade HR system customized for a Saudi-based organization.
+
+The system will manage:
+
+* Companies
+* Branches
+* Departments
+* Positions
+* Employees
+* Employee documents
+* Contracts
+* Attendance
+* Biometric attendance machines
+* Leaves
+* Payroll
+* Salary components
+* Deductions
+* Allowances
+* Reports
+* Expiry alerts
+* Users
+* Roles
+* Permissions
+* Audit logs
+* System settings
+
+The system must be:
+
+* Production-grade
+* Stable
+* Secure
+* Scalable
+* Bilingual
+* Arabic-first
+* Responsive
+* Offline-capable on local network
+* Suitable for real HR business use in Saudi Arabia
+
+# 3. Development Environment
+
+The system will be developed locally on Windows using:
+
+* XAMPP
+* PHP 8.2 environment
+* Laravel
+* MySQL / MariaDB
+* Project path:
+
+```text
+D:\xampp82\htdocs\SMARS
+```
+
+Assume local development first. The system can later be prepared for production deployment.
+
+# 4. Offline / No Internet Requirement
+
+The system must work even when there is no internet connection.
+
+Do not depend on external online resources for core UI or functionality.
+
+## Offline Asset Rules
+
+Avoid:
+
+* CDN links
+* Google Fonts online loading
+* External online CSS
+* External online JavaScript
+* External online icon libraries
+* Remote images
+* Remote UI assets
+
+All required UI assets must be local/self-hosted inside the Laravel project, including:
+
+* Fonts
+* CSS files
+* JavaScript files
+* Icons
+* UI library assets
+* Dashboard assets
+* Layout assets
+
+The system must still look complete and professional when running locally from:
+
+```text
+D:\xampp82\htdocs\SMARS
+```
+
+without internet access.
+
+# 5. Font Requirement
+
+Use **Cairo** as the main Arabic UI font.
+
+Arabic interface font:
+
+```text
+Cairo
+```
+
+English interface can use Cairo or a clean professional sans-serif font, but it must remain visually consistent with the Arabic interface.
+
+Do not load Cairo from Google Fonts online. Use local/self-hosted font assets or local package assets.
+
+# 6. Language Requirements
+
+The system must be fully bilingual.
+
+## Main Language
+
+Arabic
+
+## Secondary Language
+
+English
+
+## Language Rules
+
+* Arabic must be fully Arabic.
+* English must be fully English.
+* Do not mix Arabic and English labels inside the same active interface.
+* Arabic interface must be fully RTL.
+* English interface must be fully LTR.
+* All menus, forms, buttons, validation messages, table headers, reports, statuses, alerts, dashboard labels, print pages, and notifications must support both languages.
+* Use Laravel localization files.
+* Use clean translation keys.
+* Do not hardcode UI text directly inside Blade files.
+
+## Language Switch Button
+
+The system must include a clear language switch button/control in the main UI.
+
+The user must be able to switch between:
+
+* Arabic
+* English
+
+## Language Switch Rules
+
+* Arabic mode must switch the interface to full RTL.
+* English mode must switch the interface to full LTR.
+* The switch must update:
+
+  * Menus
+  * Sidebar
+  * Header
+  * Dashboard
+  * Forms
+  * Tables
+  * Buttons
+  * Validation messages
+  * Alerts
+  * Reports
+  * Print pages
+* The selected language should be saved in the user session.
+* If the user is logged in, save the preferred language to the user profile/settings when possible.
+* The switch button must be visible and easy to access from the main layout/header.
+* Do not mix Arabic and English in the same active interface.
+
+# 7. Saudi Arabia Context
+
+The system works in Saudi Arabia.
+
+The system must support Saudi HR requirements and Saudi-style employee data, including:
+
+* Saudi / Non-Saudi classification
+* National ID / Iqama ID
+* Iqama expiry
+* Passport data
+* Saudi mobile number validation
+* Saudi bank dropdown
+* Saudi IBAN validation
+* GOSI-related salary fields
+* Arabic-first interface
+* Gregorian date support
+* Hijri date support may be added later if needed
+
+# 8. Organization Structure
+
+SMARS is customized for one organization with one centralized HR Department managing four companies.
+
+The four companies are:
+
+| English Name     | Arabic Name             |
+| ---------------- | ----------------------- |
+| AMNIAT           | أمنيات                  |
+| AMNIAT FACTORY   | مصنع أمنيات للصناعة     |
+| PTC              | تقنيات الدهان للتجارة   |
+| PTC Construction | تقنيات الدهان للمقاولات |
+
+## Central HR Rule
+
+There is one centralized HR Department managing all four companies.
+
+The system must allow HR users to filter and manage data by:
+
+* Company
+* Branch
+* Department
+* Position
+* Employee status
+* Saudi / Non-Saudi
+* Date range
+
+# 9. Branches, Departments, and Positions Rule
+
+Each company has its own unique branches.
+
+Branches are **company-specific** and must belong to one company only.
+
+Examples:
+
+* AMNIAT has its own branches.
+* AMNIAT FACTORY has its own branches.
+* PTC has its own branches.
+* PTC Construction has its own branches.
+
+A branch cannot be shared between multiple companies.
+
+## Departments Rule
+
+Departments can be created globally at the organization level.
+
+A department can be assigned or reused across any company.
+
+Examples:
+
+* HR Department
+* Finance Department
+* Sales Department
+* IT Department
+* Operations Department
+
+Departments do not need to be duplicated separately for each company unless a company-specific customization is required.
+
+## Positions / Job Titles Rule
+
+Positions and job titles can be created globally at the organization level.
+
+A position can be assigned or reused across any company.
+
+Examples:
+
+* HR Manager
+* Accountant
+* Sales Executive
+* Technician
+* Engineer
+* Branch Manager
+
+## Database Design Rule
+
+Use this logic:
+
+* `companies` table = four main companies
+* `branches` table = company-specific branches with `company_id`
+* `departments` table = global departments
+* `positions` table = global positions/job titles
+* Employee record links to:
+
+  * `company_id`
+  * `branch_id`
+  * `department_id`
+  * `position_id`
+
+## Employee Form Rule
+
+When creating or editing an employee:
+
+* The branch dropdown must show only branches belonging to the selected company.
+* The department dropdown can show global departments.
+* The position dropdown can show global positions.
+* Department and position can be assigned to employees in any company.
+
+# 10. Employee Table Rule
+
+The employees table is global across the whole organization.
+
+It is not separated by company.
+
+Each employee belongs to one company, but the employee table itself is shared globally across all four companies.
+
+## Critical Rule
+
+`hr_employee_id` must be unique across the entire organization, not only inside one company.
+
+The same HR Employee ID cannot exist in:
+
+* AMNIAT
+* AMNIAT FACTORY
+* PTC
+* PTC Construction
+
+## Employee Record Relationships
+
+Each employee should be linked to:
+
+* `company_id`
+* `branch_id`
+* `department_id`
+* `position_id`
+* `shift_id` if applicable
+
+# 11. Employee Table Fields
+
+Use the uploaded Excel file `employee_table_fields_ar_en.xlsx` as the authoritative reference if it exists in the project/context.
+
+If the file is not available to Codex, use the field list below as the authoritative employee schema.
+
+The employee table must include these fields:
+
+1. id
+2. company_id
+3. branch_id
+4. department_id
+5. position_id
+6. shift_id
+7. name_ar
+8. name_en
+9. email
+10. phone
+11. phone_2
+12. status
+13. created_at
+14. updated_at
+15. deleted_at
+16. employee_code
+17. financial_employee_id
+18. hr_employee_id
+19. national_id
+20. iqama_full_name_arabic
+21. iqama_full_name_english
+22. full_name_arabic
+23. full_name_english
+24. nationality
+25. saudi_non_saudi
+26. gender
+27. birth_date
+28. iqama_expiry
+29. passport_id
+30. passport_full_name_arabic
+31. passport_full_name_english
+32. passport_expiry
+33. job_title
+34. contract_type
+35. start_date
+36. end_date
+37. bank
+38. iban
+39. branch
+40. basic_salary
+41. overtime
+42. housing_allowance
+43. other_allowances
+44. transportation_allowance
+45. training_labor_wages
+46. previous_dues
+47. total
+48. basic_salary_gosi
+49. housing_allowance_gosi
+50. other_gosi_items
+51. diff_registered_housing_allowance
+52. absence_deduction
+53. delay_deduction
+54. leave_deduction
+55. warnings_penalties
+56. insurance_deduction
+57. loans
+58. social_insurance_saudi
+59. total_deductions
+60. cash
+61. al_rajhi_transfer
+62. bank_albilad_transfer
+63. riyad_bank_transfer
+64. remaining_salary
+65. employment_status
+66. created_by
+67. updated_by
+
+## Employee Table Constraints
+
+Apply these constraints:
+
+* `id` is primary key.
+* `company_id` is required and indexed.
+* `branch_id` is optional and indexed.
+* `email` must be unique when provided.
+* `phone` must be unique when provided.
+* `phone_2` must be unique when provided.
+* `employee_code` must be unique.
+* `financial_employee_id` must be unique.
+* `hr_employee_id` must be unique globally.
+* `national_id` must be unique globally.
+* `passport_id` must be required and unique globally.
+* Salary and payroll numeric fields should use `decimal(12,2)`.
+* Use soft deletes through `deleted_at`.
+* `created_by` and `updated_by` must track the user responsible for creating/updating records.
+
+# 12. National ID / Iqama ID Rules
+
+The field `national_id` is the same as Iqama ID.
+
+Use one database field:
+
+```text
+national_id
+```
+
+But the UI label should be:
+
+Arabic:
+
+```text
+رقم الهوية / الإقامة
+```
+
+English:
+
+```text
+National ID / Iqama ID
+```
+
+## Validation Rules
+
+| Employee Type | Rule                                                            |
+| ------------- | --------------------------------------------------------------- |
+| Saudi         | `national_id` must start with `1` and must be exactly 10 digits |
+| Non-Saudi     | `national_id` must start with `2` and must be exactly 10 digits |
+
+## Invalid Rule
+
+If `national_id` starts with anything other than `1` or `2`, the system must show a validation error.
+
+## Auto Logic
+
+When `national_id` starts with `1`:
+
+* Automatically set `saudi_non_saudi` to Saudi
+* Automatically set `nationality` to Saudi Arabia
+
+This must happen dynamically in the frontend form and also be enforced server-side before saving.
+
+Frontend validation is not enough. Laravel validation must enforce the same rules during create and update.
+
+# 13. Nationality Field
+
+The `nationality` field must be a ready dropdown menu.
+
+It must not be a free-text field.
+
+The dropdown must include all world countries.
+
+## Localization
+
+* Arabic UI: show country names in Arabic.
+* English UI: show country names in English.
+
+## Priority Countries
+
+Show these countries at the top of the dropdown because they are most used:
+
+1. Egypt
+2. Saudi Arabia
+3. Syria
+4. Lebanon
+5. Pakistan
+6. Bangladesh
+7. India
+8. Jordan
+9. Iraq
+10. Qatar
+11. Kuwait
+12. Afghanistan
+13. Indonesia
+14. Philippines
+15. Sudan
+16. Tunisia
+17. Algeria
+18. Morocco
+
+After these priority countries, show all remaining countries alphabetically.
+
+# 14. Email Field Restrictions
+
+Apply strict validation to the employee `email` field.
+
+## Rules
+
+* Must be a valid email format.
+* Must be unique across all employees when provided.
+* Must be trimmed before saving.
+* Must be stored lowercase.
+* Must reject spaces inside the email.
+* Must reject Arabic characters inside the email.
+* Must reject missing `@`.
+* Must reject missing domain.
+* Must reject duplicate emails.
+* Must show clear validation errors in Arabic and English.
+
+## Invalid Examples
+
+* employeeexample.com
+* employee@
+* employee@company
+* موظف@example.com
+* employee @example.com
+
+# 15. Saudi Phone Number Restrictions
+
+Apply Saudi mobile number validation to:
+
+* `phone`
+* `phone_2`
+
+## Accepted Formats
+
+| Format                     | Example       | Rule                      |
+| -------------------------- | ------------- | ------------------------- |
+| Local Saudi format         | 05XXXXXXXX    | 10 digits, starts with 05 |
+| International Saudi format | +9665XXXXXXXX | starts with +9665         |
+
+## Rules
+
+* Must be a valid Saudi mobile number.
+* Reject letters.
+* Reject Arabic characters.
+* Reject spaces.
+* Reject special characters except leading `+`.
+* Reject invalid prefixes.
+* Reject too short or too long numbers.
+* `phone` must be unique across employees.
+* `phone_2` must be unique across employees when provided.
+* `phone` and `phone_2` must not be the same for the same employee.
+* Normalize before saving.
+
+## Preferred Storage Format
+
+Store Saudi mobile numbers consistently as:
+
+```text
++9665XXXXXXXX
+```
+
+Example:
+
+```text
+05XXXXXXXX should be converted to +9665XXXXXXXX
+```
+
+# 16. Passport Number Rules
+
+The field:
+
+```text
+passport_id
+```
+
+must be:
+
+* Required
+* Unique across all employees
+* Global across all four companies
+* Validated during create and update
+* Protected from duplicates even when employees belong to different companies
+
+# 17. Bank Dropdown and Saudi IBAN Validation
+
+The field `bank` must be a dropdown menu for Saudi banks.
+
+It must not be a free-text field.
+
+## IBAN Field
+
+The field `iban` must be validated using real Saudi IBAN rules.
+
+## Saudi IBAN Rules
+
+* Must start with `SA`.
+* Must follow the Saudi IBAN length and structure.
+* Must be normalized by removing spaces and converting to uppercase.
+* Must validate the bank code.
+* The selected bank must match the bank code inside the IBAN.
+* If the IBAN belongs to a different bank than the selected bank, show an error.
+* If the IBAN format is invalid, show an error.
+* Use a reliable Saudi bank-code reference table.
+* Do not invent random bank codes.
+
+## Suggested Saudi IBAN Structure
+
+Saudi IBAN is generally:
+
+```text
+SA + 2 check digits + 2 bank code digits + account number
+```
+
+The final implementation must validate the exact Saudi IBAN format and bank-code matching.
+
+# 18. Expiry Date Rules
+
+All expiry date fields must not be in the past.
+
+The system must prevent selecting past dates in the UI and must reject past dates server-side.
+
+## Applies To
+
+* `iqama_expiry`
+* `passport_expiry`
+* Contract end date when applicable
+* Insurance expiry
+* Employee document expiry dates
+* Any future expiry date fields
+
+## Rule
+
+```text
+expiry_date >= today
+```
+
+## UI Requirement
+
+Date picker should not show/select dates earlier than today for expiry fields.
+
+## Backend Requirement
+
+Laravel validation must reject past dates even if the frontend is bypassed.
+
+# 19. Attendance and Biometric Device Requirements
+
+Attendance will mainly use biometric machines.
+
+The main biometric device currently used in the organization is:
+
+**ZKTeco MB1000**
+
+These devices are widely available across the four companies.
+
+## Critical Attendance Rule
+
+Biometric attendance machines are global organization-wide devices.
+
+They are not restricted to only the company where the machine is physically installed.
+
+This means:
+
+* Any employee from any company can punch in/out from any attendance machine.
+* An AMNIAT employee can punch from a PTC machine.
+* A PTC Construction employee can punch from an AMNIAT FACTORY machine.
+* An AMNIAT FACTORY employee can punch from an AMNIAT machine.
+* Attendance records must be matched to the global employee table.
+* Attendance logic must not restrict punch records by the physical company of the biometric device.
+* The device company/branch is only location metadata.
+* The actual employee matching must be global.
+
+## Attendance Device Scope Rule
+
+Attendance machines may have:
+
+* `company_id`
+* `branch_id`
+* `location`
+
+But these fields represent the physical location of the machine only.
+
+They must not prevent employees from other companies from using that machine.
+
+## Recommended Data Logic
+
+```text
+attendance_machines.company_id = physical device location only
+attendance_machines.branch_id = physical device location only
+attendance.employee_id = global employee ID
+attendance.company_id = employee company at the time of attendance, or derived from employee record
+attendance.attendance_machine_id = the device used for punch
+```
+
+## Biometric Device Connection Types
+
+Biometric attendance machines may be connected through different connection types.
+
+The system must support:
+
+* LAN
+* VPN
+* DDNS
+* Static IP
+
+## Attendance Machine Table Requirements
+
+Create a table for attendance machines or biometric devices.
+
+Suggested table:
+
+```text
+attendance_machines
+```
+
+Suggested fields:
+
+* id
+* device_name
+* device_model
+* serial_number
+* connection_type
+* ip_address
+* domain
+* port
+* username if needed
+* password if needed, encrypted or secured
+* company_id as physical location
+* branch_id as physical location
+* location_description
+* timezone
+* status
+* is_active
+* last_sync_at
+* last_successful_connection_at
+* last_failed_connection_at
+* notes
+* created_by
+* updated_by
+* created_at
+* updated_at
+* deleted_at
+
+## Device Connection Rules
+
+* For LAN, use local IP address and port.
+* For VPN, use VPN-reachable IP address and port.
+* For DDNS, use domain/DDNS hostname and port.
+* For Static IP, use public/static IP and port.
+* The system should store connection type clearly.
+* The system should allow testing device connection.
+* The system should show device status:
+
+  * Active
+  * Inactive
+  * Online
+  * Offline
+  * Unreachable
+  * Last sync failed
+
+## Attendance Sync Requirements
+
+The attendance module should eventually support:
+
+* Pulling punch logs from biometric devices
+* Mapping punch user ID to employee record
+* Handling duplicate punch logs
+* Handling missing employee mapping
+* Showing unmatched attendance records for review
+* Sync history
+* Manual sync button
+* Scheduled sync later if needed
+* Import attendance logs from Excel/CSV as fallback
+
+## Attendance Record Requirements
+
+Attendance records should include:
+
+* employee_id
+* attendance_machine_id
+* punch_time
+* punch_date
+* punch_type if available
+* raw_punch_type if device provides it
+* source
+* device_user_id
+* verification_type if available
+* company_id derived from employee or stored snapshot
+* branch_id derived from employee or stored snapshot
+* sync_batch_id if applicable
+* notes
+* created_at
+* updated_at
+
+## Important Attendance Design Principle
+
+The attendance system must be designed around the global employee table.
+
+The biometric device does not own the employee.
+
+The employee belongs to the organization globally and can use any attendance machine in any company.
+
+# 20. Saudi HR Market UI Reference
+
+The UI must follow a Saudi HR SaaS market-inspired visual style based on the analyzed reference screens.
+
+The UI should use:
+
+* Arabic RTL first
+* Cairo font
+* Clean white/light background
+* Large bold Arabic page titles
+* Soft rounded cards
+* Subtle borders
+* Very light shadows
+* Muted gray secondary typography
+* Strong readability
+* Colored pill badges for statuses and types
+* Employee avatars inside tables and profile headers
+* Tabbed employee profile pages
+* Leave details pages with approval timeline
+* Attendance monthly matrix with color-coded icons and legend
+* Search/filter bars above tables
+* Pagination and row actions
+* Responsive data tables
+* Mobile card layout when tables are too wide
+* Offline-ready local assets only
+
+## Recommended Visual Identity
+
+Use this direction:
+
+| Element        | Recommendation               |
+| -------------- | ---------------------------- |
+| Background     | `#F7F8FA` or very light gray |
+| Cards          | `#FFFFFF`                    |
+| Borders        | `#E6EAF0`                    |
+| Main text      | `#1F2937`                    |
+| Secondary text | `#64748B`                    |
+| Success        | Green                        |
+| Danger         | Red                          |
+| Warning        | Orange                       |
+| Info           | Blue                         |
+| Purple status  | For rest day / special state |
+| Border radius  | 12px–18px                    |
+| Shadow         | Very subtle                  |
+| Font           | Cairo                        |
+
+## UI Pattern Rules
+
+* Use page titles clearly at the top.
+* Use cards for grouped information.
+* Use tabbed layouts for employee profile pages.
+* Use status badges for:
+
+  * Active
+  * Inactive
+  * Approved
+  * Rejected
+  * Pending
+  * Expired
+  * Expiring soon
+  * Valid
+  * Online
+  * Offline
+  * Unreachable
+* Use employee avatar placeholders in employee lists and profiles.
+* Use an approval timeline UI for leave details.
+* Use a matrix-style monthly attendance screen.
+* Use tooltips or labels for attendance icons.
+* Do not rely only on icon colors without labels.
+* Desktop tables can be full tables.
+* Tablet tables can use horizontal scroll.
+* Mobile views should use card layout where suitable.
+
+# 21. Dashboard Requirements
+
+Dashboard should show:
+
+* Total employees
+* Active employees
+* Saudi employees
+* Non-Saudi employees
+* Employees by company
+* Employees by branch
+* Employees by department
+* Expired Iqama count
+* Iqama expiring soon
+* Expired passport count
+* Passport expiring soon
+* Contracts ending soon
+* Attendance summary
+* Payroll summary
+* Biometric device status summary
+* Online/offline attendance machines
+* Last attendance sync
+* Unmatched attendance punches
+* Recent HR actions
+* Alerts and notifications
+
+# 22. UI / UX Requirements
+
+The UI must be professional, enterprise-grade, responsive, and clean.
+
+## Devices
+
+The UI must work properly on:
+
+* Desktop PC
+* Laptop
+* Tablet
+* Mobile phone
+
+## Browsers
+
+The UI must work properly on:
+
+* Google Chrome
+* Mozilla Firefox
+* Microsoft Edge
+* Safari
+
+## Responsive Rules
+
+* Mobile-first where suitable.
+* No broken tables on small screens.
+* Tables must become horizontally scrollable or use responsive card layout on mobile.
+* Sidebar must collapse on tablet and mobile.
+* Forms must remain usable on small screens.
+* Buttons must be touch-friendly.
+* Modals must fit mobile screens.
+* Dropdowns must work on mobile and desktop.
+* Reports must have print-friendly layout.
+* RTL Arabic interface must not break on mobile.
+* LTR English interface must not break on mobile.
+* Avoid browser-specific CSS problems.
+* Language switch button must be visible and usable on desktop, tablet, and mobile.
+
+# 23. Core Navigation Menu
+
+The main sidebar navigation must include only these modules:
+
+1. Dashboard
+2. Companies
+3. Branches
+4. Departments
+5. Positions
+6. Employees
+7. Employee Documents
+8. Attendance
+9. Biometric Devices
+10. Leaves
+11. Payroll
+12. Reports
+13. Users & Roles
+14. Audit Logs
+15. Settings
+
+Do not add extra modules outside this list.
+
+# 24. Technical Requirements
+
+Use stable Laravel architecture.
+
+## Backend
+
+* Laravel MVC structure
+* Form Request validation
+* Policies or permission middleware
+* Eloquent relationships
+* Database migrations
+* Seeders
+* Soft deletes
+* Audit fields
+* Service classes where needed
+* Clean controllers
+* No business logic directly inside Blade files
+* Device integration logic should be separated into services
+* Attendance sync logic should not be placed directly inside controllers
+
+## Frontend
+
+* Blade templates
+* Responsive CSS
+* Bootstrap or clean custom CSS structure
+* RTL/LTR support
+* Cairo font for Arabic
+* Local/self-hosted frontend assets
+* Reusable components
+* Modern dashboard cards
+* Clean tables
+* Search and filters
+* Pagination
+* Form validation feedback
+* Arabic and English messages
+* Clear language switch button/control
+* Soft cards and subtle shadows
+* Status badges
+* Employee avatars
+* Tabbed pages where suitable
+* Print-friendly reports
+
+## Database
+
+Use normalized database design where appropriate.
+
+Core tables should include:
+
+* users
+* roles
+* permissions
+* companies
+* branches
+* departments
+* positions
+* shifts
+* employees
+* employee_documents
+* contracts
+* attendance_machines
+* attendance_records
+* attendance_sync_batches
+* leave_types
+* leave_requests
+* payrolls
+* payroll_items
+* deductions
+* allowances
+* banks
+* countries
+* audit_logs
+* system_settings
+
+# 25. Main Development Sequence
+
+Build in this exact sequence.
+
+## Phase 0 — Project Inspection and Safety Check
+
+Before implementation:
+
+* Inspect the current Laravel project.
+* Detect whether authentication already exists.
+* Detect current route/layout structure.
+* Detect current database/migration structure.
+* Detect current frontend asset structure.
+* Detect whether localization exists.
+* Detect whether local assets exist.
+* Do not overwrite working code blindly.
+* Prepare the safest implementation path.
+
+## Phase 1 — Foundation
+
+Create the foundation only.
+
+Scope:
+
+* Laravel setup assumptions for `D:\xampp82\htdocs\SMARS`
+* Authentication
+* Main layout
+* Arabic/English localization
+* RTL/LTR support
+* Cairo font loaded locally
+* No CDN dependency for core UI
+* Language switch button
+* Dashboard shell
+* Sidebar navigation
+* Header
+* Responsive layout
+* Soft Saudi HR SaaS visual style
+* Four-company seed data
+* Initial roles
+* Basic settings structure
+* Database foundation
+
+Do not implement employee management yet.
+
+## Phase 2 — Organization Structure
+
+Create management modules for:
+
+* Companies
+* Company-specific branches
+* Global departments
+* Global positions / job titles
+* Shifts if needed
+
+Requirements:
+
+* Branches must belong to one company.
+* Departments can be globally created and assigned to any company.
+* Positions/job titles can be globally created and assigned to any company.
+* CRUD pages
+* Search
+* Filters
+* Pagination
+* Active/inactive status
+* Bilingual names
+* Company filtering where applicable
+* Use soft cards, clean tables, status badges, and responsive layouts.
+
+## Phase 3 — Employee Management
+
+Create full employee management using the employee fields listed above.
+
+Requirements:
+
+* Employee list
+* Create employee
+* Edit employee
+* View employee profile
+* Soft delete
+* Restore if needed
+* Search by name, HR ID, financial ID, national ID, phone, email, passport
+* Filter by company, branch, department, nationality, Saudi/Non-Saudi, employment status
+* Validation rules from this prompt
+* Bilingual labels
+* Responsive forms
+* Employee avatar placeholder
+* Tabbed employee profile layout
+* Document-ready structure for future employee attachments
+
+Employee profile tabs:
+
+1. Overview
+2. Personal Information
+3. Job Information
+4. Documents
+5. Attendance
+6. Leaves
+7. Payroll
+8. Audit History
+
+## Phase 4 — Employee Documents and Expiry Alerts
+
+Create:
+
+* Employee documents module
+* Document type
+* Issue date
+* Expiry date
+* File upload
+* Expiry alerts
+* Dashboard widgets for expired and near-expiry documents
+* Reports for Iqama, passport, contract, insurance, and document expiry
+
+Document statuses:
+
+* Valid
+* Expiring soon
+* Expired
+
+Use colored badges.
+
+## Phase 5 — Attendance and Biometric Devices
+
+Create:
+
+* Attendance machine management
+* Global biometric device structure
+* ZKTeco MB1000-ready device data model
+* LAN / VPN / DDNS / Static IP connection settings
+* Device physical location metadata
+* Device status
+* Manual attendance entry
+* Daily attendance
+* Monthly attendance matrix
+* Check-in
+* Check-out
+* Late arrival
+* Absence
+* Overtime
+* Attendance import from Excel/CSV
+* Attendance reports by employee, company, branch, department, device, and date range
+* Unmatched punch review screen
+
+Important:
+
+* Attendance machines are global.
+* Any employee from any company can punch from any machine.
+* Match attendance records against the global employees table.
+* Do not restrict punches by device company.
+* Device company/branch is physical location only.
+* Monthly attendance matrix should use color-coded icons and a legend.
+
+Attendance states should include:
+
+* Present
+* Absent
+* Late
+* Official holiday
+* On leave
+* Rest day
+
+## Phase 6 — Leave Management
+
+Create:
+
+* Leave types
+* Leave requests
+* Leave approval workflow
+* Leave detail page with approval timeline
+* Annual leave
+* Sick leave
+* Emergency leave
+* Unpaid leave
+* Leave balance
+* Leave deduction connection to payroll
+
+Leave statuses:
+
+* Pending
+* Approved
+* Rejected
+* Cancelled
+
+## Phase 7 — Payroll
+
+Create payroll system using the salary fields from the employee table and scalable payroll tables.
+
+Payroll should include:
+
+* Basic salary
+* Overtime
+* Housing allowance
+* Transportation allowance
+* Other allowances
+* Training labor wages
+* Previous dues
+* Total salary
+* GOSI salary fields
+* Absence deduction
+* Delay deduction
+* Leave deduction
+* Warnings and penalties
+* Insurance deduction
+* Loans
+* Social insurance for Saudi employees
+* Total deductions
+* Net salary
+* Cash
+* Al Rajhi transfer
+* Bank Albilad transfer
+* Riyad Bank transfer
+* Remaining salary
+
+Reports:
+
+* Monthly payroll
+* Employee salary slip
+* Bank transfer report
+* Deduction report
+* Allowance report
+* GOSI-related report
+* Company payroll summary
+* Branch payroll summary
+* Department payroll summary
+
+## Phase 8 — Roles, Permissions, and Audit Logs
+
+Create role-based access control.
+
+Suggested roles:
+
+* Super Admin
+* HR Manager
+* HR Officer
+* Accountant
+* Branch Manager
+* Employee Viewer
+
+Permissions must control:
+
+* View
+* Create
+* Edit
+* Delete
+* Export
+* Print
+* View salary data
+* Modify salary data
+* Approve leave
+* Manage users
+* Manage settings
+
+Audit logs must track:
+
+* Employee creation
+* Employee updates
+* Salary updates
+* Payroll generation
+* Attendance modification
+* Leave approval/rejection
+* User login
+* Permission changes
+* Attendance machine creation/update
+* Attendance sync actions
+
+Each audit log should include:
+
+* User
+* Action
+* Module
+* Old value
+* New value
+* Date and time
+* IP address if available
+
+## Phase 9 — Reports, Import, Export, and Printing
+
+Support:
+
+* Export to Excel
+* Export to PDF
+* Printable reports
+* Employee import from Excel/CSV
+* Attendance import from Excel/CSV
+* Payroll import from Excel/CSV
+* Report filters
+* Company/branch/department/date filters
+* Device-based attendance reports
+* Arabic and English report versions
+* Print-friendly layout
+
+## Phase 10 — Final Stabilization
+
+Finalize:
+
+* Responsive UI testing
+* Arabic RTL testing
+* English LTR testing
+* Offline/no-internet UI testing
+* Browser testing
+* Validation testing
+* Permission testing
+* Database integrity testing
+* Security hardening
+* Production readiness notes
+
+# 26. Important Development Rules
+
+Follow these rules strictly:
+
+1. Develop phase by phase.
+2. Do not jump to future phases until the current phase is stable.
+3. Do not break completed modules when adding new modules.
+4. Maintain backward compatibility.
+5. Before modifying existing files, analyze dependencies.
+6. Avoid random fixes.
+7. Solve root causes, not symptoms.
+8. Keep the Arabic RTL UI professional and responsive.
+9. Keep English LTR UI professional and responsive.
+10. Use Cairo for Arabic UI.
+11. Do not rely on internet/CDN for core UI assets.
+12. Validate both frontend and backend.
+13. Use database constraints in addition to Laravel validation.
+14. Do not hardcode business-critical values where database tables are better.
+15. Use seeders for initial companies, roles, permissions, Saudi banks, countries, and system settings.
+16. Use clear naming conventions.
+17. Keep code readable and maintainable.
+18. Do not remove existing working functionality unless explicitly required.
+19. Every phase must include testing instructions.
+20. Every phase must include files changed/created.
+21. Attendance devices must remain global organization-wide.
+22. Do not design attendance devices as company-restricted devices.
+23. Device company/branch fields are physical location metadata only.
+24. Attendance employee matching must use the global employee table.
+25. Store sensitive device credentials securely.
+26. Do not add unsupported modules.
+27. Do not add random UI pages outside this prompt.
+28. Keep the UI aligned with Saudi HR SaaS market patterns.
+
+# 27. Do Not Create
+
+Do not create:
+
+* Recruitment module
+* Performance appraisal module
+* Training module
+* Asset management module
+* Ticketing system
+* Chat system
+* CRM
+* Sales module
+* Inventory module
+* Accounting module outside payroll
+* Random dashboards
+* Random fields not listed here
+* Random company names
+* Random workflows not listed here
+* Any design unrelated to HRMS/ERP
+
+# 28. First Required Development Step
+
+Start with **Phase 0 and Phase 1 only**.
+
+Do not build all modules at once.
+
+Phase 0 should inspect the project safely.
+
+Phase 1 should prepare the foundation for the entire SMARS system:
+
+* Laravel setup assumptions for `D:\xampp82\htdocs\SMARS`
+* Authentication
+* Main layout
+* Arabic/English localization
+* RTL/LTR support
+* Cairo Arabic font loaded locally
+* Offline-ready local assets
+* Language switch button
+* Dashboard shell
+* Sidebar navigation
+* Header
+* Soft Saudi HR SaaS UI style
+* Four-company seed data
+* Initial roles
+* Basic responsive UI
+* Database foundation
+
+After Phase 1 is complete and tested, stop and wait for my instruction before moving to Phase 2.

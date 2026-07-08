@@ -1,0 +1,1024 @@
+You are a senior **Enterprise HRMS UI/UX Designer**, **Arabic RTL Interface Designer**, and **Responsive Web App Designer**.
+
+Your task is to design the complete UI for a custom HR system named **SMARS**.
+
+Do not invent features, modules, pages, fields, colors, sections, workflows, or business logic outside this prompt.
+
+Stick strictly to the requirements below.
+
+Create only the UI/UX design for the system. Do not create backend logic, database code, or unsupported modules.
+
+# 1. System Name
+
+The system name is:
+
+**SMARS**
+
+# 2. UI Goal
+
+Design a professional, modern, enterprise-grade HRMS/ERP interface for a Saudi-based organization.
+
+The UI must look like a real production business system, not a generic template.
+
+The design should be:
+
+* Clean
+* Professional
+* Corporate
+* Responsive
+* Arabic-first
+* Fully bilingual-ready
+* Suitable for HR, payroll, attendance, employee management, and reports
+* Easy to use for HR employees, accountants, managers, and administrators
+
+# 3. Main Rule
+
+Do not create anything from your own imagination outside this prompt.
+
+Use only the modules, pages, fields, and rules listed here.
+
+If a screen needs placeholder data, use realistic sample data based on the four companies and Saudi HR context only.
+
+# 4. Language and Direction
+
+The system is bilingual.
+
+## Main Language
+
+Arabic
+
+## Secondary Language
+
+English
+
+## Required UI Behavior
+
+* Arabic interface must be fully RTL.
+* English interface must be fully LTR.
+* Do not mix Arabic and English in the same active interface.
+* All menus, buttons, labels, forms, tables, validation messages, cards, filters, reports, and alerts must support both languages.
+* The design must include a clear language switch button.
+* The language switch button must be visible in the main header.
+* Arabic mode must show Arabic text and RTL direction.
+* English mode must show English text and LTR direction.
+
+# 5. Organization Structure
+
+SMARS is customized for one organization with one centralized HR Department managing four companies.
+
+The four companies are:
+
+| English Name     | Arabic Name             |
+| ---------------- | ----------------------- |
+| AMNIAT           | أمنيات                  |
+| AMNIAT FACTORY   | مصنع أمنيات للصناعة     |
+| PTC              | تقنيات الدهان للتجارة   |
+| PTC Construction | تقنيات الدهان للمقاولات |
+
+# 6. UI Structure
+
+Create a complete HRMS dashboard layout with:
+
+* Fixed or collapsible sidebar
+* Top header
+* Language switch button
+* User profile menu
+* Notification icon
+* Search bar where suitable
+* Breadcrumbs
+* Main content area
+* Cards
+* Tables
+* Filters
+* Forms
+* Modals
+* Report pages
+* Print-friendly report layout
+
+# 7. Responsive Requirement
+
+The UI must work properly on:
+
+* Desktop PC
+* Laptop
+* Tablet
+* Mobile phone
+
+The UI must be suitable for:
+
+* Google Chrome
+* Mozilla Firefox
+* Microsoft Edge
+* Safari
+
+## Responsive Rules
+
+* Sidebar must collapse on tablet and mobile.
+* Tables must not break on small screens.
+* Large tables should become horizontally scrollable or convert into responsive cards.
+* Forms must remain readable and usable on mobile.
+* Buttons must be touch-friendly.
+* Modals must fit mobile screens.
+* Dropdowns must work on desktop and mobile.
+* Arabic RTL layout must remain correct on mobile.
+* English LTR layout must remain correct on mobile.
+
+# 8. Main Navigation Menu
+
+Create a sidebar navigation with these modules only:
+
+1. Dashboard
+2. Companies
+3. Branches
+4. Departments
+5. Positions
+6. Employees
+7. Employee Documents
+8. Attendance
+9. Biometric Devices
+10. Leaves
+11. Payroll
+12. Reports
+13. Users & Roles
+14. Audit Logs
+15. Settings
+
+Do not add extra modules outside this list.
+
+# 9. Dashboard UI
+
+Create a professional dashboard screen showing:
+
+* Total employees
+* Active employees
+* Saudi employees
+* Non-Saudi employees
+* Employees by company
+* Employees by branch
+* Employees by department
+* Expired Iqama count
+* Iqama expiring soon
+* Expired passport count
+* Passport expiring soon
+* Contracts ending soon
+* Attendance summary
+* Payroll summary
+* Biometric device status summary
+* Online/offline attendance machines
+* Last attendance sync
+* Unmatched attendance punches
+* Recent HR actions
+* Alerts and notifications
+
+Use clean dashboard cards, charts, status badges, and compact summary tables.
+
+# 10. Companies UI
+
+Create screens for managing the four companies.
+
+Company list must show:
+
+* Company name Arabic
+* Company name English
+* Status
+* Number of branches
+* Number of employees
+* Actions
+
+Company names must be:
+
+* AMNIAT / أمنيات
+* AMNIAT FACTORY / مصنع أمنيات للصناعة
+* PTC / تقنيات الدهان للتجارة
+* PTC Construction / تقنيات الدهان للمقاولات
+
+# 11. Branches UI
+
+Branches are company-specific.
+
+A branch belongs to one company only.
+
+Create branch list and branch form screens.
+
+Branch list must include:
+
+* Branch name Arabic
+* Branch name English
+* Company
+* Location
+* Status
+* Number of employees
+* Actions
+
+Branch form must include:
+
+* Company dropdown
+* Branch name Arabic
+* Branch name English
+* Address / location
+* Status
+
+# 12. Departments UI
+
+Departments are global.
+
+They can be assigned to employees in any company.
+
+Create department list and department form screens.
+
+Department list must include:
+
+* Department name Arabic
+* Department name English
+* Status
+* Number of employees
+* Actions
+
+Do not design departments as company-restricted.
+
+# 13. Positions UI
+
+Positions / job titles are global.
+
+They can be assigned to employees in any company.
+
+Create position list and position form screens.
+
+Position list must include:
+
+* Position name Arabic
+* Position name English
+* Status
+* Number of employees
+* Actions
+
+Do not design positions as company-restricted.
+
+# 14. Employee Management UI
+
+Create a full employee management interface.
+
+## Employee List Screen
+
+The employee list must include:
+
+* Employee photo/avatar placeholder
+* HR Employee ID
+* Financial Employee ID
+* Employee code
+* Arabic name
+* English name
+* Company
+* Branch
+* Department
+* Position
+* Nationality
+* Saudi / Non-Saudi
+* National ID / Iqama ID
+* Phone
+* Email
+* Employment status
+* Actions
+
+## Employee List Filters
+
+Include filters for:
+
+* Company
+* Branch
+* Department
+* Position
+* Nationality
+* Saudi / Non-Saudi
+* Employment status
+* Search by name
+* Search by HR Employee ID
+* Search by Financial Employee ID
+* Search by National ID / Iqama ID
+* Search by phone
+* Search by email
+* Search by passport number
+
+## Employee Form Screen
+
+Create a professional employee create/edit form divided into clear sections:
+
+### A. Organization Information
+
+* Company
+* Branch
+* Department
+* Position
+* Shift
+* Employment status
+
+Branch dropdown must depend on selected company.
+
+Department dropdown is global.
+
+Position dropdown is global.
+
+### B. Basic Employee Information
+
+* Employee code
+* Financial Employee ID
+* HR Employee ID
+* Arabic name
+* English name
+* Gender
+* Birth date
+* Nationality
+* Saudi / Non-Saudi
+
+### C. National ID / Iqama Information
+
+* National ID / Iqama ID
+* Iqama full name Arabic
+* Iqama full name English
+* Iqama expiry
+
+UI rule:
+
+* If National ID starts with 1, show Saudi automatically.
+* If National ID starts with 2, show Non-Saudi.
+* If National ID starts with anything else, show a validation error.
+* National ID / Iqama ID must be exactly 10 digits.
+
+### D. Passport Information
+
+* Passport number
+* Passport full name Arabic
+* Passport full name English
+* Passport expiry
+
+Passport number must appear as required and unique.
+
+### E. Contact Information
+
+* Email
+* Phone
+* Phone 2
+
+Email UI restrictions:
+
+* Valid email format
+* No spaces
+* No Arabic characters
+* Lowercase storage indication
+* Clear validation messages
+
+Saudi phone UI restrictions:
+
+* Accept 05XXXXXXXX
+* Accept +9665XXXXXXXX
+* Reject invalid format
+* Show helper text
+
+### F. Contract Information
+
+* Contract type
+* Start date
+* End date
+
+Expiry/end date fields must not allow past dates where applicable.
+
+### G. Bank Information
+
+* Bank dropdown
+* IBAN
+
+Bank must be a Saudi bank dropdown.
+
+IBAN must visually support Saudi IBAN format:
+
+SA + check digits + bank code + account number
+
+Show validation state for IBAN/bank match.
+
+### H. Salary Information
+
+* Basic salary
+* Overtime
+* Housing allowance
+* Other allowances
+* Transportation allowance
+* Training labor wages
+* Previous dues
+* Total
+
+### I. GOSI Information
+
+* Basic salary GOSI
+* Housing allowance GOSI
+* Other GOSI items
+* Difference in registered housing allowance
+* Social insurance Saudi
+
+### J. Deductions
+
+* Absence deduction
+* Delay deduction
+* Leave deduction
+* Warnings / penalties
+* Insurance deduction
+* Loans
+* Total deductions
+
+### K. Payment Distribution
+
+* Cash
+* Al Rajhi transfer
+* Bank Albilad transfer
+* Riyad Bank transfer
+* Remaining salary
+
+# 15. Employee Profile UI
+
+Create a detailed employee profile page with tabs.
+
+Tabs:
+
+1. Overview
+2. Personal Information
+3. Job Information
+4. Documents
+5. Attendance
+6. Leaves
+7. Payroll
+8. Audit History
+
+Profile header should show:
+
+* Employee avatar
+* Arabic name
+* English name
+* HR Employee ID
+* Company
+* Branch
+* Department
+* Position
+* Employment status badge
+* Saudi / Non-Saudi badge
+
+# 16. Nationality Dropdown UI
+
+The nationality field must be a ready dropdown.
+
+It must not be free text.
+
+It must contain all world countries.
+
+At the top, show the most-used countries:
+
+1. Egypt
+2. Saudi Arabia
+3. Syria
+4. Lebanon
+5. Pakistan
+6. Bangladesh
+7. India
+8. Jordan
+9. Iraq
+10. Qatar
+11. Kuwait
+12. Afghanistan
+13. Indonesia
+14. Philippines
+15. Sudan
+16. Tunisia
+17. Algeria
+18. Morocco
+
+After these countries, show all remaining countries alphabetically.
+
+Arabic UI must show country names in Arabic.
+
+English UI must show country names in English.
+
+# 17. Employee Documents UI
+
+Create employee document screens.
+
+Documents list should show:
+
+* Employee
+* Document type
+* Document number
+* Issue date
+* Expiry date
+* Status
+* Attachment
+* Actions
+
+Document statuses:
+
+* Valid
+* Expiring soon
+* Expired
+
+Use clear color-coded badges.
+
+Create document upload UI with:
+
+* Document type
+* Document number
+* Issue date
+* Expiry date
+* File upload
+* Notes
+
+Expiry dates must not allow past dates.
+
+# 18. Attendance UI
+
+Create attendance UI screens.
+
+Attendance will mainly use biometric machines.
+
+Main device used:
+
+**ZKTeco MB1000**
+
+## Attendance Rule
+
+Biometric attendance machines are global.
+
+Any employee from any company can punch from any attendance machine in any company.
+
+The UI must not show attendance devices as company-restricted.
+
+Device company/branch is only physical location metadata.
+
+## Attendance Screens
+
+Create:
+
+* Daily attendance screen
+* Attendance log screen
+* Attendance import screen
+* Manual attendance entry screen
+* Attendance report screen
+* Unmatched punch review screen
+
+## Attendance Table Columns
+
+Show:
+
+* Employee
+* HR Employee ID
+* Company
+* Branch
+* Device
+* Device physical location
+* Punch date
+* Punch time
+* Punch type
+* Source
+* Status
+* Actions
+
+## Attendance Filters
+
+Include filters for:
+
+* Date range
+* Employee
+* Company
+* Branch
+* Department
+* Device
+* Source
+* Status
+
+# 19. Biometric Devices UI
+
+Create biometric device management screens.
+
+Biometric devices are global organization-wide devices.
+
+They are not company-restricted.
+
+## Device List Columns
+
+Show:
+
+* Device name
+* Device model
+* Serial number
+* Connection type
+* IP address / domain
+* Port
+* Physical company location
+* Physical branch location
+* Status
+* Last sync
+* Last successful connection
+* Last failed connection
+* Actions
+
+## Device Form Fields
+
+* Device name
+* Device model
+* Serial number
+* Connection type
+* IP address
+* Domain / DDNS
+* Port
+* Username if needed
+* Password if needed
+* Physical company location
+* Physical branch location
+* Location description
+* Timezone
+* Status
+* Active / inactive
+* Notes
+
+## Connection Types
+
+The UI must support:
+
+* LAN
+* VPN
+* DDNS
+* Static IP
+
+## Device Actions
+
+Show actions for:
+
+* View device
+* Edit device
+* Test connection
+* Sync attendance
+* View sync history
+* Disable device
+
+Device status badges:
+
+* Active
+* Inactive
+* Online
+* Offline
+* Unreachable
+* Last sync failed
+
+# 20. Leave Management UI
+
+Create leave screens:
+
+* Leave types
+* Leave request list
+* Create leave request
+* Leave approval screen
+* Leave balance screen
+
+Leave types:
+
+* Annual leave
+* Sick leave
+* Emergency leave
+* Unpaid leave
+
+Leave request list should show:
+
+* Employee
+* Leave type
+* Start date
+* End date
+* Days
+* Status
+* Approver
+* Actions
+
+Statuses:
+
+* Pending
+* Approved
+* Rejected
+* Cancelled
+
+# 21. Payroll UI
+
+Create payroll screens.
+
+## Payroll List
+
+Show:
+
+* Payroll month
+* Company
+* Branch
+* Department
+* Total employees
+* Gross salary
+* Total deductions
+* Net salary
+* Status
+* Actions
+
+## Payroll Employee Details
+
+Show salary fields:
+
+* Basic salary
+* Overtime
+* Housing allowance
+* Transportation allowance
+* Other allowances
+* Training labor wages
+* Previous dues
+* Total salary
+* Basic salary GOSI
+* Housing allowance GOSI
+* Other GOSI items
+* Difference in registered housing allowance
+* Absence deduction
+* Delay deduction
+* Leave deduction
+* Warnings and penalties
+* Insurance deduction
+* Loans
+* Social insurance for Saudi employees
+* Total deductions
+* Net salary
+* Cash
+* Al Rajhi transfer
+* Bank Albilad transfer
+* Riyad Bank transfer
+* Remaining salary
+
+## Payroll Reports
+
+Create UI for:
+
+* Monthly payroll
+* Employee salary slip
+* Bank transfer report
+* Deduction report
+* Allowance report
+* GOSI-related report
+* Company payroll summary
+* Branch payroll summary
+* Department payroll summary
+
+# 22. Reports UI
+
+Create report screens for:
+
+* Employee report
+* Saudi / Non-Saudi report
+* Iqama expiry report
+* Passport expiry report
+* Contract expiry report
+* Attendance report
+* Device attendance report
+* Payroll report
+* Bank transfer report
+* Leave report
+* Audit log report
+
+Each report should include:
+
+* Filters
+* Table
+* Export button
+* Print button
+* Date range picker
+* Company filter
+* Branch filter
+* Department filter where applicable
+
+# 23. Roles and Users UI
+
+Create screens for:
+
+* Users
+* Roles
+* Permissions
+
+Suggested roles:
+
+* Super Admin
+* HR Manager
+* HR Officer
+* Accountant
+* Branch Manager
+* Employee Viewer
+
+Permission UI must support:
+
+* View
+* Create
+* Edit
+* Delete
+* Export
+* Print
+* View salary data
+* Modify salary data
+* Approve leave
+* Manage users
+* Manage settings
+
+# 24. Audit Logs UI
+
+Create audit log screen.
+
+Columns:
+
+* Date and time
+* User
+* Module
+* Action
+* Old value
+* New value
+* IP address
+* Details
+
+Filters:
+
+* User
+* Module
+* Action
+* Date range
+
+# 25. Settings UI
+
+Create settings screens for:
+
+* General settings
+* Language settings
+* Company settings
+* Bank settings
+* Country settings
+* Attendance settings
+* Payroll settings
+* Notification settings
+
+Do not create extra settings outside these categories.
+
+# 26. UI Style Direction
+
+Use a modern enterprise style.
+
+The design should feel suitable for a Saudi corporate HR system.
+
+Preferred style:
+
+* Clean white/light background
+* Professional sidebar
+* Clear hierarchy
+* Soft cards
+* Rounded corners
+* Subtle shadows
+* Clean tables
+* Clear status badges
+* Good spacing
+* Strong readability
+* Professional icons
+* No childish colors
+* No random illustrations
+* No unrelated images
+
+# 27. Components to Design
+
+Create reusable UI components:
+
+* Dashboard cards
+* Stat cards
+* Data tables
+* Filter bars
+* Search input
+* Dropdowns
+* Date pickers
+* Form sections
+* Validation messages
+* Status badges
+* Action buttons
+* Tabs
+* Modals
+* Alerts
+* Empty states
+* Loading states
+* Pagination
+* Breadcrumbs
+* Sidebar navigation
+* Header
+* Language switch button
+* Print report layout
+
+# 28. Validation UI
+
+Show clear validation states for:
+
+* Required fields
+* Invalid National ID / Iqama ID
+* Invalid email
+* Invalid Saudi phone number
+* Duplicate passport number
+* Invalid IBAN
+* Bank and IBAN mismatch
+* Past expiry dates
+* Missing required fields
+
+Validation messages must be ready for Arabic and English.
+
+# 29. Do Not Create
+
+Do not create:
+
+* Recruitment module
+* Performance appraisal module
+* Training module
+* Asset management module
+* Ticketing system
+* Chat system
+* CRM
+* Sales module
+* Inventory module
+* Accounting module outside payroll
+* Random dashboards
+* Random fields not listed here
+* Random company names
+* Random workflows not listed here
+* Any design unrelated to HRMS/ERP
+
+# 30. Final Output Required from Stitch
+
+Generate a complete UI concept for SMARS including:
+
+* Main dashboard
+* Sidebar navigation
+* Header with language switch
+* Employee list page
+* Employee create/edit form
+* Employee profile page
+* Company page
+* Branch page
+* Department page
+* Position page
+* Attendance page
+* Biometric devices page
+* Leave page
+* Payroll page
+* Reports page
+* Users and roles page
+* Audit logs page
+* Settings page
+
+The design must strictly follow this prompt.
+
+Do not invent anything outside it.
+
+
+# Offline UI and Font Requirements
+
+The system must work even when there is no internet connection.
+
+Do not depend on external online resources for the core UI.
+
+## Font Requirement
+
+Use **Cairo** as the main Arabic UI font.
+
+Arabic interface font:
+
+* Cairo
+
+English interface can use a clean professional sans-serif font, but the design must remain visually consistent with Cairo.
+
+## Offline / Local Asset Rules
+
+The UI should be designed so the final system can run locally without internet.
+
+Avoid relying on:
+
+* Online CDN links
+* Online Google Fonts loading
+* External icon libraries loaded from the internet
+* External CSS/JS libraries loaded from the internet
+* Remote images
+* Remote UI assets
+
+## Required Asset Behavior
+
+All required UI assets should be available locally inside the project, including:
+
+* Fonts
+* CSS files
+* JavaScript files
+* Icons
+* Layout assets
+* Dashboard assets
+* UI library assets if used
+
+## Design Rule
+
+The UI must still look professional and complete when the system is running locally on:
+
+```text
+D:\xampp82\htdocs\SMARS
+```
+
+without internet access.
