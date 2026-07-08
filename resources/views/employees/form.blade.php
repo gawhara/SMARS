@@ -10,7 +10,7 @@
 @endphp
 
 @section('content')
-    <section class="page-heading">
+    <section class="page-heading compact">
         <div>
             <span class="eyebrow">{{ __('app.employees') }}</span>
             <h1>{{ $employee->exists ? __('app.edit') : __('app.emp.add') }}</h1>

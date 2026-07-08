@@ -466,6 +466,35 @@ input {
     color: var(--muted);
 }
 
+/* Compact, dashboard-style page header */
+.page-heading.compact {
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.page-heading.compact .eyebrow {
+    margin-bottom: 1px;
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.page-heading.compact h1 {
+    font-size: 1.4rem;
+    line-height: 1.2;
+}
+
+.page-heading.compact p {
+    margin-top: 2px;
+    font-size: 0.85rem;
+}
+
+.page-heading.compact .primary-button {
+    min-height: 40px;
+    padding: 10px 18px;
+    font-size: 0.9rem;
+}
+
 .stat-grid {
     display: grid;
     grid-template-columns: repeat(5, minmax(140px, 1fr));
@@ -1027,6 +1056,65 @@ nav[role='navigation'] span {
 .empty-row {
     text-align: center;
     color: var(--muted);
+}
+
+/* Per-company employee overview dashboard */
+.mini-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.mini-stat {
+    padding: 15px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.mini-stat-label {
+    display: block;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.mini-stat-value {
+    display: block;
+    margin-top: 8px;
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.mini-stat-value small {
+    font-size: 0.8rem;
+    font-weight: 700;
+    opacity: 0.85;
+}
+
+.mini-stat-value.tone-info {
+    color: var(--primary);
+}
+
+.mini-stat-value.tone-success {
+    color: var(--success);
+}
+
+.mini-stat-value.tone-warning {
+    color: var(--warning);
+}
+
+.mini-stat.accent {
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    border-color: transparent;
+}
+
+.mini-stat.accent .mini-stat-label {
+    color: #dbeafe;
 }
 
 /* List results toolbar */

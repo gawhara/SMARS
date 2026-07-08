@@ -3,16 +3,42 @@
 @section('title', __('app.employees'))
 
 @section('content')
-    <section class="page-heading">
+    <section class="page-heading compact">
         <div>
             <span class="eyebrow">{{ __('app.organization_structure') }}</span>
             <h1>{{ __('app.employees') }}</h1>
-            <p>{{ __('app.central_hr_note') }}</p>
         </div>
         <a class="primary-button" href="{{ route('employees.create') }}">{{ __('app.emp.add') }}</a>
     </section>
 
     @include('partials.flash')
+
+    <div class="mini-stats">
+        <div class="mini-stat">
+            <span class="mini-stat-label">{{ __('app.emp.stat_total') }}</span>
+            <strong class="mini-stat-value">{{ number_format($stats['total']) }}</strong>
+        </div>
+        <div class="mini-stat">
+            <span class="mini-stat-label">{{ __('app.emp.saudi') }}</span>
+            <strong class="mini-stat-value tone-info">{{ number_format($stats['saudi']) }}</strong>
+        </div>
+        <div class="mini-stat">
+            <span class="mini-stat-label">{{ __('app.emp.non_saudi') }}</span>
+            <strong class="mini-stat-value">{{ number_format($stats['non_saudi']) }}</strong>
+        </div>
+        <div class="mini-stat">
+            <span class="mini-stat-label">{{ __('app.emp.stat_active') }}</span>
+            <strong class="mini-stat-value tone-success">{{ number_format($stats['active']) }}</strong>
+        </div>
+        <div class="mini-stat">
+            <span class="mini-stat-label">{{ __('app.emp.stat_iqama_expiring') }}</span>
+            <strong class="mini-stat-value {{ $stats['iqama_expiring'] > 0 ? 'tone-warning' : '' }}">{{ number_format($stats['iqama_expiring']) }}</strong>
+        </div>
+        <div class="mini-stat accent">
+            <span class="mini-stat-label">{{ __('app.emp.stat_payroll') }}</span>
+            <strong class="mini-stat-value">{{ number_format($stats['payroll'], 0) }} <small>{{ __('app.currency') }}</small></strong>
+        </div>
+    </div>
 
     <section class="panel filter-panel">
         <form class="filter-bar" method="GET">

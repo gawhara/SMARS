@@ -8,7 +8,7 @@
 @endphp
 
 @section('content')
-    <section class="page-heading">
+    <section class="page-heading compact">
         <div>
             <span class="eyebrow">{{ __('app.emp.profile') }}</span>
             <h1>{{ $employee->localizedName() }}</h1>

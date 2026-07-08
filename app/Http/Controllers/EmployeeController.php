@@ -38,8 +38,23 @@ class EmployeeController extends Controller
             ->paginate(15)
             ->withQueryString();
 
+        // Overview stats for the selected company (or the whole organization).
+        $scope = Employee::query()
+            ->when($request->filled('company_id'), fn ($q) => $q->where('company_id', $request->integer('company_id')));
+
+        $stats = [
+            'total' => (clone $scope)->count(),
+            'saudi' => (clone $scope)->where('saudi_non_saudi', 'saudi')->count(),
+            'non_saudi' => (clone $scope)->where('saudi_non_saudi', 'non_saudi')->count(),
+            'active' => (clone $scope)->where('status', 'active')->count(),
+            'iqama_expiring' => (clone $scope)->whereNotNull('iqama_expiry')
+                ->whereBetween('iqama_expiry', [today(), today()->copy()->addDays(30)])->count(),
+            'payroll' => (float) (clone $scope)->sum('total'),
+        ];
+
         return view('employees.index', [
             'employees' => $employees,
+            'stats' => $stats,
             'companies' => Company::orderBy('name_en')->get(),
             'departments' => Department::orderBy('name_en')->get(),
         ]);
