@@ -229,7 +229,17 @@
             <div class="form-grid">
                 <label>
                     <span>{{ __('app.emp.job_title') }}</span>
-                    <input name="job_title" value="{{ old('job_title', $employee->job_title) }}">
+                    @php $jobTitle = old('job_title', $employee->job_title); @endphp
+                    <select name="job_title">
+                        <option value="">{{ __('app.select_placeholder') }}</option>
+                        @foreach ($positions as $position)
+                            <option value="{{ $position->name_ar }}" @selected($jobTitle === $position->name_ar)>{{ $position->name_ar }}</option>
+                        @endforeach
+                        @if ($jobTitle && ! $positions->contains('name_ar', $jobTitle))
+                            <option value="{{ $jobTitle }}" selected>{{ $jobTitle }}</option>
+                        @endif
+                    </select>
+                    @error('job_title')<small>{{ $message }}</small>@enderror
                 </label>
                 <label>
                     <span>{{ __('app.emp.contract_type') }}</span>

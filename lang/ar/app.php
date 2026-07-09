@@ -192,6 +192,7 @@ return [
         'passport_full_name_arabic' => 'الاسم بالجواز (عربي)',
         'passport_full_name_english' => 'الاسم بالجواز (إنجليزي)',
         'job_title' => 'المسمى الوظيفي',
+        'contract_expiry' => 'انتهاء العقد',
         'contract_type' => 'نوع العقد',
         'start_date' => 'تاريخ المباشرة',
         'end_date' => 'تاريخ الانتهاء',

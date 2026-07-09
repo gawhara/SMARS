@@ -28,18 +28,18 @@ class EmployeeSeeder extends Seeder
         // Names deliberately matched to nationality (ISO2). SA => Saudi (national id
         // starts with 1); everyone else is on an Iqama (starts with 2).
         $people = [
-            ['co' => 'AMNIAT',           'ar' => 'محمد عبدالله العتيبي', 'en' => 'Mohammed Abdullah Al-Otaibi', 'nat' => 'SA', 'g' => 'male',   'bank' => 'RAJHI',   'job' => 'HR Manager'],
-            ['co' => 'AMNIAT',           'ar' => 'أحمد حسن محمود',        'en' => 'Ahmed Hassan Mahmoud',        'nat' => 'EG', 'g' => 'male',   'bank' => 'RIYAD',   'job' => 'Accountant'],
-            ['co' => 'AMNIAT',           'ar' => 'راجيش كومار',           'en' => 'Rajesh Kumar',                'nat' => 'IN', 'g' => 'male',   'bank' => 'ALBILAD', 'job' => 'Technician'],
-            ['co' => 'AMNIAT_FACTORY',   'ar' => 'محمد أسلم خان',         'en' => 'Muhammad Aslam Khan',         'nat' => 'PK', 'g' => 'male',   'bank' => 'RAJHI',   'job' => 'Technician'],
-            ['co' => 'AMNIAT_FACTORY',   'ar' => 'عبدالرحمن حسين',        'en' => 'Abdur Rahman Hossain',        'nat' => 'BD', 'g' => 'male',   'bank' => 'RIYAD',   'job' => 'Technician'],
-            ['co' => 'AMNIAT_FACTORY',   'ar' => 'منى إبراهيم علي',       'en' => 'Mona Ibrahim Ali',            'nat' => 'EG', 'g' => 'female', 'bank' => 'ALBILAD', 'job' => 'Sales Executive'],
-            ['co' => 'PTC',              'ar' => 'سارة فهد القحطاني',     'en' => 'Sara Fahad Al-Qahtani',       'nat' => 'SA', 'g' => 'female', 'bank' => 'RAJHI',   'job' => 'Branch Manager'],
-            ['co' => 'PTC',              'ar' => 'خوسيه سانتوس',          'en' => 'Jose Santos',                 'nat' => 'PH', 'g' => 'male',   'bank' => 'RIYAD',   'job' => 'Engineer'],
-            ['co' => 'PTC',              'ar' => 'عمر خالد الحلبي',       'en' => 'Omar Khaled Al-Halabi',       'nat' => 'SY', 'g' => 'male',   'bank' => 'ALBILAD', 'job' => 'Sales Executive'],
-            ['co' => 'PTC_CONSTRUCTION', 'ar' => 'أنيل شارما',            'en' => 'Anil Sharma',                 'nat' => 'IN', 'g' => 'male',   'bank' => 'RAJHI',   'job' => 'Engineer'],
-            ['co' => 'PTC_CONSTRUCTION', 'ar' => 'عمران خان',             'en' => 'Imran Khan',                  'nat' => 'PK', 'g' => 'male',   'bank' => 'RIYAD',   'job' => 'Technician'],
-            ['co' => 'PTC_CONSTRUCTION', 'ar' => 'ليث العمري',            'en' => 'Laith Al-Omari',              'nat' => 'JO', 'g' => 'male',   'bank' => 'ALBILAD', 'job' => 'Accountant'],
+            ['co' => 'AMNIAT',           'ar' => 'محمد عبدالله العتيبي', 'en' => 'Mohammed Abdullah Al-Otaibi', 'nat' => 'SA', 'g' => 'male',   'bank' => 'RAJHI',   'job' => 'مدير الموارد البشرية'],
+            ['co' => 'AMNIAT',           'ar' => 'أحمد حسن محمود',        'en' => 'Ahmed Hassan Mahmoud',        'nat' => 'EG', 'g' => 'male',   'bank' => 'RIYAD',   'job' => 'محاسب'],
+            ['co' => 'AMNIAT',           'ar' => 'راجيش كومار',           'en' => 'Rajesh Kumar',                'nat' => 'IN', 'g' => 'male',   'bank' => 'ALBILAD', 'job' => 'فني'],
+            ['co' => 'AMNIAT_FACTORY',   'ar' => 'محمد أسلم خان',         'en' => 'Muhammad Aslam Khan',         'nat' => 'PK', 'g' => 'male',   'bank' => 'RAJHI',   'job' => 'فني'],
+            ['co' => 'AMNIAT_FACTORY',   'ar' => 'عبدالرحمن حسين',        'en' => 'Abdur Rahman Hossain',        'nat' => 'BD', 'g' => 'male',   'bank' => 'RIYAD',   'job' => 'فني'],
+            ['co' => 'AMNIAT_FACTORY',   'ar' => 'منى إبراهيم علي',       'en' => 'Mona Ibrahim Ali',            'nat' => 'EG', 'g' => 'female', 'bank' => 'ALBILAD', 'job' => 'مسؤول مبيعات'],
+            ['co' => 'PTC',              'ar' => 'سارة فهد القحطاني',     'en' => 'Sara Fahad Al-Qahtani',       'nat' => 'SA', 'g' => 'female', 'bank' => 'RAJHI',   'job' => 'مدير فرع'],
+            ['co' => 'PTC',              'ar' => 'خوسيه سانتوس',          'en' => 'Jose Santos',                 'nat' => 'PH', 'g' => 'male',   'bank' => 'RIYAD',   'job' => 'مهندس'],
+            ['co' => 'PTC',              'ar' => 'عمر خالد الحلبي',       'en' => 'Omar Khaled Al-Halabi',       'nat' => 'SY', 'g' => 'male',   'bank' => 'ALBILAD', 'job' => 'مسؤول مبيعات'],
+            ['co' => 'PTC_CONSTRUCTION', 'ar' => 'أنيل شارما',            'en' => 'Anil Sharma',                 'nat' => 'IN', 'g' => 'male',   'bank' => 'RAJHI',   'job' => 'مهندس'],
+            ['co' => 'PTC_CONSTRUCTION', 'ar' => 'عمران خان',             'en' => 'Imran Khan',                  'nat' => 'PK', 'g' => 'male',   'bank' => 'RIYAD',   'job' => 'فني'],
+            ['co' => 'PTC_CONSTRUCTION', 'ar' => 'ليث العمري',            'en' => 'Laith Al-Omari',              'nat' => 'JO', 'g' => 'male',   'bank' => 'ALBILAD', 'job' => 'محاسب'],
         ];
 
         $domains = [

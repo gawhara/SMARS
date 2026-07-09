@@ -1117,6 +1117,16 @@ nav[role='navigation'] span {
     color: #dbeafe;
 }
 
+.text-danger {
+    color: var(--danger);
+    font-weight: 700;
+}
+
+.text-warning {
+    color: var(--warning);
+    font-weight: 700;
+}
+
 /* List results toolbar */
 .list-toolbar {
     display: flex;
@@ -1241,30 +1251,48 @@ nav[role='navigation'] span {
 
 .tab-nav {
     display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    padding: 14px 16px 0;
+    gap: 0;
+    padding: 0;
+    background: var(--surface-soft);
     border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: thin;
 }
 
 .tab-link {
-    padding: 10px 14px;
+    flex: 1 1 0;
+    min-width: max-content;
+    padding: 17px 20px;
     color: var(--muted);
     background: transparent;
     border: 0;
-    border-bottom: 2px solid transparent;
+    border-bottom: 3px solid transparent;
     cursor: pointer;
     font-weight: 700;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    text-align: center;
+    transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.tab-link + .tab-link {
+    box-shadow: inset 1px 0 0 var(--border);
+}
+
+.tab-link:hover {
+    color: var(--text);
+    background: rgba(30, 58, 138, 0.04);
 }
 
 .tab-link.active {
     color: var(--primary);
+    background: var(--card);
     border-bottom-color: var(--primary);
 }
 
 .tab-panel {
     display: none;
-    padding: 20px;
+    padding: 26px;
 }
 
 .tab-panel.active {

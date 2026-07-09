@@ -99,8 +99,8 @@
                             <th>{{ __('app.emp.name') }}</th>
                             <th>{{ __('app.emp.hr_employee_id') }}</th>
                             <th>{{ __('app.emp.job_title') }}</th>
-                            <th>{{ __('app.company') }}</th>
-                            <th>{{ __('app.branch') }}</th>
+                            <th>{{ __('app.emp.national_id') }}</th>
+                            <th>{{ __('app.emp.contract_expiry') }}</th>
                             <th>{{ __('app.emp.saudi_non_saudi') }}</th>
                             <th>{{ __('app.status') }}</th>
                             <th>{{ __('app.actions') }}</th>
@@ -114,14 +114,21 @@
                                         <span class="avatar">{{ $employee->initials() }}</span>
                                         <div>
                                             <a class="cell-name" href="{{ route('employees.show', $employee) }}">{{ $employee->localizedName() }}</a>
-                                            <small>{{ $employee->national_id }}</small>
+                                            <small>{{ $employee->isSaudi() ? __('app.emp.saudi') : $employee->nationality }}</small>
                                         </div>
                                     </div>
                                 </td>
                                 <td>{{ $employee->hr_employee_id }}</td>
                                 <td>{{ $employee->job_title ?: __('app.none') }}</td>
-                                <td>{{ $employee->company?->localizedName() }}</td>
-                                <td>{{ $employee->orgBranch?->localizedName() ?? __('app.none') }}</td>
+                                <td>{{ $employee->national_id }}</td>
+                                <td>
+                                    @php $end = $employee->end_date; @endphp
+                                    @if ($end)
+                                        <span class="{{ $end->isPast() ? 'text-danger' : ($end->lte(now()->addDays(30)) ? 'text-warning' : '') }}">{{ $end->format('Y-m-d') }}</span>
+                                    @else
+                                        {{ __('app.none') }}
+                                    @endif
+                                </td>
                                 <td>
                                     <span class="status-badge {{ $employee->isSaudi() ? 'info' : 'muted' }}">
                                         {{ $employee->isSaudi() ? __('app.emp.saudi') : __('app.emp.non_saudi') }}

@@ -192,6 +192,7 @@ return [
         'passport_full_name_arabic' => 'Passport name (Arabic)',
         'passport_full_name_english' => 'Passport name (English)',
         'job_title' => 'Job title',
+        'contract_expiry' => 'Contract expiry',
         'contract_type' => 'Contract type',
         'start_date' => 'Start date',
         'end_date' => 'End date',
