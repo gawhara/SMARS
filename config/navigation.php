@@ -55,8 +55,8 @@ return [
 
         // Modules scheduled for later phases (disabled placeholders).
         ['title' => 'employee_documents', 'route' => null, 'icon' => 'document', 'permission' => 'documents.view'],
-        ['title' => 'attendance', 'route' => null, 'icon' => 'clock', 'permission' => 'attendance.view'],
-        ['title' => 'biometric_devices', 'route' => null, 'icon' => 'fingerprint', 'permission' => 'devices.view'],
+        ['title' => 'attendance', 'route' => 'attendance.index', 'icon' => 'clock', 'permission' => 'attendance.view'],
+        ['title' => 'biometric_devices', 'route' => 'devices.index', 'icon' => 'fingerprint', 'permission' => 'devices.view'],
         ['title' => 'leaves', 'route' => null, 'icon' => 'calendar', 'permission' => 'leaves.view'],
         ['title' => 'payroll', 'route' => null, 'icon' => 'wallet', 'permission' => 'payroll.view'],
         ['title' => 'reports', 'route' => null, 'icon' => 'chart', 'permission' => 'reports.view'],

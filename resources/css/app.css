@@ -855,6 +855,16 @@ tbody tr:last-child td {
     background: #f1f5f9;
 }
 
+.status-badge.warning {
+    color: #92400e;
+    background: var(--warning-soft);
+}
+
+.status-badge.danger {
+    color: #991b1b;
+    background: var(--danger-soft);
+}
+
 .scope-list {
     display: grid;
     gap: 10px;
@@ -1638,6 +1648,259 @@ nav[role='navigation'] span {
 .text-warning {
     color: var(--warning);
     font-weight: 700;
+}
+
+/* Biometric device fleet cards */
+.device-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.device-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-inline-start: 4px solid var(--border-strong);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.device-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+.device-card.status-online {
+    border-inline-start-color: var(--success);
+}
+
+.device-card.status-unreachable,
+.device-card.status-sync_failed {
+    border-inline-start-color: var(--danger);
+}
+
+.device-card.status-unknown {
+    border-inline-start-color: var(--warning);
+}
+
+.device-card-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.device-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    border-radius: 12px;
+    color: var(--primary);
+    background: var(--primary-soft);
+}
+
+.device-icon-svg {
+    width: 22px;
+    height: 22px;
+}
+
+.device-card-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.device-card-title a {
+    display: block;
+    font-weight: 800;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.device-card-title a:hover {
+    color: var(--primary);
+}
+
+.device-card-title small {
+    color: var(--muted);
+    font-size: 0.8rem;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-inline-end: 6px;
+    border-radius: 999px;
+    background: currentColor;
+}
+
+.device-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+    margin: 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+}
+
+.device-meta dt {
+    color: var(--muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.device-meta dd {
+    margin: 3px 0 0;
+    font-weight: 700;
+    font-size: 0.86rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.device-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 4px;
+}
+
+.device-card-actions form {
+    margin: 0;
+}
+
+.device-card-actions .primary-button,
+.device-card-actions .ghost-button,
+.device-card-actions .danger-button {
+    min-height: 36px;
+    padding: 7px 14px;
+    font-size: 0.82rem;
+}
+
+/* Attendance: match-state tabs + unmatched rows + import format */
+.match-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.match-tab {
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 0.86rem;
+    transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.match-tab:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
+}
+
+.match-tab.active {
+    color: #ffffff;
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.row-unmatched {
+    background: var(--warning-soft) !important;
+}
+
+.import-format {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.import-format code {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+.import-format pre {
+    margin: 0;
+    overflow-x: auto;
+    direction: ltr;
+    color: var(--text);
+    font-size: 0.82rem;
+}
+
+/* Device enrollments — copy + enroll */
+.copy-form {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.copy-form label {
+    display: grid;
+    gap: 6px;
+    flex: 1 1 220px;
+}
+
+.copy-form select {
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 14px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    outline: none;
+}
+
+.copy-form select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.16);
+}
+
+.enroll-list {
+    display: grid;
+    gap: 3px;
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 6px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.enroll-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.enroll-option:hover {
+    background: var(--surface-soft);
+}
+
+.enroll-option small {
+    color: var(--muted);
 }
 
 /* List results toolbar */

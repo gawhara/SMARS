@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\BiometricDeviceController;
+use App\Http\Controllers\DeviceEnrollmentController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
@@ -38,4 +41,14 @@ Route::middleware('auth')->group(function () {
     Route::put('employees/{employee}/restore', [EmployeeController::class, 'restore'])
         ->name('employees.restore');
     Route::resource('employees', EmployeeController::class);
+    Route::post('devices/{device}/test', [BiometricDeviceController::class, 'testConnection'])->name('devices.test');
+    Route::get('devices/{device}/enrollments', [DeviceEnrollmentController::class, 'index'])->name('devices.enrollments.index');
+    Route::post('devices/{device}/enrollments', [DeviceEnrollmentController::class, 'store'])->name('devices.enrollments.store');
+    Route::delete('devices/{device}/enrollments/{enrollment}', [DeviceEnrollmentController::class, 'destroy'])->name('devices.enrollments.destroy');
+    Route::post('devices/{device}/enrollments/copy', [DeviceEnrollmentController::class, 'copy'])->name('devices.enrollments.copy');
+    Route::resource('devices', BiometricDeviceController::class)->parameter('devices', 'device');
+
+    Route::get('attendance/import', [AttendanceController::class, 'importForm'])->name('attendance.import.form');
+    Route::post('attendance/import', [AttendanceController::class, 'import'])->name('attendance.import');
+    Route::resource('attendance', AttendanceController::class)->only(['index', 'create', 'store', 'destroy']);
 });
