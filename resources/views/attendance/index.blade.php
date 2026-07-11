@@ -14,6 +14,7 @@
             <h1>{{ __('app.att.punch_log') }}</h1>
         </div>
         <div class="table-actions">
+            <a class="ghost-button" href="{{ route('attendance.index', array_merge(request()->query(), ['export' => 'csv'])) }}">{{ __('app.att.export_csv') }}</a>
             <a class="ghost-button" href="{{ route('attendance.report') }}">{{ __('app.att.open_report') }}</a>
             <a class="ghost-button" href="{{ route('attendance.matrix') }}">{{ __('app.att.open_matrix') }}</a>
             <a class="ghost-button" href="{{ route('attendance.import.form') }}">{{ __('app.att.import') }}</a>
@@ -56,10 +57,10 @@
         <form class="filter-bar" method="GET">
             @if ($match)<input type="hidden" name="match" value="{{ $match }}">@endif
             <input type="search" name="search" value="{{ request('search') }}" placeholder="{{ __('app.search') }}">
-            <select name="company_id">
-                <option value="">{{ __('app.all_companies') }}</option>
-                @foreach ($companies as $company)
-                    <option value="{{ $company->id }}" @selected((string) request('company_id') === (string) $company->id)>{{ $company->localizedName() }}</option>
+            <select name="employee_id">
+                <option value="">{{ __('app.att.all_employees') }}</option>
+                @foreach ($employees as $employee)
+                    <option value="{{ $employee->id }}" @selected((string) request('employee_id') === (string) $employee->id)>{{ $employee->localizedName() }} · {{ $employee->employee_code }}</option>
                 @endforeach
             </select>
             <select name="machine_id">
@@ -70,6 +71,8 @@
             </select>
             <input type="date" name="date_from" value="{{ request('date_from') }}" aria-label="{{ __('app.att.date_from') }}">
             <input type="date" name="date_to" value="{{ request('date_to') }}" aria-label="{{ __('app.att.date_to') }}">
+            <input type="time" name="time_from" value="{{ request('time_from') }}" aria-label="{{ __('app.att.time_from') }}" title="{{ __('app.att.time_from') }}">
+            <input type="time" name="time_to" value="{{ request('time_to') }}" aria-label="{{ __('app.att.time_to') }}" title="{{ __('app.att.time_to') }}">
             <button class="primary-button" type="submit">{{ __('app.filters') }}</button>
         </form>
     </section>

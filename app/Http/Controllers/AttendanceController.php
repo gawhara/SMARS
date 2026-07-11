@@ -24,25 +24,14 @@ class AttendanceController extends Controller
     {
     }
 
-    public function index(Request $request): View
+    public function index(Request $request): View|StreamedResponse
     {
-        $records = AttendanceRecord::query()
+        if ($request->input('export') === 'csv') {
+            return $this->exportPunchesCsv($this->punchQuery($request)->with(['employee', 'machine'])->get());
+        }
+
+        $records = $this->punchQuery($request)
             ->with(['employee', 'machine', 'company'])
-            ->when($request->filled('company_id'), fn ($q) => $q->where('company_id', $request->integer('company_id')))
-            ->when($request->filled('machine_id'), fn ($q) => $q->where('attendance_machine_id', $request->integer('machine_id')))
-            ->when($request->input('match') === 'matched', fn ($q) => $q->matched())
-            ->when($request->input('match') === 'unmatched', fn ($q) => $q->unmatched())
-            ->when($request->filled('date_from'), fn ($q) => $q->whereDate('punch_at', '>=', $request->date('date_from')))
-            ->when($request->filled('date_to'), fn ($q) => $q->whereDate('punch_at', '<=', $request->date('date_to')))
-            ->when($request->filled('search'), function ($q) use ($request): void {
-                $search = trim((string) $request->string('search'));
-                $q->where(function ($q) use ($search): void {
-                    $q->where('device_user_id', 'like', "%{$search}%")
-                        ->orWhereHas('employee', fn ($e) => $e->where('name_ar', 'like', "%{$search}%")
-                            ->orWhere('name_en', 'like', "%{$search}%")
-                            ->orWhere('employee_code', 'like', "%{$search}%"));
-                });
-            })
             ->orderByDesc('punch_at')
             ->paginate(20)
             ->withQueryString();
@@ -59,7 +48,58 @@ class AttendanceController extends Controller
             'stats' => $stats,
             'companies' => Company::orderBy('name_en')->get(),
             'machines' => AttendanceMachine::orderBy('device_name')->get(),
+            'employees' => Employee::orderBy('name_en')->get(['id', 'name_ar', 'name_en', 'employee_code']),
         ]);
+    }
+
+    /**
+     * Punch log query with all filters (employee, device, date range, time-of-day, match, search).
+     */
+    private function punchQuery(Request $request)
+    {
+        return AttendanceRecord::query()
+            ->when($request->filled('employee_id'), fn ($q) => $q->where('employee_id', $request->integer('employee_id')))
+            ->when($request->filled('company_id'), fn ($q) => $q->where('company_id', $request->integer('company_id')))
+            ->when($request->filled('machine_id'), fn ($q) => $q->where('attendance_machine_id', $request->integer('machine_id')))
+            ->when($request->input('match') === 'matched', fn ($q) => $q->matched())
+            ->when($request->input('match') === 'unmatched', fn ($q) => $q->unmatched())
+            ->when($request->filled('date_from'), fn ($q) => $q->whereDate('punch_at', '>=', $request->date('date_from')))
+            ->when($request->filled('date_to'), fn ($q) => $q->whereDate('punch_at', '<=', $request->date('date_to')))
+            ->when($request->filled('time_from'), fn ($q) => $q->whereTime('punch_at', '>=', $request->input('time_from')))
+            ->when($request->filled('time_to'), fn ($q) => $q->whereTime('punch_at', '<=', $request->input('time_to')))
+            ->when($request->filled('search'), function ($q) use ($request): void {
+                $search = trim((string) $request->string('search'));
+                $q->where(function ($q) use ($search): void {
+                    $q->where('device_user_id', 'like', "%{$search}%")
+                        ->orWhereHas('employee', fn ($e) => $e->where('name_ar', 'like', "%{$search}%")
+                            ->orWhere('name_en', 'like', "%{$search}%")
+                            ->orWhere('employee_code', 'like', "%{$search}%"));
+                });
+            });
+    }
+
+    private function exportPunchesCsv($records): StreamedResponse
+    {
+        return response()->streamDownload(function () use ($records): void {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, ['Employee', 'Code', 'Device user ID', 'Punch at', 'Type', 'Device', 'Verification', 'Source']);
+
+            foreach ($records->sortBy('punch_at') as $record) {
+                fputcsv($out, [
+                    $record->employee?->name_en,
+                    $record->employee?->employee_code,
+                    $record->device_user_id,
+                    $record->punch_at->format('Y-m-d H:i:s'),
+                    $record->punch_type,
+                    $record->machine?->device_name,
+                    $record->verification_type,
+                    $record->source,
+                ]);
+            }
+
+            fclose($out);
+        }, 'punches_'.now()->format('Ymd_His').'.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 
     public function matrix(Request $request, AttendanceMatrixService $matrixService): View

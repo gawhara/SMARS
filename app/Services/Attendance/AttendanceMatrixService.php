@@ -14,7 +14,8 @@ use Illuminate\Support\Collection;
  */
 class AttendanceMatrixService
 {
-    private const GRACE_MINUTES = 15;
+    // A check-in more than 10 minutes after shift start counts as late.
+    private const GRACE_MINUTES = 10;
     private const DEFAULT_START = '08:00';
 
     /**
@@ -81,8 +82,8 @@ class AttendanceMatrixService
             return $firstPunch > $threshold ? 'late' : 'present';
         }
 
-        // No punches: KSA weekend is a rest day.
-        if ($date->isFriday() || $date->isSaturday()) {
+        // No punches: Friday is the weekly rest day in Saudi Arabia.
+        if ($date->isFriday()) {
             return 'rest';
         }
 
