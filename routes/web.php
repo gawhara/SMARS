@@ -48,6 +48,8 @@ Route::middleware('auth')->group(function () {
     Route::post('devices/{device}/enrollments/copy', [DeviceEnrollmentController::class, 'copy'])->name('devices.enrollments.copy');
     Route::resource('devices', BiometricDeviceController::class)->parameter('devices', 'device');
 
+    Route::get('attendance/matrix', [AttendanceController::class, 'matrix'])->name('attendance.matrix');
+    Route::get('attendance/report', [AttendanceController::class, 'report'])->name('attendance.report');
     Route::get('attendance/import', [AttendanceController::class, 'importForm'])->name('attendance.import.form');
     Route::post('attendance/import', [AttendanceController::class, 'import'])->name('attendance.import');
     Route::resource('attendance', AttendanceController::class)->only(['index', 'create', 'store', 'destroy']);

@@ -14,6 +14,8 @@
             <h1>{{ __('app.att.punch_log') }}</h1>
         </div>
         <div class="table-actions">
+            <a class="ghost-button" href="{{ route('attendance.report') }}">{{ __('app.att.open_report') }}</a>
+            <a class="ghost-button" href="{{ route('attendance.matrix') }}">{{ __('app.att.open_matrix') }}</a>
             <a class="ghost-button" href="{{ route('attendance.import.form') }}">{{ __('app.att.import') }}</a>
             <a class="primary-button" href="{{ route('attendance.create') }}">{{ __('app.att.add_manual') }}</a>
         </div>

@@ -5,11 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AttendanceRecordRequest;
 use App\Models\AttendanceMachine;
 use App\Models\AttendanceRecord;
+use App\Models\Branch;
 use App\Models\Company;
+use App\Models\Department;
 use App\Models\Employee;
+use App\Services\Attendance\AttendanceMatrixService;
+use App\Services\Attendance\AttendanceReportService;
 use App\Services\Attendance\AttendanceService;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\View\View;
 
 class AttendanceController extends Controller
@@ -54,6 +60,123 @@ class AttendanceController extends Controller
             'companies' => Company::orderBy('name_en')->get(),
             'machines' => AttendanceMachine::orderBy('device_name')->get(),
         ]);
+    }
+
+    public function matrix(Request $request, AttendanceMatrixService $matrixService): View
+    {
+        $month = $this->resolveMonth($request->input('month'));
+
+        $employees = Employee::query()
+            ->with('shift')
+            ->when($request->filled('company_id'), fn ($q) => $q->where('company_id', $request->integer('company_id')))
+            ->when($request->filled('branch_id'), fn ($q) => $q->where('branch_id', $request->integer('branch_id')))
+            ->when($request->filled('department_id'), fn ($q) => $q->where('department_id', $request->integer('department_id')))
+            ->orderBy('name_en')
+            ->get();
+
+        $records = AttendanceRecord::query()
+            ->matched()
+            ->whereIn('employee_id', $employees->pluck('id'))
+            ->whereBetween('punch_at', [$month->copy()->startOfMonth(), $month->copy()->endOfMonth()])
+            ->get(['employee_id', 'punch_at']);
+
+        return view('attendance.matrix', [
+            'month' => $month,
+            'daysInMonth' => $month->daysInMonth,
+            'employees' => $employees,
+            'matrix' => $matrixService->build($month, $employees, $records),
+            'companies' => Company::orderBy('name_en')->get(),
+            'branches' => Branch::orderBy('name_en')->get(),
+            'departments' => Department::orderBy('name_en')->get(),
+        ]);
+    }
+
+    public function report(Request $request, AttendanceReportService $reportService): View|StreamedResponse
+    {
+        $from = $this->resolveDate($request->input('date_from'), Carbon::now()->startOfMonth());
+        $to = $this->resolveDate($request->input('date_to'), Carbon::now());
+
+        if ($from->gt($to)) {
+            [$from, $to] = [$to, $from];
+        }
+
+        $employees = Employee::query()
+            ->with(['shift', 'company', 'department'])
+            ->when($request->filled('company_id'), fn ($q) => $q->where('company_id', $request->integer('company_id')))
+            ->when($request->filled('branch_id'), fn ($q) => $q->where('branch_id', $request->integer('branch_id')))
+            ->when($request->filled('department_id'), fn ($q) => $q->where('department_id', $request->integer('department_id')))
+            ->orderBy('name_en')
+            ->get();
+
+        $records = AttendanceRecord::query()
+            ->matched()
+            ->whereIn('employee_id', $employees->pluck('id'))
+            ->whereBetween('punch_at', [$from->copy()->startOfDay(), $to->copy()->endOfDay()])
+            ->get(['employee_id', 'punch_at']);
+
+        $rows = $reportService->build($from, $to, $employees, $records);
+
+        if ($request->input('export') === 'csv') {
+            return $this->exportCsv($rows, $from, $to);
+        }
+
+        return view('attendance.report', [
+            'rows' => $rows,
+            'from' => $from,
+            'to' => $to,
+            'totals' => [
+                'present' => array_sum(array_column($rows, 'present')),
+                'late' => array_sum(array_column($rows, 'late')),
+                'absent' => array_sum(array_column($rows, 'absent')),
+                'hours' => round(array_sum(array_column($rows, 'hours')), 1),
+            ],
+            'companies' => Company::orderBy('name_en')->get(),
+            'branches' => Branch::orderBy('name_en')->get(),
+            'departments' => Department::orderBy('name_en')->get(),
+        ]);
+    }
+
+    private function exportCsv(array $rows, Carbon $from, Carbon $to): StreamedResponse
+    {
+        $filename = 'attendance_'.$from->format('Ymd').'_'.$to->format('Ymd').'.csv';
+
+        return response()->streamDownload(function () use ($rows): void {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel/Arabic
+            fputcsv($out, ['Employee', 'Code', 'Company', 'Department', 'Present', 'Late', 'Absent', 'Rest', 'Worked days', 'Punches', 'Hours']);
+
+            foreach ($rows as $row) {
+                $employee = $row['employee'];
+                fputcsv($out, [
+                    $employee->name_en,
+                    $employee->employee_code,
+                    $employee->company?->name_en,
+                    $employee->department?->name_en,
+                    $row['present'], $row['late'], $row['absent'], $row['rest'],
+                    $row['worked_days'], $row['punches'], $row['hours'],
+                ]);
+            }
+
+            fclose($out);
+        }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    private function resolveDate(?string $value, Carbon $default): Carbon
+    {
+        try {
+            return $value ? Carbon::parse($value) : $default->copy();
+        } catch (\Throwable) {
+            return $default->copy();
+        }
+    }
+
+    private function resolveMonth(?string $value): Carbon
+    {
+        try {
+            return $value ? Carbon::createFromFormat('Y-m', $value)->startOfMonth() : Carbon::now()->startOfMonth();
+        } catch (\Throwable) {
+            return Carbon::now()->startOfMonth();
+        }
     }
 
     public function create(): View

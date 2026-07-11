@@ -1903,6 +1903,136 @@ nav[role='navigation'] span {
     color: var(--muted);
 }
 
+/* Monthly attendance matrix */
+.att-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.legend-title {
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text);
+    font-size: 0.85rem;
+}
+
+.legend-swatch {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+.matrix-wrap {
+    overflow-x: auto;
+}
+
+table.attendance-matrix {
+    min-width: max-content;
+    border-collapse: collapse;
+}
+
+.attendance-matrix th,
+.attendance-matrix td {
+    border: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.matrix-name-col {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: 2;
+    min-width: 180px;
+    padding: 10px 14px;
+    text-align: start;
+    background: var(--card);
+    box-shadow: 2px 0 0 var(--border);
+}
+
+[dir='rtl'] .matrix-name-col {
+    box-shadow: -2px 0 0 var(--border);
+}
+
+thead .matrix-name-col {
+    z-index: 3;
+    background: #f1f5f9;
+}
+
+.matrix-day {
+    width: 32px;
+    min-width: 32px;
+    padding: 8px 0;
+    text-align: center;
+    color: #475569;
+    background: #f1f5f9;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.matrix-day.is-weekend {
+    color: var(--muted);
+    background: #e7ecf3;
+}
+
+.matrix-cell {
+    width: 32px;
+    min-width: 32px;
+    padding: 6px 0;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.cell-present {
+    color: #047857;
+    background: var(--success-soft);
+}
+
+.cell-late {
+    color: #92400e;
+    background: var(--warning-soft);
+}
+
+.cell-absent {
+    color: #991b1b;
+    background: var(--danger-soft);
+}
+
+.cell-rest {
+    background: #eef2f7;
+}
+
+.cell-holiday {
+    color: var(--primary);
+    background: var(--info-soft);
+}
+
+.cell-leave {
+    color: #6d28d9;
+    background: #ede9fe;
+}
+
+.matrix-sum {
+    padding: 8px 14px;
+    text-align: center;
+    font-weight: 800;
+    white-space: nowrap;
+    background: var(--card);
+}
+
 /* List results toolbar */
 .list-toolbar {
     display: flex;
