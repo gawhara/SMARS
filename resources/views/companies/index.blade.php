@@ -26,6 +26,13 @@
         </form>
     </section>
 
+    <div class="list-toolbar">
+        <div class="list-count">
+            <strong>{{ $companies->total() }}</strong>
+            <span>{{ __('app.companies') }}</span>
+        </div>
+    </div>
+
     <div class="company-grid">
         @forelse ($companies as $company)
             <article class="company-card">
@@ -39,7 +46,7 @@
                 <h3 class="company-card-title">
                     <a href="{{ route('companies.show', $company) }}" class="stretched-link">{{ $company->localizedName() }}</a>
                 </h3>
-                <p class="company-card-sub">{{ $company->name_en }} · {{ $company->code }}</p>
+                <p class="company-card-sub">{{ $company->name_en }} / {{ $company->code }}</p>
 
                 <dl class="company-card-meta">
                     <div>
@@ -63,7 +70,11 @@
                 </div>
             </article>
         @empty
-            <p class="muted-note">{{ __('app.none') }}</p>
+            <section class="panel empty-state company-empty">
+                <div class="empty-icon">@include('partials.icon', ['name' => 'building', 'class' => 'empty-icon-svg'])</div>
+                <h3>{{ __('app.none') }}</h3>
+                <a class="primary-button" href="{{ route('companies.create') }}">{{ __('app.add_new') }}</a>
+            </section>
         @endforelse
     </div>
 

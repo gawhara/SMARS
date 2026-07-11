@@ -24,28 +24,34 @@
 
     <section class="panel profile-header">
         <span class="avatar avatar-lg">{{ $employee->initials() }}</span>
-        <div class="profile-badges">
-            <span class="status-badge {{ $employee->status === 'active' ? 'success' : 'muted' }}">{{ $employee->status === 'active' ? __('app.active') : __('app.inactive') }}</span>
-            <span class="status-badge {{ $employee->isSaudi() ? 'info' : 'muted' }}">{{ $employee->isSaudi() ? __('app.emp.saudi') : __('app.emp.non_saudi') }}</span>
-            <span class="status-badge muted">{{ __('app.emp.hr_employee_id') }}: {{ $employee->hr_employee_id }}</span>
-            <span class="status-badge muted">{{ $employee->company?->localizedName() }}</span>
+        <div class="profile-identity">
+            <span class="profile-kicker">{{ $employee->employee_code }}</span>
+            <h2>{{ $employee->localizedName() }}</h2>
+            <p>{{ $employee->job_title ?: __('app.none') }} · {{ $employee->department?->localizedName() ?: __('app.none') }}</p>
+            <div class="profile-badges">
+                <span class="status-badge {{ $employee->status === 'active' ? 'success' : 'muted' }}">{{ $employee->status === 'active' ? __('app.active') : __('app.inactive') }}</span>
+                <span class="status-badge {{ $employee->isSaudi() ? 'info' : 'muted' }}">{{ $employee->isSaudi() ? __('app.emp.saudi') : __('app.emp.non_saudi') }}</span>
+                <span class="status-badge muted">{{ __('app.emp.hr_employee_id') }}: {{ $employee->hr_employee_id }}</span>
+                <span class="status-badge muted">{{ $employee->company?->localizedName() }}</span>
+            </div>
         </div>
     </section>
 
     <section class="panel">
         <div class="tabs" data-tabs>
-            <div class="tab-nav">
-                <button type="button" class="tab-link active" data-tab="overview">{{ __('app.emp.tab_overview') }}</button>
-                <button type="button" class="tab-link" data-tab="personal">{{ __('app.emp.tab_personal') }}</button>
-                <button type="button" class="tab-link" data-tab="job">{{ __('app.emp.tab_job') }}</button>
-                <button type="button" class="tab-link" data-tab="salary">{{ __('app.emp.tab_salary') }}</button>
-                <button type="button" class="tab-link" data-tab="documents">{{ __('app.emp.tab_documents') }}</button>
-                <button type="button" class="tab-link" data-tab="attendance">{{ __('app.emp.tab_attendance') }}</button>
-                <button type="button" class="tab-link" data-tab="leaves">{{ __('app.emp.tab_leaves') }}</button>
-                <button type="button" class="tab-link" data-tab="audit">{{ __('app.emp.tab_audit') }}</button>
+            <div class="tab-nav" role="tablist" aria-label="{{ __('app.emp.profile') }}">
+                <button type="button" class="tab-link active" data-tab="overview" role="tab" aria-selected="true">{{ __('app.emp.tab_overview') }}</button>
+                <button type="button" class="tab-link" data-tab="personal" role="tab" aria-selected="false">{{ __('app.emp.tab_personal') }}</button>
+                <button type="button" class="tab-link" data-tab="job" role="tab" aria-selected="false">{{ __('app.emp.tab_job') }}</button>
+                <button type="button" class="tab-link" data-tab="salary" role="tab" aria-selected="false">{{ __('app.emp.tab_salary') }}</button>
+                <button type="button" class="tab-link" data-tab="documents" role="tab" aria-selected="false">{{ __('app.emp.tab_documents') }}</button>
+                <button type="button" class="tab-link" data-tab="attendance" role="tab" aria-selected="false">{{ __('app.emp.tab_attendance') }}</button>
+                <button type="button" class="tab-link" data-tab="leaves" role="tab" aria-selected="false">{{ __('app.emp.tab_leaves') }}</button>
+                <button type="button" class="tab-link" data-tab="audit" role="tab" aria-selected="false">{{ __('app.emp.tab_audit') }}</button>
             </div>
 
             <div class="tab-panel active" data-panel="overview">
+                <div class="tab-panel-heading"><div><span>{{ __('app.emp.profile') }}</span><h2>{{ __('app.emp.tab_overview') }}</h2></div><p>{{ __('app.emp.overview_hint') }}</p></div>
                 <dl class="detail-list">
                     <div><dt>{{ __('app.name_en') }}</dt><dd>{{ $employee->name_en }}</dd></div>
                     <div><dt>{{ __('app.emp.employee_code') }}</dt><dd>{{ $employee->employee_code }}</dd></div>
@@ -59,6 +65,7 @@
             </div>
 
             <div class="tab-panel" data-panel="personal">
+                <div class="tab-panel-heading"><div><span>{{ __('app.emp.section_identity') }}</span><h2>{{ __('app.emp.tab_personal') }}</h2></div><p>{{ __('app.emp.personal_hint') }}</p></div>
                 <dl class="detail-list">
                     <div><dt>{{ __('app.emp.national_id') }}</dt><dd>{{ $employee->national_id }}</dd></div>
                     <div><dt>{{ __('app.emp.nationality') }}</dt><dd>{{ $country?->localizedName() ?: $employee->nationality }}</dd></div>
@@ -75,6 +82,7 @@
             </div>
 
             <div class="tab-panel" data-panel="job">
+                <div class="tab-panel-heading"><div><span>{{ __('app.emp.section_organization') }}</span><h2>{{ __('app.emp.tab_job') }}</h2></div><p>{{ __('app.emp.job_hint') }}</p></div>
                 <dl class="detail-list">
                     <div><dt>{{ __('app.emp.job_title') }}</dt><dd>{{ $employee->job_title ?: __('app.none') }}</dd></div>
                     <div><dt>{{ __('app.emp.contract_type') }}</dt><dd>{{ $employee->contract_type ?: __('app.none') }}</dd></div>
@@ -88,18 +96,25 @@
             </div>
 
             <div class="tab-panel" data-panel="salary">
+                <div class="tab-panel-heading"><div><span>{{ __('app.currency') }}</span><h2>{{ __('app.emp.tab_salary') }}</h2></div><p>{{ __('app.emp.salary_hint') }}</p></div>
+                <div class="salary-highlight">
+                    <span>{{ __('app.emp.remaining_salary') }}</span>
+                    <strong>{{ number_format((float) $employee->remaining_salary, 2) }}</strong>
+                    <small>{{ __('app.currency') }}</small>
+                </div>
                 <dl class="detail-list">
                     @foreach ($salaryFields as $field)
-                        <div><dt>{{ __('app.emp.'.$field) }}</dt><dd>{{ number_format((float) $employee->$field, 2) }}</dd></div>
+                        <div><dt>{{ __('app.emp.'.$field) }}</dt><dd class="money-value">{{ number_format((float) $employee->$field, 2) }} <small>{{ __('app.currency') }}</small></dd></div>
                     @endforeach
                 </dl>
             </div>
 
-            <div class="tab-panel" data-panel="documents"><p class="muted-note">{{ __('app.emp.tab_placeholder') }}</p></div>
-            <div class="tab-panel" data-panel="attendance"><p class="muted-note">{{ __('app.emp.tab_placeholder') }}</p></div>
-            <div class="tab-panel" data-panel="leaves"><p class="muted-note">{{ __('app.emp.tab_placeholder') }}</p></div>
+            <div class="tab-panel" data-panel="documents"><div class="profile-empty-state"><strong>{{ __('app.emp.tab_documents') }}</strong><p>{{ __('app.emp.tab_placeholder') }}</p></div></div>
+            <div class="tab-panel" data-panel="attendance"><div class="profile-empty-state"><strong>{{ __('app.emp.tab_attendance') }}</strong><p>{{ __('app.emp.tab_placeholder') }}</p></div></div>
+            <div class="tab-panel" data-panel="leaves"><div class="profile-empty-state"><strong>{{ __('app.emp.tab_leaves') }}</strong><p>{{ __('app.emp.tab_placeholder') }}</p></div></div>
 
             <div class="tab-panel" data-panel="audit">
+                <div class="tab-panel-heading"><div><span>{{ __('app.emp.profile') }}</span><h2>{{ __('app.emp.tab_audit') }}</h2></div><p>{{ __('app.emp.audit_hint') }}</p></div>
                 <dl class="detail-list">
                     <div><dt>{{ __('app.created_by') }}</dt><dd>{{ $employee->creator?->name ?: __('app.none') }}</dd></div>
                     <div><dt>{{ __('app.created_at') }}</dt><dd>{{ optional($employee->created_at)->format('Y-m-d H:i') }}</dd></div>
@@ -117,7 +132,11 @@
             container.querySelectorAll('.tab-link').forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     const target = btn.getAttribute('data-tab');
-                    container.querySelectorAll('.tab-link').forEach(b => b.classList.toggle('active', b === btn));
+                    container.querySelectorAll('.tab-link').forEach(function (b) {
+                        const active = b === btn;
+                        b.classList.toggle('active', active);
+                        b.setAttribute('aria-selected', active ? 'true' : 'false');
+                    });
                     container.querySelectorAll('.tab-panel').forEach(function (panel) {
                         panel.classList.toggle('active', panel.getAttribute('data-panel') === target);
                     });

@@ -25,18 +25,26 @@
             @include('partials.sidebar')
         </aside>
 
+        <button class="sidebar-backdrop" type="button" data-sidebar-close aria-label="Close menu" tabindex="-1"></button>
+
         <div class="content-shell">
             <header class="topbar">
-                <button class="icon-button menu-toggle" type="button" data-sidebar-toggle aria-label="Menu">Menu</button>
+                <button class="icon-button menu-toggle" type="button" data-sidebar-toggle aria-label="Menu" aria-controls="sidebar" aria-expanded="false">
+                    @include('partials.icon', ['name' => 'menu', 'class' => 'button-icon'])
+                </button>
 
-                <div class="topbar-search">
-                    <span>{{ __('app.search') }}</span>
+                <div class="topbar-context" aria-label="{{ __('app.app_name') }}">
+                    <span class="topbar-context-label">{{ __('app.app_name') }}</span>
+                    <strong>@yield('title', __('app.dashboard'))</strong>
                 </div>
 
                 <div class="topbar-actions">
                     <a class="language-link {{ $locale === 'ar' ? 'active' : '' }}" href="{{ route('language.switch', 'ar') }}">{{ __('app.arabic') }}</a>
                     <a class="language-link {{ $locale === 'en' ? 'active' : '' }}" href="{{ route('language.switch', 'en') }}">{{ __('app.english') }}</a>
-                    <button class="icon-button" type="button" aria-label="{{ __('app.notifications') }}">N</button>
+                    <button class="icon-button notification-button" type="button" aria-label="{{ __('app.notifications') }}">
+                        @include('partials.icon', ['name' => 'bell', 'class' => 'button-icon'])
+                        <span class="notification-dot" aria-hidden="true"></span>
+                    </button>
                     <div class="user-chip">
                         <span>{{ mb_substr(auth()->user()->name, 0, 1) }}</span>
                         <strong>{{ auth()->user()->name }}</strong>

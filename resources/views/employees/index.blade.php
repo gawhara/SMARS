@@ -86,7 +86,7 @@
             @endif
         </div>
         @if ($hasFilters)
-            <a class="chip-clear" href="{{ route('employees.index') }}">✕ {{ __('app.clear_filters') }}</a>
+            <a class="chip-clear" href="{{ route('employees.index') }}">x {{ __('app.clear_filters') }}</a>
         @endif
     </div>
 

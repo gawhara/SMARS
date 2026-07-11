@@ -6,10 +6,12 @@
 
 <div class="company-picker">
     <a class="picker-card {{ $active === '' ? 'active' : '' }}" href="{{ route($route) }}">
-        <span class="picker-logo picker-logo-all">★</span>
+        <span class="picker-logo picker-logo-all">@include('partials.icon', ['name' => 'building', 'class' => 'picker-logo-icon'])</span>
         <span class="picker-body">
             <span class="picker-name">{{ __('app.all_companies') }}</span>
-            <span class="picker-meta">{{ $companies->sum($countField) }} · {{ $label }}</span>
+            <span class="picker-meta-row">
+                <span class="picker-count">{{ $companies->sum($countField) }} {{ $label }}</span>
+            </span>
         </span>
     </a>
 
@@ -24,7 +26,10 @@
             @endif
             <span class="picker-body">
                 <span class="picker-name">{{ $company->localizedName() }}</span>
-                <span class="picker-meta">{{ $company->{$countField} }} · {{ $company->code }}</span>
+                <span class="picker-meta-row">
+                    <span class="picker-count">{{ $company->{$countField} }} {{ $label }}</span>
+                    <span class="picker-code">{{ $company->code }}</span>
+                </span>
             </span>
         </a>
     @endforeach

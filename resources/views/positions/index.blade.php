@@ -27,6 +27,12 @@
     </section>
 
     <section class="panel">
+        <div class="panel-header">
+            <div>
+                <h2>{{ __('app.positions') }}</h2>
+                <p>{{ $positions->total() }} {{ __('app.positions') }}</p>
+            </div>
+        </div>
         <div class="table-wrap">
             <table>
                 <thead>
@@ -38,7 +44,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($positions as $position)
+                    @forelse ($positions as $position)
                         <tr>
                             <td>{{ $position->name_ar }}</td>
                             <td>{{ $position->name_en }}</td>
@@ -52,7 +58,9 @@
                                 </form>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr><td colspan="4" class="empty-row">{{ __('app.none') }}</td></tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

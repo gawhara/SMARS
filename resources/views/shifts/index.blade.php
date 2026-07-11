@@ -27,39 +27,75 @@
     </section>
 
     <section class="panel">
+        <div class="panel-header">
+            <div>
+                <h2>{{ __('app.shifts') }}</h2>
+                <p>{{ $shiftSchedules->count() }} {{ __('app.shifts') }}</p>
+            </div>
+        </div>
         <div class="table-wrap">
             <table>
                 <thead>
                     <tr>
-                        <th>{{ __('app.name_ar') }}</th>
-                        <th>{{ __('app.name_en') }}</th>
-                        <th>{{ __('app.start_time') }}</th>
-                        <th>{{ __('app.end_time') }}</th>
+                        <th>{{ __('app.shift') }}</th>
+                        <th>{{ __('app.work_period_1') }}</th>
+                        <th>{{ __('app.work_period_2') }}</th>
+                        <th>{{ __('app.hours_count') }}</th>
                         <th>{{ __('app.status') }}</th>
                         <th>{{ __('app.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($shifts as $shift)
+                    @forelse ($shiftSchedules as $schedule)
+                        @php
+                            $firstShift = $schedule->firstWhere('shift_number', 1) ?? $schedule->first();
+                            $secondShift = $schedule->firstWhere('shift_number', 2);
+                            $totalMinutes = $schedule->sum(fn ($shift) => $shift->durationMinutes());
+                            $totalHours = $totalMinutes / 60;
+                        @endphp
                         <tr>
-                            <td>{{ $shift->name_ar }}</td>
-                            <td>{{ $shift->name_en }}</td>
-                            <td>{{ \Illuminate\Support\Str::substr($shift->start_time, 0, 5) }}</td>
-                            <td>{{ \Illuminate\Support\Str::substr($shift->end_time, 0, 5) }}</td>
-                            <td><span class="status-badge {{ $shift->is_active ? 'success' : 'muted' }}">{{ $shift->is_active ? __('app.active') : __('app.inactive') }}</span></td>
+                            <td><strong>{{ ($firstShift ?? $secondShift)->localizedName() }}</strong></td>
+                            <td>
+                                @if ($firstShift)
+                                    <span class="shift-time-range">{{ $firstShift->localizedTime('start_time') }} – {{ $firstShift->localizedTime('end_time') }}</span>
+                                @else
+                                    {{ __('app.none') }}
+                                @endif
+                            </td>
+                            <td>
+                                @if ($secondShift)
+                                    <span class="shift-time-range">{{ $secondShift->localizedTime('start_time') }} – {{ $secondShift->localizedTime('end_time') }}</span>
+                                @else
+                                    {{ __('app.none') }}
+                                @endif
+                            </td>
+                            <td>
+                                <span class="hours-total">
+                                    {{ fmod($totalHours, 1.0) === 0.0 ? number_format($totalHours, 0) : number_format($totalHours, 2) }}
+                                    {{ __('app.hours_unit') }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge {{ $secondShift ? 'info' : 'success' }}">
+                                    {{ $secondShift ? __('app.two_shift_schedule') : __('app.continuous_schedule') }}
+                                </span>
+                            </td>
                             <td class="table-actions">
-                                <a class="ghost-button" href="{{ route('shifts.edit', $shift) }}">{{ __('app.edit') }}</a>
-                                <form method="POST" action="{{ route('shifts.destroy', $shift) }}" onsubmit="return confirm('{{ __('app.confirm_delete') }}')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="danger-button" type="submit">{{ __('app.delete') }}</button>
-                                </form>
+                                @if ($firstShift)
+                                    <a class="ghost-button" href="{{ route('shifts.edit', $firstShift) }}">{{ __('app.edit') }}</a>
+                                    <form method="POST" action="{{ route('shifts.destroy', $firstShift) }}" onsubmit="return confirm('{{ __('app.confirm_delete_shift_schedule') }}')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="danger-button" type="submit">{{ __('app.delete') }}</button>
+                                    </form>
+                                @endif
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr><td colspan="6" class="empty-row">{{ __('app.none') }}</td></tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
-        {{ $shifts->links() }}
     </section>
 @endsection
