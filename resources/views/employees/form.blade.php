@@ -116,7 +116,7 @@
                     <select name="shift_id">
                         <option value="">{{ __('app.select_placeholder') }}</option>
                         @foreach ($shifts as $shift)
-                            <option value="{{ $shift->id }}" @selected((string) old('shift_id', $employee->shift_id) === (string) $shift->id)>{{ $shift->localizedName() }} ({{ $shift->localizedTime('start_time') }}–{{ $shift->localizedTime('end_time') }})</option>
+                            <option value="{{ $shift->id }}" @selected((string) old('shift_id', $employee->shift_id) === (string) $shift->id)>{{ $shift->localizedScheduleLabel() }}</option>
                         @endforeach
                     </select>
                 </label>

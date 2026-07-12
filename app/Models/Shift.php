@@ -39,7 +39,7 @@ class Shift extends Model
 
     public function localizedTime(string $attribute): string
     {
-        $time = Carbon::createFromFormat('H:i:s', (string) $this->{$attribute});
+        $time = Carbon::parse((string) $this->{$attribute});
 
         if (app()->isLocale('ar')) {
             return $time->format('h:i').' '.($time->format('A') === 'AM' ? __('app.time_am') : __('app.time_pm'));
@@ -50,10 +50,23 @@ class Shift extends Model
 
     public function durationMinutes(): int
     {
-        $start = Carbon::createFromFormat('H:i:s', (string) $this->start_time);
-        $end = Carbon::createFromFormat('H:i:s', (string) $this->end_time);
+        $start = Carbon::parse((string) $this->start_time);
+        $end = Carbon::parse((string) $this->end_time);
 
         return (int) $start->diffInMinutes($end);
+    }
+
+    public function schedulePeriods()
+    {
+        return $this->schedule_id
+            ? static::where('schedule_id', $this->schedule_id)->orderBy('shift_number')->get()
+            : collect([$this]);
+    }
+
+    public function localizedScheduleLabel(): string
+    {
+        $periods = $this->schedulePeriods()->map(fn ($shift) => $shift->localizedTime('start_time').'–'.$shift->localizedTime('end_time'))->join(' / ');
+        return $this->localizedName().' ('.$periods.')';
     }
 
 }

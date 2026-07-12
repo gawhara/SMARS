@@ -67,6 +67,8 @@
                         <th>{{ __('app.att.st_late') }}</th>
                         <th>{{ __('app.att.st_absent') }}</th>
                         <th>{{ __('app.att.st_rest') }}</th>
+                        <th>{{ __('app.att.st_holiday') }}</th>
+                        <th>{{ __('app.att.st_leave') }}</th>
                         <th>{{ __('app.att.worked_days') }}</th>
                         <th>{{ __('app.att.punches') }}</th>
                         <th>{{ __('app.att.hours') }}</th>
@@ -85,12 +87,14 @@
                             <td><span class="tone-warning">{{ $row['late'] }}</span></td>
                             <td><span class="{{ $row['absent'] > 0 ? 'text-danger' : '' }}">{{ $row['absent'] }}</span></td>
                             <td>{{ $row['rest'] }}</td>
+                            <td>{{ $row['holiday'] }}</td>
+                            <td>{{ $row['leave'] }}</td>
                             <td><strong>{{ $row['worked_days'] }}</strong></td>
                             <td>{{ $row['punches'] }}</td>
                             <td><strong>{{ number_format($row['hours'], 1) }}</strong></td>
                         </tr>
                     @empty
-                        <tr><td colspan="9" class="empty-row">{{ __('app.att.no_employees') }}</td></tr>
+                        <tr><td colspan="11" class="empty-row">{{ __('app.att.no_employees') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>

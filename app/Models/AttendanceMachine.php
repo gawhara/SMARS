@@ -22,6 +22,7 @@ class AttendanceMachine extends Model
         'ip_address',
         'domain',
         'port',
+        'comm_key',
         'username',
         'password',
         'company_id',
@@ -30,6 +31,7 @@ class AttendanceMachine extends Model
         'timezone',
         'status',
         'is_active',
+        'automatic_sync_enabled','sync_interval_minutes',
         'notes',
     ];
 
@@ -39,8 +41,10 @@ class AttendanceMachine extends Model
     {
         return [
             'is_active' => 'boolean',
+            'automatic_sync_enabled' => 'boolean',
             'password' => 'encrypted',
             'last_sync_at' => 'datetime',
+            'last_attendance_at' => 'datetime',
             'last_successful_connection_at' => 'datetime',
             'last_failed_connection_at' => 'datetime',
         ];

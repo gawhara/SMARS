@@ -14,6 +14,12 @@
             <h1>{{ __('app.att.punch_log') }}</h1>
         </div>
         <div class="table-actions">
+            <a class="ghost-button" href="{{ route('attendance.holidays.index') }}">{{ __('app.att.holidays') }}</a>
+            <a class="ghost-button" href="{{ route('attendance.leaves.index') }}">{{ __('app.att.leaves') }}</a>
+            <a class="ghost-button" href="{{ route('attendance.policies.index') }}">{{ __('app.att.policies') }}</a>
+            <a class="ghost-button" href="{{ route('attendance.corrections.index') }}">{{ __('app.att.corrections') }}</a>
+            <a class="ghost-button" href="{{ route('attendance.daily') }}">{{ __('app.att.open_daily') }}</a>
+            <a class="ghost-button" href="{{ route('attendance.exceptions') }}">{{ __('app.att.open_exceptions') }}</a>
             <a class="ghost-button" href="{{ route('attendance.index', array_merge(request()->query(), ['export' => 'csv'])) }}">{{ __('app.att.export_csv') }}</a>
             <a class="ghost-button" href="{{ route('attendance.report') }}">{{ __('app.att.open_report') }}</a>
             <a class="ghost-button" href="{{ route('attendance.matrix') }}">{{ __('app.att.open_matrix') }}</a>
@@ -108,6 +114,9 @@
                                 <td>{{ $record->machine?->device_name ?? __('app.none') }}</td>
                                 <td>{{ __('app.att.source_'.$record->source) }}</td>
                                 <td class="table-actions">
+                                    @if ($record->isMatched())
+                                        <a class="ghost-button" href="{{ route('attendance.corrections.create', ['record_id' => $record->id]) }}">{{ __('app.att.request_correction') }}</a>
+                                    @endif
                                     <form method="POST" action="{{ route('attendance.destroy', $record) }}" onsubmit="return confirm('{{ __('app.confirm_delete') }}')">
                                         @csrf
                                         @method('DELETE')

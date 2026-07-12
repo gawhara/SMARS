@@ -1,0 +1,3 @@
+<?php
+use Illuminate\Database\Migrations\Migration; use Illuminate\Database\Schema\Blueprint; use Illuminate\Support\Facades\Schema;
+return new class extends Migration { public function up():void{Schema::table('attendance_machines',function(Blueprint $t){$t->unsignedInteger('comm_key')->default(0)->after('port');$t->boolean('automatic_sync_enabled')->default(false)->after('is_active');$t->unsignedSmallInteger('sync_interval_minutes')->default(5)->after('automatic_sync_enabled');$t->timestamp('last_attendance_at')->nullable()->after('last_sync_at');});} public function down():void{Schema::table('attendance_machines',fn(Blueprint $t)=>$t->dropColumn(['comm_key','automatic_sync_enabled','sync_interval_minutes','last_attendance_at']));}};

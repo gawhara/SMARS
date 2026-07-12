@@ -60,7 +60,7 @@
                     <div><dt>{{ __('app.branch') }}</dt><dd>{{ $employee->orgBranch?->localizedName() ?: __('app.none') }}</dd></div>
                     <div><dt>{{ __('app.department') }}</dt><dd>{{ $employee->department?->localizedName() ?: __('app.none') }}</dd></div>
                     <div><dt>{{ __('app.position') }}</dt><dd>{{ $employee->position?->localizedName() ?: __('app.none') }}</dd></div>
-                    <div><dt>{{ __('app.emp.shift') }}</dt><dd>{{ $employee->shift?->localizedName() ?: __('app.none') }}</dd></div>
+                    <div><dt>{{ __('app.emp.shift') }}</dt><dd>{{ $employee->shift?->localizedScheduleLabel() ?: __('app.none') }}</dd></div>
                 </dl>
             </div>
 

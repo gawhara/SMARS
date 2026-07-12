@@ -9,6 +9,7 @@ use App\Models\Company;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Services\Attendance\ZktecoReadOnlySyncService;
 
 class BiometricDeviceController extends Controller
 {
@@ -110,6 +111,12 @@ class BiometricDeviceController extends Controller
         return back()->with('error', __('app.device.connection_failed', ['error' => $errstr ?: __('app.device.timeout')]));
     }
 
+    public function sync(AttendanceMachine $device, ZktecoReadOnlySyncService $service): RedirectResponse
+    {
+        try { $batch=$service->sync($device,(int)request()->user()->id); return back()->with('status',__('app.device.sync_ok',['count'=>$batch->imported_count])); }
+        catch (\Throwable $e) { return back()->with('error',__('app.device.sync_failed').': '.$e->getMessage()); }
+    }
+
     private function formData(AttendanceMachine $device): array
     {
         return [
@@ -121,7 +128,7 @@ class BiometricDeviceController extends Controller
 
     private function payload(AttendanceMachineRequest $request): array
     {
-        $data = $request->safe()->merge(['is_active' => $request->boolean('is_active')])->except(['password']);
+        $data = $request->safe()->merge(['is_active' => $request->boolean('is_active'),'automatic_sync_enabled'=>$request->boolean('automatic_sync_enabled')])->except(['password']);
 
         // Only overwrite the stored password when a new one is supplied.
         if ($request->filled('password')) {

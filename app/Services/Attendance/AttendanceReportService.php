@@ -20,9 +20,11 @@ class AttendanceReportService
      * @param  Collection<int, \App\Models\AttendanceRecord>  $records
      * @return array<int, array<string, mixed>>
      */
-    public function build(Carbon $from, Carbon $to, Collection $employees, Collection $records): array
+    public function build(Carbon $from, Carbon $to, Collection $employees, Collection $records, ?Collection $holidays = null, ?Collection $leaves = null): array
     {
         $today = Carbon::today();
+        $holidays ??= collect();
+        $leaves ??= collect();
         $byEmployee = $records->groupBy('employee_id')
             ->map(fn ($group) => $group->groupBy(fn ($r) => $r->punch_at->toDateString()));
 
@@ -30,13 +32,15 @@ class AttendanceReportService
 
         foreach ($employees as $employee) {
             $shiftStart = $this->matrix->shiftStart($employee);
-            $counts = ['present' => 0, 'late' => 0, 'absent' => 0, 'rest' => 0];
+            $policy = app(AttendancePolicyService::class)->forEmployee($employee);
+            $counts = ['present' => 0, 'late' => 0, 'absent' => 0, 'rest' => 0, 'holiday' => 0, 'leave' => 0];
             $punchTotal = 0;
             $minutes = 0;
 
             for ($date = $from->copy(); $date->lte($to); $date->addDay()) {
                 $dayPunches = $byEmployee[$employee->id][$date->toDateString()] ?? collect();
-                $status = $this->matrix->dayStatus($date, $today, $dayPunches, $shiftStart);
+                $calendarStatus = $this->matrix->calendarStatus($employee, $date, $holidays, $leaves);
+                $status = $this->matrix->dayStatus($date, $today, $dayPunches, $shiftStart, $policy->grace_minutes, $policy->weekend_days ?? [5], $calendarStatus);
 
                 if (isset($counts[$status])) {
                     $counts[$status]++;
@@ -44,10 +48,7 @@ class AttendanceReportService
 
                 if ($dayPunches->isNotEmpty()) {
                     $punchTotal += $dayPunches->count();
-                    $first = $dayPunches->min(fn ($r) => $r->punch_at->format('H:i:s'));
-                    $last = $dayPunches->max(fn ($r) => $r->punch_at->format('H:i:s'));
-                    $minutes += Carbon::createFromFormat('H:i:s', $first)
-                        ->diffInMinutes(Carbon::createFromFormat('H:i:s', $last));
+                    $minutes += $this->pairedMinutes($dayPunches);
                 }
             }
 
@@ -57,6 +58,8 @@ class AttendanceReportService
                 'late' => $counts['late'],
                 'absent' => $counts['absent'],
                 'rest' => $counts['rest'],
+                'holiday' => $counts['holiday'],
+                'leave' => $counts['leave'],
                 'worked_days' => $counts['present'] + $counts['late'],
                 'punches' => $punchTotal,
                 'hours' => round($minutes / 60, 1),
@@ -64,5 +67,19 @@ class AttendanceReportService
         }
 
         return $rows;
+    }
+
+    private function pairedMinutes(Collection $punches): int
+    {
+        $open = null;
+        $minutes = 0;
+        foreach ($punches->sortBy('punch_at') as $punch) {
+            if ($punch->punch_type === 'in' && $open === null) $open = $punch;
+            if ($punch->punch_type === 'out' && $open !== null) {
+                $minutes += (int) $open->punch_at->diffInMinutes($punch->punch_at);
+                $open = null;
+            }
+        }
+        return $minutes;
     }
 }

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\AttendanceRecord;
+use App\Models\AttendanceDailySummary;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\User;
@@ -50,6 +51,9 @@ class AttendanceTest extends TestCase
         $this->assertSame($employee->company_id, $record->company_id);
         $this->assertSame('manual', $record->source);
         $this->assertTrue($record->isMatched());
+        $summary = AttendanceDailySummary::where('employee_id', $employee->id)->firstOrFail();
+        $this->assertSame('2026-07-11', $summary->attendance_date->format('Y-m-d'));
+        $this->assertTrue($summary->has_exception);
     }
 
     public function test_csv_import_matches_dedupes_and_flags_unmatched(): void
@@ -76,5 +80,53 @@ class AttendanceTest extends TestCase
         $this->assertDatabaseHas('attendance_sync_batches', [
             'imported_count' => 2, 'matched_count' => 1, 'unmatched_count' => 1, 'duplicate_count' => 1,
         ]);
+        $this->assertDatabaseHas('attendance_daily_summaries', [
+            'employee_id' => Employee::where('employee_code', 'EMP-0001')->value('id'),
+            'has_exception' => true,
+        ]);
+    }
+
+    public function test_daily_summary_pairs_punches_and_calculates_worked_minutes(): void
+    {
+        $user = User::factory()->create(['is_active' => true]);
+        $employee = $this->employee();
+
+        foreach ([['08:00', 'in'], ['12:00', 'out'], ['13:00', 'in'], ['17:00', 'out']] as [$time, $type]) {
+            $this->actingAs($user)->post(route('attendance.store'), [
+                'employee_id' => $employee->id,
+                'punch_at' => "2026-07-12T{$time}",
+                'punch_type' => $type,
+            ])->assertRedirect(route('attendance.index'));
+        }
+
+        $summary = AttendanceDailySummary::firstOrFail();
+        $this->assertSame(480, $summary->worked_minutes);
+        $this->assertFalse($summary->has_exception);
+        $this->assertSame('present', $summary->status);
+    }
+
+    public function test_exception_dashboard_lists_missing_checkout(): void
+    {
+        $user = User::factory()->create(['is_active' => true]);
+        $employee = $this->employee();
+
+        $this->actingAs($user)->post(route('attendance.store'), [
+            'employee_id' => $employee->id,
+            'punch_at' => '2026-07-13T08:00',
+            'punch_type' => 'in',
+        ]);
+
+        $this->actingAs($user)->get(route('attendance.exceptions'))
+            ->assertOk()
+            ->assertSee(__('app.att.ex_missing_out'))
+            ->assertSee($employee->employee_code);
+    }
+
+    public function test_daily_summary_dashboard_loads(): void
+    {
+        $this->actingAs(User::factory()->create(['is_active' => true]))
+            ->get(route('attendance.daily'))
+            ->assertOk()
+            ->assertSee(__('app.att.daily_title'));
     }
 }

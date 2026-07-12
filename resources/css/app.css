@@ -797,6 +797,13 @@ tbody tr:last-child td {
     font-variant-numeric: tabular-nums;
 }
 
+.exception-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 220px;
+}
+
 .time-12-control {
     display: grid;
     grid-template-columns: minmax(74px, 1fr) auto minmax(72px, 0.8fr) minmax(74px, 0.8fr);
@@ -949,7 +956,8 @@ tbody tr:last-child td {
 .filter-bar input,
 .filter-bar select,
 .form-grid input,
-.form-grid select {
+.form-grid select,
+.form-grid textarea {
     width: 100%;
     min-height: 46px;
     padding: 12px 14px;
@@ -960,6 +968,51 @@ tbody tr:last-child td {
     outline: none;
     font-weight: 500;
     transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.form-grid textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+.policy-weekdays {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.policy-weekdays legend {
+    padding-inline: 8px;
+    color: #334155;
+    font-size: 0.88rem;
+    font-weight: 800;
+}
+
+.correction-reason {
+    min-width: 220px;
+    max-width: 340px;
+    white-space: normal;
+}
+
+.correction-actions {
+    display: grid;
+    min-width: 250px;
+    gap: 8px;
+}
+
+.correction-actions form {
+    display: flex;
+    gap: 8px;
+}
+
+.correction-actions input {
+    min-width: 150px;
+    padding: 9px 10px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
 }
 
 .filter-bar select,

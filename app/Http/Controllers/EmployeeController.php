@@ -124,7 +124,9 @@ class EmployeeController extends Controller
             'branches' => \App\Models\Branch::where('is_active', true)->orderBy('name_en')->get(['id', 'company_id', 'name_ar', 'name_en']),
             'departments' => Department::where('is_active', true)->orderBy('name_en')->get(),
             'positions' => Position::where('is_active', true)->orderBy('name_en')->get(),
-            'shifts' => Shift::where('is_active', true)->orderBy('shift_number')->get(),
+            'shifts' => Shift::where('is_active', true)
+                ->where(fn ($query) => $query->whereNull('schedule_id')->orWhere('shift_number', 1))
+                ->orderBy('name_en')->get(),
             'banks' => Bank::where('is_active', true)->orderBy('name_en')->get(),
             'countries' => Country::ordered()->get(),
         ];

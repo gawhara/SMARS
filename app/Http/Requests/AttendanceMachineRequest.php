@@ -37,6 +37,9 @@ class AttendanceMachineRequest extends FormRequest
             'ip_address' => [Rule::requiredIf(in_array($connection, ['lan', 'vpn', 'static_ip'], true)), 'nullable', 'ip'],
             'domain' => [Rule::requiredIf($connection === 'ddns'), 'nullable', 'string', 'max:255'],
             'port' => ['required', 'integer', 'between:1,65535'],
+            'comm_key' => ['nullable', 'integer', 'min:0'],
+            'automatic_sync_enabled' => ['nullable', 'boolean'],
+            'sync_interval_minutes' => ['nullable', 'integer', 'between:1,60'],
             'username' => ['nullable', 'string', 'max:120'],
             'password' => ['nullable', 'string', 'max:255'],
 

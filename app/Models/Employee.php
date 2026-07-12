@@ -6,6 +6,7 @@ use App\Models\Concerns\TracksBlame;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Employee extends Model
@@ -77,6 +78,11 @@ class Employee extends Model
     public function shift(): BelongsTo
     {
         return $this->belongsTo(Shift::class);
+    }
+
+    public function attendanceDailySummaries(): HasMany
+    {
+        return $this->hasMany(AttendanceDailySummary::class);
     }
 
     public function localizedName(): string

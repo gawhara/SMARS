@@ -8,6 +8,9 @@
 @endphp
 
 @section('content')
+    <div class="table-actions" style="margin-bottom:16px">
+        <form method="POST" action="{{ route('devices.sync', $device) }}">@csrf<button class="primary-button" type="submit">{{ __('app.device.sync_now_readonly') }}</button></form>
+    </div>
     <section class="page-heading compact">
         <div>
             <span class="eyebrow">{{ __('app.device.profile') }}</span>

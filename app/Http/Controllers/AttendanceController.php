@@ -4,14 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AttendanceRecordRequest;
 use App\Models\AttendanceMachine;
+use App\Models\AttendanceDailySummary;
+use App\Models\AttendanceHoliday;
+use App\Models\EmployeeLeaveRequest;
 use App\Models\AttendanceRecord;
 use App\Models\Branch;
 use App\Models\Company;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Services\Attendance\AttendanceMatrixService;
+use App\Services\Attendance\AttendanceDailySummaryService;
 use App\Services\Attendance\AttendanceReportService;
 use App\Services\Attendance\AttendanceService;
+use App\Services\Attendance\PayrollPeriodService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,7 +25,11 @@ use Illuminate\View\View;
 
 class AttendanceController extends Controller
 {
-    public function __construct(private readonly AttendanceService $service)
+    public function __construct(
+        private readonly AttendanceService $service,
+        private readonly AttendanceDailySummaryService $dailySummaryService,
+        private readonly PayrollPeriodService $periods,
+    )
     {
     }
 
@@ -118,13 +127,16 @@ class AttendanceController extends Controller
             ->matched()
             ->whereIn('employee_id', $employees->pluck('id'))
             ->whereBetween('punch_at', [$month->copy()->startOfMonth(), $month->copy()->endOfMonth()])
-            ->get(['employee_id', 'punch_at']);
+            ->get(['employee_id', 'punch_at', 'punch_type']);
+
+        $holidays = AttendanceHoliday::where('is_active', true)->whereBetween('holiday_date', [$month->copy()->startOfMonth(), $month->copy()->endOfMonth()])->get();
+        $leaves = EmployeeLeaveRequest::where('status', 'approved')->whereIn('employee_id', $employees->pluck('id'))->whereDate('start_date', '<=', $month->copy()->endOfMonth())->whereDate('end_date', '>=', $month->copy()->startOfMonth())->get();
 
         return view('attendance.matrix', [
             'month' => $month,
             'daysInMonth' => $month->daysInMonth,
             'employees' => $employees,
-            'matrix' => $matrixService->build($month, $employees, $records),
+            'matrix' => $matrixService->build($month, $employees, $records, $holidays, $leaves),
             'companies' => Company::orderBy('name_en')->get(),
             'branches' => Branch::orderBy('name_en')->get(),
             'departments' => Department::orderBy('name_en')->get(),
@@ -152,9 +164,12 @@ class AttendanceController extends Controller
             ->matched()
             ->whereIn('employee_id', $employees->pluck('id'))
             ->whereBetween('punch_at', [$from->copy()->startOfDay(), $to->copy()->endOfDay()])
-            ->get(['employee_id', 'punch_at']);
+            ->get(['employee_id', 'punch_at', 'punch_type']);
 
-        $rows = $reportService->build($from, $to, $employees, $records);
+        $holidays = AttendanceHoliday::where('is_active', true)->whereBetween('holiday_date', [$from, $to])->get();
+        $leaves = EmployeeLeaveRequest::where('status', 'approved')->whereIn('employee_id', $employees->pluck('id'))->whereDate('start_date', '<=', $to)->whereDate('end_date', '>=', $from)->get();
+
+        $rows = $reportService->build($from, $to, $employees, $records, $holidays, $leaves);
 
         if ($request->input('export') === 'csv') {
             return $this->exportCsv($rows, $from, $to);
@@ -173,6 +188,53 @@ class AttendanceController extends Controller
             'companies' => Company::orderBy('name_en')->get(),
             'branches' => Branch::orderBy('name_en')->get(),
             'departments' => Department::orderBy('name_en')->get(),
+        ]);
+    }
+
+    public function exceptions(Request $request): View
+    {
+        $query = AttendanceDailySummary::query()
+            ->with(['employee.company', 'employee.department'])
+            ->where('has_exception', true)
+            ->when($request->filled('employee_id'), fn ($q) => $q->where('employee_id', $request->integer('employee_id')))
+            ->when($request->filled('company_id'), fn ($q) => $q->whereHas('employee', fn ($e) => $e->where('company_id', $request->integer('company_id'))))
+            ->when($request->filled('date_from'), fn ($q) => $q->whereDate('attendance_date', '>=', $request->date('date_from')))
+            ->when($request->filled('date_to'), fn ($q) => $q->whereDate('attendance_date', '<=', $request->date('date_to')))
+            ->when($request->filled('exception'), fn ($q) => $q->whereJsonContains('exception_codes', $request->input('exception')));
+
+        $summaries = $query->orderByDesc('attendance_date')->paginate(20)->withQueryString();
+
+        return view('attendance.exceptions', [
+            'summaries' => $summaries,
+            'stats' => [
+                'total' => AttendanceDailySummary::where('has_exception', true)->count(),
+                'missing_in' => AttendanceDailySummary::whereJsonContains('exception_codes', 'missing_in')->count(),
+                'missing_out' => AttendanceDailySummary::whereJsonContains('exception_codes', 'missing_out')->count(),
+                'today' => AttendanceDailySummary::where('has_exception', true)->whereDate('attendance_date', today())->count(),
+            ],
+            'companies' => Company::orderBy('name_en')->get(),
+            'employees' => Employee::orderBy('name_en')->get(['id', 'name_ar', 'name_en', 'employee_code']),
+            'exceptionTypes' => ['missing_in', 'missing_out', 'missing_period', 'repeated_in', 'repeated_out', 'unknown_type'],
+        ]);
+    }
+
+    public function daily(Request $request): View
+    {
+        $summaries = AttendanceDailySummary::query()
+            ->with(['employee.company', 'employee.department'])
+            ->when($request->filled('employee_id'), fn ($q) => $q->where('employee_id', $request->integer('employee_id')))
+            ->when($request->filled('company_id'), fn ($q) => $q->whereHas('employee', fn ($e) => $e->where('company_id', $request->integer('company_id'))))
+            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->input('status')))
+            ->when($request->filled('date_from'), fn ($q) => $q->whereDate('attendance_date', '>=', $request->date('date_from')))
+            ->when($request->filled('date_to'), fn ($q) => $q->whereDate('attendance_date', '<=', $request->date('date_to')))
+            ->orderByDesc('attendance_date')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('attendance.daily', [
+            'summaries' => $summaries,
+            'companies' => Company::orderBy('name_en')->get(),
+            'employees' => Employee::orderBy('name_en')->get(['id', 'name_ar', 'name_en', 'employee_code']),
         ]);
     }
 
@@ -232,12 +294,18 @@ class AttendanceController extends Controller
     {
         $employee = Employee::findOrFail($request->integer('employee_id'));
 
-        AttendanceRecord::create($request->safe()->merge([
+        if ($this->periods->isLocked($employee->company_id, $request->input('punch_at'))) {
+            return back()->with('error', __('app.pay.period_locked'))->withInput();
+        }
+
+        $record = AttendanceRecord::create($request->safe()->merge([
             'device_user_id' => $employee->employee_code,
             'source' => 'manual',
             'company_id' => $employee->company_id,
             'branch_id' => $employee->branch_id,
         ])->all());
+
+        $this->dailySummaryService->rebuild($employee, $record->punch_at);
 
         return redirect()->route('attendance.index')->with('status', __('app.saved_successfully'));
     }
@@ -261,6 +329,9 @@ class AttendanceController extends Controller
             : null;
 
         $batch = $this->service->importCsv($request->file('file'), $machine, (int) $request->user()->id);
+        $this->dailySummaryService->rebuildForRecords(
+            AttendanceRecord::where('sync_batch_id', $batch->id)->matched()->get(),
+        );
 
         return redirect()->route('attendance.index', ['match' => $batch->unmatched_count > 0 ? 'unmatched' : null])
             ->with('status', __('app.attendance.import_summary', [
@@ -273,7 +344,17 @@ class AttendanceController extends Controller
 
     public function destroy(AttendanceRecord $attendance): RedirectResponse
     {
+        if ($this->periods->isLocked($attendance->company_id, $attendance->punch_at)) {
+            return back()->with('error', __('app.pay.period_locked'));
+        }
+
+        $employee = $attendance->employee;
+        $date = $attendance->punch_at->copy();
         $attendance->delete();
+
+        if ($employee) {
+            $this->dailySummaryService->rebuild($employee, $date);
+        }
 
         return redirect()->route('attendance.index')->with('status', __('app.deleted_successfully'));
     }
