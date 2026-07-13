@@ -55,9 +55,26 @@ return [
 
         // Modules scheduled for later phases (disabled placeholders).
         ['title' => 'employee_documents', 'route' => null, 'icon' => 'document', 'permission' => 'documents.view'],
-        ['title' => 'attendance', 'route' => 'attendance.index', 'icon' => 'clock', 'permission' => 'attendance.view'],
+        // Attendance — collapsible group. Flat sub-routes share the `attendance.`
+        // prefix, so each needs an explicit `active` pattern to avoid over-matching.
+        [
+            'title' => 'attendance',
+            'route' => null,
+            'icon' => 'clock',
+            'permission' => 'attendance.view',
+            'children' => [
+                ['title' => 'att.punch_log', 'route' => 'attendance.index', 'active' => 'attendance.index'],
+                ['title' => 'att.daily_title', 'route' => 'attendance.daily', 'active' => 'attendance.daily'],
+                ['title' => 'att.exceptions_title', 'route' => 'attendance.exceptions', 'active' => 'attendance.exceptions'],
+                ['title' => 'att.matrix_title', 'route' => 'attendance.matrix', 'active' => 'attendance.matrix'],
+                ['title' => 'att.report_title', 'route' => 'attendance.report', 'active' => 'attendance.report'],
+                ['title' => 'att.corrections', 'route' => 'attendance.corrections.index'],
+                ['title' => 'att.holidays', 'route' => 'attendance.holidays.index'],
+                ['title' => 'att.policies', 'route' => 'attendance.policies.index'],
+            ],
+        ],
         ['title' => 'biometric_devices', 'route' => 'devices.index', 'icon' => 'fingerprint', 'permission' => 'devices.view'],
-        ['title' => 'leaves', 'route' => null, 'icon' => 'calendar', 'permission' => 'leaves.view'],
+        ['title' => 'leaves', 'route' => 'attendance.leaves.index', 'icon' => 'calendar', 'permission' => 'leaves.view', 'active' => 'attendance.leaves.*'],
         ['title' => 'payroll', 'route' => 'payroll.periods.index', 'icon' => 'wallet', 'permission' => 'payroll.view'],
         ['title' => 'reports', 'route' => null, 'icon' => 'chart', 'permission' => 'reports.view'],
         ['title' => 'users_roles', 'route' => null, 'icon' => 'shield', 'permission' => 'users.view'],

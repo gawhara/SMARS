@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('attendance_machine_id')->constrained()->cascadeOnDelete();
             $table->foreignId('employee_id')->constrained()->cascadeOnDelete();
-            $table->string('device_user_id'); // enrolment id used on the device (employee code)
+            $table->string('device_user_id'); // Device Employee ID = system HR employee ID.
             $table->foreignId('source_machine_id')->nullable()->constrained('attendance_machines')->nullOnDelete();
             $table->timestamp('enrolled_at')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();

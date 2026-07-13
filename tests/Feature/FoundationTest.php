@@ -35,7 +35,7 @@ class FoundationTest extends TestCase
         $this->actingAs($user)
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee(__('app.foundation_ready'));
+            ->assertSee(__('app.dash.title'));
     }
 
     public function test_login_is_rate_limited_after_five_failed_attempts(): void

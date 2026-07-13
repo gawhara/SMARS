@@ -105,6 +105,18 @@ class AttendanceTest extends TestCase
         $this->assertSame('present', $summary->status);
     }
 
+    public function test_machine_employee_id_resolves_to_hr_employee_id_before_employee_code(): void
+    {
+        $hrMatch = $this->employee('INTERNAL-1');
+        $hrMatch->update(['hr_employee_id' => '10006']);
+        $codeCollision = $this->employee('10006');
+
+        $resolved = app(\App\Services\Attendance\AttendanceService::class)->resolveEmployee('10006');
+
+        $this->assertSame($hrMatch->id, $resolved?->id);
+        $this->assertNotSame($codeCollision->id, $resolved?->id);
+    }
+
     public function test_exception_dashboard_lists_missing_checkout(): void
     {
         $user = User::factory()->create(['is_active' => true]);

@@ -16,6 +16,7 @@ use App\Services\Attendance\AttendanceMatrixService;
 use App\Services\Attendance\AttendanceDailySummaryService;
 use App\Services\Attendance\AttendanceReportService;
 use App\Services\Attendance\AttendanceService;
+use App\Services\Attendance\AttendanceShiftPunchMatcher;
 use App\Services\Attendance\PayrollPeriodService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -28,6 +29,7 @@ class AttendanceController extends Controller
     public function __construct(
         private readonly AttendanceService $service,
         private readonly AttendanceDailySummaryService $dailySummaryService,
+        private readonly AttendanceShiftPunchMatcher $shiftPunchMatcher,
         private readonly PayrollPeriodService $periods,
     )
     {
@@ -39,11 +41,57 @@ class AttendanceController extends Controller
             return $this->exportPunchesCsv($this->punchQuery($request)->with(['employee', 'machine'])->get());
         }
 
-        $records = $this->punchQuery($request)
-            ->with(['employee', 'machine', 'company'])
-            ->orderByDesc('punch_at')
+        $dailyRows = AttendanceDailySummary::query()
+            ->with(['employee.company', 'employee.shift'])
+            ->whereHas('employee', function ($employeeQuery) use ($request): void {
+                $employeeQuery
+                    ->when($request->filled('employee_id'), fn ($q) => $q->whereKey($request->integer('employee_id')))
+                    ->when($request->filled('company_id'), fn ($q) => $q->where('company_id', $request->integer('company_id')))
+                    ->when($request->filled('search'), function ($q) use ($request): void {
+                        $search = trim((string) $request->string('search'));
+                        $q->where(fn ($names) => $names
+                            ->where('name_ar', 'like', "%{$search}%")
+                            ->orWhere('name_en', 'like', "%{$search}%")
+                            ->orWhere('employee_code', 'like', "%{$search}%")
+                            ->orWhere('hr_employee_id', 'like', "%{$search}%"));
+                    });
+            })
+            ->when($request->input('match') === 'unmatched', fn ($q) => $q->whereRaw('1 = 0'))
+            ->when($request->filled('date_from'), fn ($q) => $q->whereDate('attendance_date', '>=', $request->date('date_from')))
+            ->when($request->filled('date_to'), fn ($q) => $q->whereDate('attendance_date', '<=', $request->date('date_to')))
+            ->when($request->filled('machine_id') || $request->filled('time_from') || $request->filled('time_to'), function ($q) use ($request): void {
+                $q->whereExists(function ($records) use ($request): void {
+                    $records->selectRaw('1')
+                        ->from('attendance_records as filtered_punches')
+                        ->whereNull('filtered_punches.deleted_at')
+                        ->whereColumn('filtered_punches.employee_id', 'attendance_daily_summaries.employee_id')
+                        ->whereRaw('DATE(filtered_punches.punch_at) = attendance_daily_summaries.attendance_date')
+                        ->when($request->filled('machine_id'), fn ($p) => $p->where('filtered_punches.attendance_machine_id', $request->integer('machine_id')))
+                        ->when($request->filled('time_from'), fn ($p) => $p->whereTime('filtered_punches.punch_at', '>=', $request->input('time_from')))
+                        ->when($request->filled('time_to'), fn ($p) => $p->whereTime('filtered_punches.punch_at', '<=', $request->input('time_to')));
+                });
+            })
+            ->orderByDesc('attendance_date')
+            ->orderBy('employee_id')
             ->paginate(20)
             ->withQueryString();
+
+        $employeeIds = $dailyRows->getCollection()->pluck('employee_id')->unique();
+        $dates = $dailyRows->getCollection()->pluck('attendance_date');
+        $dayPunches = $dates->isEmpty() ? collect() : AttendanceRecord::query()
+            ->whereIn('employee_id', $employeeIds)
+            ->whereDate('punch_at', '>=', $dates->min())
+            ->whereDate('punch_at', '<=', $dates->max())
+            ->orderBy('punch_at')
+            ->get()
+            ->groupBy(fn (AttendanceRecord $record) => $record->employee_id.'|'.$record->punch_at->toDateString());
+
+        $dailyRows->getCollection()->transform(function (AttendanceDailySummary $summary) use ($dayPunches): AttendanceDailySummary {
+            $punches = $dayPunches->get($summary->employee_id.'|'.$summary->attendance_date->toDateString(), collect());
+            $summary->setAttribute('matched_periods', $this->shiftPunchMatcher->match($summary->employee, $summary->attendance_date, $punches));
+
+            return $summary;
+        });
 
         $stats = [
             'total' => AttendanceRecord::count(),
@@ -53,11 +101,11 @@ class AttendanceController extends Controller
         ];
 
         return view('attendance.index', [
-            'records' => $records,
+            'dailyRows' => $dailyRows,
             'stats' => $stats,
             'companies' => Company::orderBy('name_en')->get(),
             'machines' => AttendanceMachine::orderBy('device_name')->get(),
-            'employees' => Employee::orderBy('name_en')->get(['id', 'name_ar', 'name_en', 'employee_code']),
+            'employees' => Employee::orderBy('name_en')->get(['id', 'name_ar', 'name_en', 'employee_code', 'hr_employee_id']),
         ]);
     }
 
@@ -82,7 +130,8 @@ class AttendanceController extends Controller
                     $q->where('device_user_id', 'like', "%{$search}%")
                         ->orWhereHas('employee', fn ($e) => $e->where('name_ar', 'like', "%{$search}%")
                             ->orWhere('name_en', 'like', "%{$search}%")
-                            ->orWhere('employee_code', 'like', "%{$search}%"));
+                            ->orWhere('employee_code', 'like', "%{$search}%")
+                            ->orWhere('hr_employee_id', 'like', "%{$search}%"));
                 });
             });
     }
@@ -299,7 +348,7 @@ class AttendanceController extends Controller
         }
 
         $record = AttendanceRecord::create($request->safe()->merge([
-            'device_user_id' => $employee->employee_code,
+            'device_user_id' => $employee->hr_employee_id,
             'source' => 'manual',
             'company_id' => $employee->company_id,
             'branch_id' => $employee->branch_id,

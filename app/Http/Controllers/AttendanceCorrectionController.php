@@ -80,7 +80,7 @@ class AttendanceCorrectionController extends Controller
 
             $replacement = AttendanceRecord::create([
                 'employee_id' => $employee->id,
-                'device_user_id' => $employee->employee_code,
+                'device_user_id' => $employee->hr_employee_id,
                 'punch_at' => $correction->requested_punch_at,
                 'punch_type' => $correction->requested_punch_type,
                 'source' => 'correction',

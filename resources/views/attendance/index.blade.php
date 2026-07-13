@@ -3,8 +3,14 @@
 @section('title', __('app.attendance'))
 
 @php
-    $typeTone = ['in' => 'success', 'out' => 'info', 'unknown' => 'muted'];
     $match = request('match');
+    $formatPunchTime = static function ($value): string {
+        if (! $value) return '—';
+        $time = $value instanceof \Carbon\Carbon ? $value : \Carbon\Carbon::parse($value);
+        return app()->isLocale('ar')
+            ? $time->format('h:i').' '.($time->format('A') === 'AM' ? __('app.time_am') : __('app.time_pm'))
+            : $time->format('h:i A');
+    };
 @endphp
 
 @section('content')
@@ -59,77 +65,102 @@
         <div class="alert alert-danger">{{ __('app.att.unmatched_hint') }}</div>
     @endif
 
-    <section class="panel filter-panel">
-        <form class="filter-bar" method="GET">
+    <section class="panel filter-panel attendance-filter-panel">
+        <form class="filter-bar attendance-filter-bar" method="GET">
             @if ($match)<input type="hidden" name="match" value="{{ $match }}">@endif
-            <input type="search" name="search" value="{{ request('search') }}" placeholder="{{ __('app.search') }}">
-            <select name="employee_id">
-                <option value="">{{ __('app.att.all_employees') }}</option>
-                @foreach ($employees as $employee)
-                    <option value="{{ $employee->id }}" @selected((string) request('employee_id') === (string) $employee->id)>{{ $employee->localizedName() }} · {{ $employee->employee_code }}</option>
-                @endforeach
-            </select>
-            <select name="machine_id">
-                <option value="">{{ __('app.att.machine') }}</option>
-                @foreach ($machines as $machine)
-                    <option value="{{ $machine->id }}" @selected((string) request('machine_id') === (string) $machine->id)>{{ $machine->device_name }}</option>
-                @endforeach
-            </select>
-            <input type="date" name="date_from" value="{{ request('date_from') }}" aria-label="{{ __('app.att.date_from') }}">
-            <input type="date" name="date_to" value="{{ request('date_to') }}" aria-label="{{ __('app.att.date_to') }}">
-            <input type="time" name="time_from" value="{{ request('time_from') }}" aria-label="{{ __('app.att.time_from') }}" title="{{ __('app.att.time_from') }}">
-            <input type="time" name="time_to" value="{{ request('time_to') }}" aria-label="{{ __('app.att.time_to') }}" title="{{ __('app.att.time_to') }}">
+            <label class="attendance-filter-field attendance-filter-search">
+                <span>{{ __('app.search') }}</span>
+                <input type="search" name="search" value="{{ request('search') }}" placeholder="{{ __('app.search') }}">
+            </label>
+            <label class="attendance-filter-field">
+                <span>{{ __('app.att.employee') }}</span>
+                <select name="employee_id">
+                    <option value="">{{ __('app.att.all_employees') }}</option>
+                    @foreach ($employees as $employee)
+                        <option value="{{ $employee->id }}" @selected((string) request('employee_id') === (string) $employee->id)>{{ $employee->localizedName() }} · {{ $employee->hr_employee_id }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label class="attendance-filter-field">
+                <span>{{ __('app.att.machine') }}</span>
+                <select name="machine_id">
+                    <option value="">{{ __('app.att.machine') }}</option>
+                    @foreach ($machines as $machine)
+                        <option value="{{ $machine->id }}" @selected((string) request('machine_id') === (string) $machine->id)>{{ $machine->device_name }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <div class="attendance-filter-field attendance-filter-range">
+                <span>{{ __('app.att.date_from') }} — {{ __('app.att.date_to') }}</span>
+                <div>
+                    <input type="date" name="date_from" value="{{ request('date_from') }}" aria-label="{{ __('app.att.date_from') }}">
+                    <input type="date" name="date_to" value="{{ request('date_to') }}" aria-label="{{ __('app.att.date_to') }}">
+                </div>
+            </div>
+            <div class="attendance-filter-field attendance-filter-range attendance-filter-time">
+                <span>{{ __('app.att.time_from') }} — {{ __('app.att.time_to') }}</span>
+                <div>
+                    <input type="time" name="time_from" value="{{ request('time_from') }}" aria-label="{{ __('app.att.time_from') }}" title="{{ __('app.att.time_from') }}">
+                    <input type="time" name="time_to" value="{{ request('time_to') }}" aria-label="{{ __('app.att.time_to') }}" title="{{ __('app.att.time_to') }}">
+                </div>
+            </div>
             <button class="primary-button" type="submit">{{ __('app.filters') }}</button>
         </form>
     </section>
 
-    @if ($records->count())
+    @if ($dailyRows->count())
         <section class="panel">
             <div class="table-wrap">
-                <table>
+                <table class="attendance-day-table">
                     <thead>
                         <tr>
                             <th>{{ __('app.att.employee') }}</th>
-                            <th>{{ __('app.att.punch_at') }}</th>
-                            <th>{{ __('app.att.punch_type') }}</th>
-                            <th>{{ __('app.att.machine') }}</th>
-                            <th>{{ __('app.att.source') }}</th>
-                            <th>{{ __('app.actions') }}</th>
+                            <th>{{ __('app.att.date') }}</th>
+                            <th>{{ __('app.att.period_1_entry') }}</th>
+                            <th>{{ __('app.att.period_1_exit') }}</th>
+                            <th>{{ __('app.att.period_2_entry') }}</th>
+                            <th>{{ __('app.att.period_2_exit') }}</th>
+                            <th>{{ __('app.att.actual_scheduled') }}</th>
+                            <th>{{ __('app.status') }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($records as $record)
-                            <tr class="{{ $record->isMatched() ? '' : 'row-unmatched' }}">
+                        @foreach ($dailyRows as $summary)
+                            @php
+                                $periods = collect($summary->matched_periods);
+                                $periodOne = $periods->firstWhere('number', 1);
+                                $periodTwo = $periods->firstWhere('number', 2);
+                            @endphp
+                            <tr>
                                 <td>
-                                    @if ($record->isMatched())
-                                        <a class="cell-name" href="{{ route('employees.show', $record->employee) }}">{{ $record->employee->localizedName() }}</a>
-                                        <small>{{ $record->company?->localizedName() }}</small>
-                                    @else
-                                        <span class="cell-name">{{ $record->device_user_id ?: __('app.none') }}</span>
-                                        <small><span class="status-badge warning">{{ __('app.att.unmatched_badge') }}</span></small>
-                                    @endif
+                                    <a class="cell-name" href="{{ route('employees.show', $summary->employee) }}">{{ $summary->employee->localizedName() }}</a>
+                                    <small>{{ $summary->employee->hr_employee_id }} · {{ $summary->employee->company?->localizedName() }}</small>
                                 </td>
-                                <td dir="ltr">{{ $record->punch_at->format('Y-m-d H:i') }}</td>
-                                <td><span class="status-badge {{ $typeTone[$record->punch_type] ?? 'muted' }}">{{ __('app.att.punch_'.$record->punch_type) }}</span></td>
-                                <td>{{ $record->machine?->device_name ?? __('app.none') }}</td>
-                                <td>{{ __('app.att.source_'.$record->source) }}</td>
-                                <td class="table-actions">
-                                    @if ($record->isMatched())
-                                        <a class="ghost-button" href="{{ route('attendance.corrections.create', ['record_id' => $record->id]) }}">{{ __('app.att.request_correction') }}</a>
-                                    @endif
-                                    <form method="POST" action="{{ route('attendance.destroy', $record) }}" onsubmit="return confirm('{{ __('app.confirm_delete') }}')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="danger-button" type="submit">{{ __('app.delete') }}</button>
-                                    </form>
+                                <td dir="ltr"><strong>{{ $summary->attendance_date->format('Y-m-d') }}</strong><small>{{ $summary->punch_count }} {{ __('app.att.punches') }}</small></td>
+                                @foreach ([[$periodOne, 'actual_in', 'scheduled_in'], [$periodOne, 'actual_out', 'scheduled_out'], [$periodTwo, 'actual_in', 'scheduled_in'], [$periodTwo, 'actual_out', 'scheduled_out']] as [$period, $actualKey, $scheduledKey])
+                                    <td>
+                                        @if ($period)
+                                            <div class="shift-punch-match {{ empty($period[$actualKey]) ? 'missing' : '' }}">
+                                                <strong dir="ltr">{{ $formatPunchTime($period[$actualKey] ?? null) }}</strong>
+                                                <small>{{ __('app.att.scheduled_time') }}: <span dir="ltr">{{ $formatPunchTime($period[$scheduledKey] ?? null) }}</span></small>
+                                            </div>
+                                        @else
+                                            <span class="period-not-applicable">—</span>
+                                        @endif
+                                    </td>
+                                @endforeach
+                                <td>
+                                    <strong>{{ number_format($summary->worked_minutes / 60, 2) }}</strong>
+                                    <small>/ {{ number_format($summary->scheduled_minutes / 60, 2) }} {{ __('app.att.hours') }}</small>
                                 </td>
+                                <td><span class="status-badge {{ $summary->has_exception ? 'warning' : ($summary->status === 'late' ? 'info' : 'success') }}">{{ __('app.att.summary_'.$summary->status) }}</span></td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
         </section>
-        <div class="company-grid-pagination">{{ $records->links() }}</div>
+        <div class="company-grid-pagination">{{ $dailyRows->links() }}</div>
     @else
         <section class="panel empty-state">
             <span class="empty-icon">@include('partials.icon', ['name' => 'clock', 'class' => 'empty-icon-svg'])</span>

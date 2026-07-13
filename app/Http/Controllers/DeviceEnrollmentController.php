@@ -21,7 +21,7 @@ class DeviceEnrollmentController extends Controller
         return view('devices.enrollments', [
             'device' => $device,
             'enrollments' => $device->enrollments->sortBy(fn ($e) => $e->employee?->name_en)->values(),
-            'available' => Employee::whereNotIn('id', $enrolledIds)->orderBy('name_en')->get(['id', 'name_ar', 'name_en', 'employee_code']),
+            'available' => Employee::whereNotIn('id', $enrolledIds)->orderBy('name_en')->get(['id', 'name_ar', 'name_en', 'employee_code', 'hr_employee_id']),
             'otherDevices' => AttendanceMachine::where('id', '!=', $device->id)->orderBy('device_name')->get(),
         ]);
     }
@@ -37,7 +37,7 @@ class DeviceEnrollmentController extends Controller
         foreach (Employee::whereIn('id', $validated['employee_ids'])->get() as $employee) {
             $enrollment = DeviceEnrollment::firstOrCreate(
                 ['attendance_machine_id' => $device->id, 'employee_id' => $employee->id],
-                ['device_user_id' => $employee->employee_code, 'enrolled_at' => now()],
+                ['device_user_id' => $employee->hr_employee_id, 'enrolled_at' => now()],
             );
 
             if ($enrollment->wasRecentlyCreated) {

@@ -25,8 +25,8 @@ class AttendanceService
         }
 
         return Employee::query()
-            ->where('employee_code', $deviceUserId)
-            ->orWhere('hr_employee_id', $deviceUserId)
+            ->where('hr_employee_id', $deviceUserId)
+            ->orWhere('employee_code', $deviceUserId)
             ->first();
     }
 

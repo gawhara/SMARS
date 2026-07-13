@@ -52,7 +52,7 @@ class DeviceEnrollmentTest extends TestCase
 
         $this->assertSame(2, $device->enrollments()->count());
         $this->assertDatabaseHas('device_enrollments', [
-            'attendance_machine_id' => $device->id, 'employee_id' => $e1->id, 'device_user_id' => 'EMP-1',
+            'attendance_machine_id' => $device->id, 'employee_id' => $e1->id, 'device_user_id' => 'HR-EMP-1',
         ]);
     }
 

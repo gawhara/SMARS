@@ -53,17 +53,25 @@
             @endif
 
             <div class="form-section">
+                <div class="shift-period-heading">
+                    <strong>{{ __('app.work_period_1') }}</strong>
+                    <small>{{ __('app.shift_punch_mapping_hint') }}</small>
+                </div>
                 <div class="form-grid">
-                @include('partials.time-12-field', ['name' => 'start_time', 'label' => __('app.start_time'), 'value' => old('start_time', \Illuminate\Support\Str::substr($shift->start_time ?? '', 0, 5)), 'required' => true])
-                @include('partials.time-12-field', ['name' => 'end_time', 'label' => __('app.end_time'), 'value' => old('end_time', \Illuminate\Support\Str::substr($shift->end_time ?? '', 0, 5)), 'required' => true])
+                @include('partials.time-12-field', ['name' => 'start_time', 'label' => __('app.shift_start_punch'), 'value' => old('start_time', \Illuminate\Support\Str::substr($shift->start_time ?? '', 0, 5)), 'required' => true])
+                @include('partials.time-12-field', ['name' => 'end_time', 'label' => __('app.shift_end_punch'), 'value' => old('end_time', \Illuminate\Support\Str::substr($shift->end_time ?? '', 0, 5)), 'required' => true])
                 </div>
             </div>
 
             @unless($shift->exists)
                 <div class="form-section second-shift-section" data-second-shift @if(old('schedule_mode', 'single') !== 'double') hidden @endif>
+                    <div class="shift-period-heading">
+                        <strong>{{ __('app.work_period_2') }}</strong>
+                        <small>{{ __('app.shift_punch_mapping_hint') }}</small>
+                    </div>
                     <div class="form-grid">
-                        @include('partials.time-12-field', ['name' => 'second_start_time', 'label' => __('app.start_time'), 'value' => old('second_start_time'), 'required' => false])
-                        @include('partials.time-12-field', ['name' => 'second_end_time', 'label' => __('app.end_time'), 'value' => old('second_end_time'), 'required' => false])
+                        @include('partials.time-12-field', ['name' => 'second_start_time', 'label' => __('app.shift_start_punch'), 'value' => old('second_start_time'), 'required' => false])
+                        @include('partials.time-12-field', ['name' => 'second_end_time', 'label' => __('app.shift_end_punch'), 'value' => old('second_end_time'), 'required' => false])
                     </div>
                 </div>
             @endunless
