@@ -19,6 +19,15 @@ class MachinePunchSeeder extends Seeder
     public function run(): void
     {
         $sourcePath = base_path('attendance-punches-2026-07-12.json');
+
+        // Large device-export fixture (~10 MB) kept out of the repo. Skip gracefully
+        // when it is not present so the seed pipeline still succeeds.
+        if (! is_file($sourcePath)) {
+            $this->command?->warn('MachinePunchSeeder: attendance-punches-2026-07-12.json not found — skipping punch import.');
+
+            return;
+        }
+
         $payload = json_decode(file_get_contents($sourcePath), true, flags: JSON_THROW_ON_ERROR);
         $rows = collect($payload['records'] ?? [])->filter(fn (array $row) =>
             $row['punch_at'] >= '2026-05-01 00:00:00' && $row['punch_at'] < '2026-07-01 00:00:00'

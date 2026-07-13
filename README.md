@@ -1,59 +1,103 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SMARS — Saudi HR & Attendance System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Bilingual (Arabic-first, RTL/LTR) HR/attendance platform for one organization that
+manages four companies (AMNIAT, AMNIAT FACTORY, PTC, PTC Construction). Built on
+Laravel 12 with a self-hosted, offline-capable UI (local Cairo font, no CDNs).
 
-## About Laravel
+## Modules
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Organization** — companies (with legal profiles + logos), company-scoped branches,
+  global departments, positions, and shift schedules (one or two shifts per day)
+- **Employees** — full CODEX schema with Saudi validation (national ID/Iqama, Saudi
+  phone, IBAN + bank match, passport uniqueness, expiry rules), tabbed profile,
+  per-company dashboard
+- **Attendance & Biometric**
+  - Biometric device fleet + **read-only ZKTeco sync**, employee enrollment copy
+  - Punches: manual entry, CSV import, unmatched-punch review
+  - Daily summary engine (paired sessions, worked/late/early-leave/overtime, exceptions)
+  - Per-company policies, holidays, employee leaves, punch-correction workflow
+  - Monthly matrix + attendance report (CSV export)
+- **Payroll periods** — lock a company month (freezes attendance edits) and export
+  per-employee payroll CSV incl. overtime
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP **8.2+**, Composer
+- MySQL / MariaDB (XAMPP works well on Windows)
+- Node.js + npm
+- *(Optional, for live device sync)* Python 3 + `pip install pyzk`
 
-## Learning Laravel
+## Setup
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```bash
+git clone https://github.com/gawhara/SMARS.git
+cd SMARS
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+composer install
+npm install
+npm run build            # compile CSS/JS + local Cairo font into public/build
 
-## Laravel Sponsors
+cp .env.example .env
+php artisan key:generate
+# create the database named in .env (default: smars), then:
+php artisan migrate --seed
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+`migrate --seed` sets up roles, the four companies + branches, departments, positions,
+shift schedules, banks, countries, system settings, and the **super-admin** user.
 
-### Premium Partners
+### Optional demo data
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+php artisan db:seed --class=MachineEmployeeSeeder   # ~40 employees with HR/device IDs
+php artisan db:seed --class=MachinePunchSeeder      # requires the punch fixture (below)
+```
 
-## Contributing
+`MachinePunchSeeder` imports `attendance-punches-2026-07-12.json` (a ~10 MB device export
+kept out of the repo). If the file is absent the seeder skips gracefully — drop the file
+in the project root to enable it.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Run
 
-## Code of Conduct
+```bash
+# start MySQL (XAMPP Control Panel, or the mysqld service), then:
+php artisan serve            # http://127.0.0.1:8000
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**Default login:** `admin@smars.local` / `password` *(change before any real use).*
 
-## Security Vulnerabilities
+## Biometric device sync (optional)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Devices are managed under **Biometric Devices**. Sync is strictly read-only — the
+[helper script](scripts/zkteco_readonly_sync.py) only calls `get_attendance()` and never
+writes to the device.
+
+```bash
+pip install pyzk
+php artisan attendance:sync-devices          # sync all auto-sync-enabled LAN devices
+php artisan schedule:work                    # runs the 5-minute auto-sync in the background
+```
+
+Or click **Sync now** on a device page.
+
+## Testing
+
+```bash
+php artisan test
+```
+
+Feature tests run against in-memory SQLite (no MySQL needed).
+
+## Troubleshooting
+
+- **Pages 500 with a DB connection error** → MySQL isn't running. Start it (XAMPP
+  Control Panel is the most reliable) and retry.
+- **UI loads unstyled** → a stale `public/hot` file points Vite at a dev server that
+  isn't running. Delete `public/hot` (or run `npm run dev` and keep it running).
+- **Timezone / weekend** → the app uses `Asia/Riyadh`; the weekly rest day is **Friday**,
+  and the default late tolerance is **10 minutes** (configurable per company under
+  Attendance → Policies).
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Proprietary — internal HR system.
