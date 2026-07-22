@@ -3,10 +3,12 @@
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceCorrectionController;
 use App\Http\Controllers\AttendancePolicyController;
+use App\Http\Controllers\AttendanceReconciliationController;
 use App\Http\Controllers\AttendanceHolidayController;
 use App\Http\Controllers\EmployeeLeaveController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\BiometricDeviceController;
+use App\Http\Controllers\BiometricProvisioningController;
 use App\Http\Controllers\DeviceEnrollmentController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CompanyController;
@@ -52,11 +54,21 @@ Route::middleware('auth')->group(function () {
     Route::post('devices/{device}/enrollments', [DeviceEnrollmentController::class, 'store'])->name('devices.enrollments.store');
     Route::delete('devices/{device}/enrollments/{enrollment}', [DeviceEnrollmentController::class, 'destroy'])->name('devices.enrollments.destroy');
     Route::post('devices/{device}/enrollments/copy', [DeviceEnrollmentController::class, 'copy'])->name('devices.enrollments.copy');
+
+    // Biometric provisioning: move / copy / delete user identity + fingerprint templates on real devices.
+    Route::get('devices/{device}/provision', [BiometricProvisioningController::class, 'index'])->name('devices.provision');
+    Route::post('devices/{device}/provision/copy', [BiometricProvisioningController::class, 'copy'])->name('devices.provision.copy');
+    Route::post('devices/{device}/provision/move', [BiometricProvisioningController::class, 'move'])->name('devices.provision.move');
+    Route::post('devices/{device}/provision/delete', [BiometricProvisioningController::class, 'destroy'])->name('devices.provision.delete');
+
     Route::resource('devices', BiometricDeviceController::class)->parameter('devices', 'device');
 
     Route::get('attendance/matrix', [AttendanceController::class, 'matrix'])->name('attendance.matrix');
     Route::get('attendance/report', [AttendanceController::class, 'report'])->name('attendance.report');
     Route::get('attendance/exceptions', [AttendanceController::class, 'exceptions'])->name('attendance.exceptions');
+    Route::get('attendance/reconciliation', [AttendanceReconciliationController::class, 'index'])->name('attendance.reconciliation.index');
+    Route::put('attendance/reconciliation/approve', [AttendanceReconciliationController::class, 'approve'])->name('attendance.reconciliation.approve');
+    Route::put('attendance/reconciliation/reopen', [AttendanceReconciliationController::class, 'reopen'])->name('attendance.reconciliation.reopen');
     Route::get('attendance/daily', [AttendanceController::class, 'daily'])->name('attendance.daily');
     Route::get('attendance/corrections', [AttendanceCorrectionController::class, 'index'])->name('attendance.corrections.index');
     Route::get('attendance/corrections/create', [AttendanceCorrectionController::class, 'create'])->name('attendance.corrections.create');

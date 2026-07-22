@@ -66,6 +66,7 @@ return [
                 ['title' => 'att.punch_log', 'route' => 'attendance.index', 'active' => 'attendance.index'],
                 ['title' => 'att.daily_title', 'route' => 'attendance.daily', 'active' => 'attendance.daily'],
                 ['title' => 'att.exceptions_title', 'route' => 'attendance.exceptions', 'active' => 'attendance.exceptions'],
+                ['title' => 'recon.title', 'route' => 'attendance.reconciliation.index', 'active' => 'attendance.reconciliation.*'],
                 ['title' => 'att.matrix_title', 'route' => 'attendance.matrix', 'active' => 'attendance.matrix'],
                 ['title' => 'att.report_title', 'route' => 'attendance.report', 'active' => 'attendance.report'],
                 ['title' => 'att.corrections', 'route' => 'attendance.corrections.index'],

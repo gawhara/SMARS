@@ -39,7 +39,7 @@
             <strong>{{ number_format($stats['latest_attendance']) }}</strong>
             <small>{{ $stats['attendance_coverage'] }}% {{ __('app.dash.coverage') }}</small>
         </a>
-        <a class="dashboard-kpi" href="{{ route('attendance.exceptions') }}">
+        <a class="dashboard-kpi" href="{{ route('attendance.reconciliation.index') }}">
             <span>{{ __('app.dash.exceptions') }}</span>
             <strong class="{{ $stats['open_exceptions'] ? 'tone-warning' : 'tone-success' }}">{{ number_format($stats['open_exceptions']) }}</strong>
             <small>{{ __('app.dash.require_review') }}</small>
@@ -133,7 +133,7 @@
     <section class="dashboard-quick-actions">
         <a href="{{ route('employees.create') }}"><strong>+</strong><span>{{ __('app.dash.add_employee') }}</span></a>
         <a href="{{ route('attendance.index') }}"><strong>↗</strong><span>{{ __('app.dash.review_attendance') }}</span></a>
-        <a href="{{ route('attendance.exceptions') }}"><strong>!</strong><span>{{ __('app.dash.resolve_exceptions') }}</span></a>
+        <a href="{{ route('attendance.reconciliation.index') }}"><strong>!</strong><span>{{ __('app.dash.resolve_exceptions') }}</span></a>
         <a href="{{ route('payroll.periods.index') }}"><strong>✓</strong><span>{{ __('app.dash.prepare_payroll') }}</span></a>
     </section>
 @endsection

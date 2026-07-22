@@ -40,7 +40,9 @@ class AttendanceDailySummaryService
                     'worked_minutes' => 0,
                     'scheduled_minutes' => $scheduleShifts->isNotEmpty() ? $scheduleShifts->sum->durationMinutes() : (int) $policy->full_day_minutes,
                     'late_minutes' => 0, 'early_leave_minutes' => 0, 'overtime_minutes' => 0,
-                    'status' => $calendarStatus, 'has_exception' => false, 'exception_codes' => [], 'calculated_at' => now(),
+                    'status' => $calendarStatus, 'has_exception' => false, 'exception_codes' => [],
+                    'reconciliation_status' => 'not_required', 'reconciled_by' => null,
+                    'reconciled_at' => null, 'reconciliation_notes' => null, 'calculated_at' => now(),
                 ])->save();
                 return $summary;
             }
@@ -130,7 +132,7 @@ class AttendanceDailySummaryService
                 'attendance_date' => $date->toDateString(),
             ]);
 
-        $summary->fill([
+        $values = [
                 'first_in_at' => $firstIn,
                 'last_out_at' => $lastOut,
                 'punch_count' => $punches->count(),
@@ -143,7 +145,9 @@ class AttendanceDailySummaryService
                 'has_exception' => $exceptions !== [],
                 'exception_codes' => $exceptions,
                 'calculated_at' => now(),
-            ])->save();
+            ];
+
+        $summary->fill(array_merge($values, $this->reconciliationState($summary, $values, $exceptions)))->save();
 
         return $summary;
     }
@@ -192,5 +196,31 @@ class AttendanceDailySummaryService
     private function shiftDateTime(mixed $value, Carbon $date): ?Carbon
     {
         return $value ? Carbon::parse($date->toDateString().' '.substr((string) $value, 0, 8)) : null;
+    }
+
+    private function reconciliationState(AttendanceDailySummary $summary, array $values, array $exceptions): array
+    {
+        if ($exceptions === []) {
+            return [
+                'reconciliation_status' => 'not_required',
+                'reconciled_by' => null,
+                'reconciled_at' => null,
+                'reconciliation_notes' => null,
+            ];
+        }
+
+        $time = static fn ($value) => $value ? Carbon::parse($value)->format('Y-m-d H:i:s') : null;
+        $changed = ! $summary->exists
+            || $time($summary->first_in_at) !== $time($values['first_in_at'])
+            || $time($summary->last_out_at) !== $time($values['last_out_at'])
+            || (int) $summary->worked_minutes !== (int) $values['worked_minutes']
+            || array_values($summary->exception_codes ?? []) !== array_values($exceptions);
+
+        return $changed ? [
+            'reconciliation_status' => 'open',
+            'reconciled_by' => null,
+            'reconciled_at' => null,
+            'reconciliation_notes' => null,
+        ] : [];
     }
 }

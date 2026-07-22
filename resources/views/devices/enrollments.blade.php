@@ -8,7 +8,10 @@
             <span class="eyebrow">{{ $device->device_name }}</span>
             <h1>{{ __('app.enroll.manage') }}</h1>
         </div>
-        <a class="ghost-button" href="{{ route('devices.show', $device) }}">{{ __('app.cancel') }}</a>
+        <div class="table-actions">
+            <a class="primary-button" href="{{ route('devices.provision', $device) }}">{{ __('app.provision.title') }}</a>
+            <a class="ghost-button" href="{{ route('devices.show', $device) }}">{{ __('app.cancel') }}</a>
+        </div>
     </section>
 
     @include('partials.flash')

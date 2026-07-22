@@ -73,4 +73,62 @@ document.addEventListener('DOMContentLoaded', () => {
         [hour, minute, period].forEach((input) => input.addEventListener('change', syncTime));
         syncTime();
     });
+
+    const provisionForm = document.querySelector('[data-provision-form]');
+    if (provisionForm) {
+        const selectAll = provisionForm.querySelector('[data-select-all]');
+        const boxes = [...provisionForm.querySelectorAll('[data-employee]:not(:disabled)')];
+        const actions = [...provisionForm.querySelectorAll('[data-needs-selection]')];
+
+        const sync = () => {
+            const selected = boxes.filter((box) => box.checked).length;
+            actions.forEach((button) => {
+                // Never re-enable a button disabled for another reason (e.g. no target device).
+                if (!button.dataset.lockedOff) {
+                    button.disabled = selected === 0;
+                }
+            });
+            if (selectAll) {
+                selectAll.checked = boxes.length > 0 && selected === boxes.length;
+                selectAll.indeterminate = selected > 0 && selected < boxes.length;
+            }
+        };
+
+        actions.forEach((button) => {
+            if (button.disabled) {
+                button.dataset.lockedOff = 'true';
+            }
+        });
+        selectAll?.addEventListener('change', () => {
+            boxes.forEach((box) => { box.checked = selectAll.checked; });
+            sync();
+        });
+        boxes.forEach((box) => box.addEventListener('change', sync));
+        sync();
+    }
+
+    const reconciliationForm = document.querySelector('[data-reconciliation-form]');
+    if (reconciliationForm) {
+        const selectAll = reconciliationForm.querySelector('[data-select-all]');
+        const rowSelectors = [...reconciliationForm.querySelectorAll('[data-row-select]:not(:disabled)')];
+        const count = reconciliationForm.querySelector('[data-selected-count]');
+        const actions = reconciliationForm.querySelectorAll('[data-bulk-action]');
+
+        const syncSelection = () => {
+            const selected = rowSelectors.filter((checkbox) => checkbox.checked).length;
+            count.textContent = String(selected);
+            actions.forEach((button) => { button.disabled = selected === 0; });
+            if (selectAll) {
+                selectAll.checked = rowSelectors.length > 0 && selected === rowSelectors.length;
+                selectAll.indeterminate = selected > 0 && selected < rowSelectors.length;
+            }
+        };
+
+        selectAll?.addEventListener('change', () => {
+            rowSelectors.forEach((checkbox) => { checkbox.checked = selectAll.checked; });
+            syncSelection();
+        });
+        rowSelectors.forEach((checkbox) => checkbox.addEventListener('change', syncSelection));
+        syncSelection();
+    }
 });

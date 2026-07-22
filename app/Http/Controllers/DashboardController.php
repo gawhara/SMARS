@@ -59,7 +59,7 @@ class DashboardController extends Controller
                 'employees' => $employeeCount,
                 'today_attendance' => AttendanceDailySummary::whereDate('attendance_date', today())->count(),
                 'today_exceptions' => AttendanceDailySummary::whereDate('attendance_date', today())->where('has_exception', true)->count(),
-                'open_exceptions' => AttendanceDailySummary::where('has_exception', true)->count(),
+                'open_exceptions' => AttendanceDailySummary::where('has_exception', true)->where('reconciliation_status', 'open')->count(),
                 'active_schedules' => Shift::where('is_active', true)->distinct('schedule_id')->count('schedule_id'),
                 'punches' => AttendanceRecord::count(),
                 'matched_rate' => AttendanceRecord::count() > 0

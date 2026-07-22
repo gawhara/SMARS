@@ -18,6 +18,7 @@ class AttendanceDailySummary extends Model
             'last_out_at' => 'datetime',
             'has_exception' => 'boolean',
             'exception_codes' => 'array',
+            'reconciled_at' => 'datetime',
             'calculated_at' => 'datetime',
         ];
     }
@@ -25,6 +26,11 @@ class AttendanceDailySummary extends Model
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function reconciler(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reconciled_by');
     }
 
     public function localizedTime(string $attribute): string
