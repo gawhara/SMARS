@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 
 class User extends Authenticatable
 {
@@ -56,4 +57,35 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role?->name === 'super_admin';
+    }
+
+    public function hasRole(string $name): bool
+    {
+        return $this->role?->name === $name;
+    }
+
+    /**
+     * Permission names granted to this user (via its role), loaded once per
+     * instance. Empty when the user has no role.
+     *
+     * @return Collection<int, string>
+     */
+    public function permissionNames(): Collection
+    {
+        return $this->permissionCache ??= $this->role
+            ? $this->role->permissions()->pluck('name')
+            : collect();
+    }
+
+    public function hasPermissionTo(string $name): bool
+    {
+        return $this->isSuperAdmin() || $this->permissionNames()->contains($name);
+    }
+
+    /** @var Collection<int, string>|null */
+    protected ?Collection $permissionCache = null;
 }

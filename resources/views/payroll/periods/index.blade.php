@@ -12,6 +12,7 @@
 
     @include('partials.flash')
 
+    @can('payroll.manage')
     <section class="panel form-panel">
         <p class="muted-note" style="margin-top:0">{{ __('app.pay.intro') }}</p>
         <form method="POST" action="{{ route('payroll.periods.store') }}" class="copy-form">
@@ -31,6 +32,7 @@
             <button class="primary-button" type="submit">{{ __('app.pay.add_period') }}</button>
         </form>
     </section>
+    @endcan
 
     <section class="panel">
         <div class="table-wrap">
@@ -65,18 +67,22 @@
                             </td>
                             <td>{{ optional($period->exported_at)->format('Y-m-d H:i') ?? __('app.pay.never') }}</td>
                             <td class="table-actions">
-                                <a class="ghost-button" href="{{ route('payroll.periods.export', $period) }}">{{ __('app.pay.export') }}</a>
-                                @if ($period->isLocked())
-                                    <form method="POST" action="{{ route('payroll.periods.unlock', $period) }}">
-                                        @csrf @method('PUT')
-                                        <button class="ghost-button" type="submit">{{ __('app.pay.unlock') }}</button>
-                                    </form>
+                                @can('payroll.manage')
+                                    <a class="ghost-button" href="{{ route('payroll.periods.export', $period) }}">{{ __('app.pay.export') }}</a>
+                                    @if ($period->isLocked())
+                                        <form method="POST" action="{{ route('payroll.periods.unlock', $period) }}">
+                                            @csrf @method('PUT')
+                                            <button class="ghost-button" type="submit">{{ __('app.pay.unlock') }}</button>
+                                        </form>
+                                    @else
+                                        <form method="POST" action="{{ route('payroll.periods.lock', $period) }}" onsubmit="return confirm('{{ __('app.pay.confirm_lock') }}')">
+                                            @csrf @method('PUT')
+                                            <button class="danger-button" type="submit">{{ __('app.pay.lock') }}</button>
+                                        </form>
+                                    @endif
                                 @else
-                                    <form method="POST" action="{{ route('payroll.periods.lock', $period) }}" onsubmit="return confirm('{{ __('app.pay.confirm_lock') }}')">
-                                        @csrf @method('PUT')
-                                        <button class="danger-button" type="submit">{{ __('app.pay.lock') }}</button>
-                                    </form>
-                                @endif
+                                    <span class="muted-note">{{ __('app.none') }}</span>
+                                @endcan
                             </td>
                         </tr>
                     @empty

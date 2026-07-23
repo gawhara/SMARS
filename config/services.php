@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    /*
+     | ZKTeco biometric integration. `python` is the interpreter used to run the
+     | scripts/ helpers. Pin it to a full path (e.g. C:\Python314\python.exe) when
+     | the web server's PATH resolves `python` to a different install that lacks
+     | the `pyzk` package.
+     */
+    'zkteco' => [
+        'python' => env('ZKTECO_PYTHON', 'python'),
+    ],
+
 ];

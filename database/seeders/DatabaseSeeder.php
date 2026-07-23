@@ -30,6 +30,9 @@ class DatabaseSeeder extends Seeder
             Role::updateOrCreate(['name' => $role['name']], $role + ['is_active' => true]);
         }
 
+        // RBAC permission catalogue + default role grants.
+        $this->call(PermissionSeeder::class);
+
         $companies = [
             ['code' => 'AMNIAT', 'name_en' => 'AMNIAT', 'name_ar' => 'أمنيات'],
             ['code' => 'AMNIAT_FACTORY', 'name_en' => 'AMNIAT FACTORY', 'name_ar' => 'مصنع أمنيات للصناعة'],

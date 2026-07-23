@@ -63,7 +63,7 @@ class ZktecoDeviceGateway
         }
 
         $process = new Process(array_merge([
-            'python', base_path('scripts/zkteco_provision.py'),
+            config('services.zkteco.python'), base_path('scripts/zkteco_provision.py'),
             '--ip', (string) $device->host(),
             '--port', (string) $device->port,
             '--comm-key', (string) $device->comm_key,

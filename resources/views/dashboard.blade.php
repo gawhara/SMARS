@@ -131,9 +131,17 @@
     </section>
 
     <section class="dashboard-quick-actions">
-        <a href="{{ route('employees.create') }}"><strong>+</strong><span>{{ __('app.dash.add_employee') }}</span></a>
-        <a href="{{ route('attendance.index') }}"><strong>↗</strong><span>{{ __('app.dash.review_attendance') }}</span></a>
-        <a href="{{ route('attendance.reconciliation.index') }}"><strong>!</strong><span>{{ __('app.dash.resolve_exceptions') }}</span></a>
-        <a href="{{ route('payroll.periods.index') }}"><strong>✓</strong><span>{{ __('app.dash.prepare_payroll') }}</span></a>
+        @can('employees.manage')
+            <a href="{{ route('employees.create') }}"><strong>+</strong><span>{{ __('app.dash.add_employee') }}</span></a>
+        @endcan
+        @can('attendance.view')
+            <a href="{{ route('attendance.index') }}"><strong>↗</strong><span>{{ __('app.dash.review_attendance') }}</span></a>
+        @endcan
+        @can('attendance.reconcile')
+            <a href="{{ route('attendance.reconciliation.index') }}"><strong>!</strong><span>{{ __('app.dash.resolve_exceptions') }}</span></a>
+        @endcan
+        @can('payroll.view')
+            <a href="{{ route('payroll.periods.index') }}"><strong>✓</strong><span>{{ __('app.dash.prepare_payroll') }}</span></a>
+        @endcan
     </section>
 @endsection

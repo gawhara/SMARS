@@ -15,7 +15,9 @@
             <p>{{ $employee->job_title ?: __('app.none') }}</p>
         </div>
         <div class="table-actions">
-            <a class="ghost-button" href="{{ route('employees.edit', $employee) }}">{{ __('app.edit') }}</a>
+            @can('employees.manage')
+                <a class="ghost-button" href="{{ route('employees.edit', $employee) }}">{{ __('app.edit') }}</a>
+            @endcan
             <a class="ghost-button" href="{{ route('employees.index') }}">{{ __('app.cancel') }}</a>
         </div>
     </section>

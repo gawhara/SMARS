@@ -9,7 +9,9 @@
             <h1>{{ __('app.enroll.manage') }}</h1>
         </div>
         <div class="table-actions">
-            <a class="primary-button" href="{{ route('devices.provision', $device) }}">{{ __('app.provision.title') }}</a>
+            @can('devices.provision')
+                <a class="primary-button" href="{{ route('devices.provision', $device) }}">{{ __('app.provision.title') }}</a>
+            @endcan
             <a class="ghost-button" href="{{ route('devices.show', $device) }}">{{ __('app.cancel') }}</a>
         </div>
     </section>

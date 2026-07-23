@@ -8,7 +8,9 @@
             <span class="eyebrow">{{ __('app.organization_structure') }}</span>
             <h1>{{ __('app.employees') }}</h1>
         </div>
-        <a class="primary-button" href="{{ route('employees.create') }}">{{ __('app.emp.add') }}</a>
+        @can('employees.manage')
+            <a class="primary-button" href="{{ route('employees.create') }}">{{ __('app.emp.add') }}</a>
+        @endcan
     </section>
 
     @include('partials.flash')
@@ -141,12 +143,16 @@
                                 </td>
                                 <td class="table-actions">
                                     <a class="ghost-button" href="{{ route('employees.show', $employee) }}">{{ __('app.view') }}</a>
-                                    <a class="ghost-button" href="{{ route('employees.edit', $employee) }}">{{ __('app.edit') }}</a>
-                                    <form method="POST" action="{{ route('employees.destroy', $employee) }}" onsubmit="return confirm('{{ __('app.confirm_delete') }}')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="danger-button" type="submit">{{ __('app.delete') }}</button>
-                                    </form>
+                                    @can('employees.manage')
+                                        <a class="ghost-button" href="{{ route('employees.edit', $employee) }}">{{ __('app.edit') }}</a>
+                                    @endcan
+                                    @can('employees.delete')
+                                        <form method="POST" action="{{ route('employees.destroy', $employee) }}" onsubmit="return confirm('{{ __('app.confirm_delete') }}')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="danger-button" type="submit">{{ __('app.delete') }}</button>
+                                        </form>
+                                    @endcan
                                 </td>
                             </tr>
                         @endforeach
@@ -162,7 +168,9 @@
             <h3>{{ __('app.emp.empty_title') }}</h3>
             <p>{{ __('app.emp.empty_hint') }}</p>
             <div class="empty-actions">
-                <a class="primary-button" href="{{ route('employees.create') }}">{{ __('app.emp.add') }}</a>
+                @can('employees.manage')
+                    <a class="primary-button" href="{{ route('employees.create') }}">{{ __('app.emp.add') }}</a>
+                @endcan
                 @if ($hasFilters)
                     <a class="ghost-button" href="{{ route('employees.index') }}">{{ __('app.clear_filters') }}</a>
                 @endif

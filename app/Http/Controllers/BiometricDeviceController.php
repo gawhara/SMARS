@@ -117,6 +117,44 @@ class BiometricDeviceController extends Controller
         catch (\Throwable $e) { return back()->with('error',__('app.device.sync_failed').': '.$e->getMessage()); }
     }
 
+    /**
+     * Read attendance logs from every active device in one pass. Each device is
+     * read read-only and duplicate punches are skipped (per-device dedup lives in
+     * the sync service); an unreachable device is recorded and the loop continues.
+     */
+    public function syncAll(ZktecoReadOnlySyncService $service): RedirectResponse
+    {
+        $devices = AttendanceMachine::where('is_active', true)->get();
+
+        if ($devices->isEmpty()) {
+            return back()->with('error', __('app.device.no_active_devices'));
+        }
+
+        $imported = 0;
+        $succeeded = 0;
+        $failed = [];
+
+        foreach ($devices as $device) {
+            try {
+                $imported += $service->sync($device, (int) request()->user()->id)->imported_count;
+                $succeeded++;
+            } catch (\Throwable) {
+                $failed[] = $device->device_name;
+            }
+        }
+
+        $message = __('app.device.sync_all_summary', ['devices' => $succeeded, 'count' => $imported]);
+
+        if (! empty($failed)) {
+            return back()->with('error', $message.' '.__('app.device.sync_all_failed', [
+                'count' => count($failed),
+                'names' => implode(', ', $failed),
+            ]));
+        }
+
+        return back()->with('status', $message);
+    }
+
     private function formData(AttendanceMachine $device): array
     {
         return [

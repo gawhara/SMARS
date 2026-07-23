@@ -12,7 +12,17 @@
             <span class="eyebrow">{{ __('app.attendance') }}</span>
             <h1>{{ __('app.biometric_devices') }}</h1>
         </div>
-        <a class="primary-button" href="{{ route('devices.create') }}">{{ __('app.device.add') }}</a>
+        @can('devices.manage')
+            <div class="table-actions">
+                @if ($devices->total() > 0)
+                    <form method="POST" action="{{ route('devices.sync-all') }}" onsubmit="return confirm('{{ __('app.device.confirm_sync_all') }}')">
+                        @csrf
+                        <button class="ghost-button" type="submit">{{ __('app.device.read_all') }}</button>
+                    </form>
+                @endif
+                <a class="primary-button" href="{{ route('devices.create') }}">{{ __('app.device.add') }}</a>
+            </div>
+        @endcan
     </section>
 
     @include('partials.flash')
@@ -97,16 +107,24 @@
                     </dl>
 
                     <div class="device-card-actions">
-                        <form method="POST" action="{{ route('devices.test', $device) }}">
-                            @csrf
-                            <button class="primary-button" type="submit">{{ __('app.device.test_connection') }}</button>
-                        </form>
-                        <a class="ghost-button" href="{{ route('devices.edit', $device) }}">{{ __('app.edit') }}</a>
-                        <form method="POST" action="{{ route('devices.destroy', $device) }}" onsubmit="return confirm('{{ __('app.confirm_delete') }}')">
-                            @csrf
-                            @method('DELETE')
-                            <button class="danger-button" type="submit">{{ __('app.delete') }}</button>
-                        </form>
+                        @can('devices.manage')
+                            <form method="POST" action="{{ route('devices.sync', $device) }}">
+                                @csrf
+                                <button class="primary-button" type="submit">{{ __('app.device.sync_now_readonly') }}</button>
+                            </form>
+                            <form method="POST" action="{{ route('devices.test', $device) }}">
+                                @csrf
+                                <button class="ghost-button" type="submit">{{ __('app.device.test_connection') }}</button>
+                            </form>
+                            <a class="ghost-button" href="{{ route('devices.edit', $device) }}">{{ __('app.edit') }}</a>
+                            <form method="POST" action="{{ route('devices.destroy', $device) }}" onsubmit="return confirm('{{ __('app.confirm_delete') }}')">
+                                @csrf
+                                @method('DELETE')
+                                <button class="danger-button" type="submit">{{ __('app.delete') }}</button>
+                            </form>
+                        @else
+                            <a class="ghost-button" href="{{ route('devices.show', $device) }}">{{ __('app.view') }}</a>
+                        @endcan
                     </div>
                 </article>
             @endforeach

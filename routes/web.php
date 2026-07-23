@@ -40,58 +40,114 @@ Route::get('/language/{locale}', LanguageController::class)->name('language.swit
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
-    Route::resource('companies', CompanyController::class);
-    Route::resource('branches', BranchController::class)->except(['show']);
-    Route::resource('departments', DepartmentController::class)->except(['show']);
-    Route::resource('positions', PositionController::class)->except(['show']);
-    Route::resource('shifts', ShiftController::class)->except(['show']);
-    Route::put('employees/{employee}/restore', [EmployeeController::class, 'restore'])
-        ->name('employees.restore');
-    Route::resource('employees', EmployeeController::class);
-    Route::post('devices/{device}/test', [BiometricDeviceController::class, 'testConnection'])->name('devices.test');
-    Route::post('devices/{device}/sync', [BiometricDeviceController::class, 'sync'])->name('devices.sync');
-    Route::get('devices/{device}/enrollments', [DeviceEnrollmentController::class, 'index'])->name('devices.enrollments.index');
-    Route::post('devices/{device}/enrollments', [DeviceEnrollmentController::class, 'store'])->name('devices.enrollments.store');
-    Route::delete('devices/{device}/enrollments/{enrollment}', [DeviceEnrollmentController::class, 'destroy'])->name('devices.enrollments.destroy');
-    Route::post('devices/{device}/enrollments/copy', [DeviceEnrollmentController::class, 'copy'])->name('devices.enrollments.copy');
 
-    // Biometric provisioning: move / copy / delete user identity + fingerprint templates on real devices.
-    Route::get('devices/{device}/provision', [BiometricProvisioningController::class, 'index'])->name('devices.provision');
-    Route::post('devices/{device}/provision/copy', [BiometricProvisioningController::class, 'copy'])->name('devices.provision.copy');
-    Route::post('devices/{device}/provision/move', [BiometricProvisioningController::class, 'move'])->name('devices.provision.move');
-    Route::post('devices/{device}/provision/delete', [BiometricProvisioningController::class, 'destroy'])->name('devices.provision.delete');
+    // ---- Organization structure (view to read, manage to write) ----
+    // Manage resources are registered before view resources so literal routes
+    // (e.g. companies/create) win over wildcard show routes (companies/{id}).
+    Route::middleware('can:companies.manage')->group(function () {
+        Route::resource('companies', CompanyController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
+    });
+    Route::middleware('can:companies.view')->group(function () {
+        Route::resource('companies', CompanyController::class)->only(['index', 'show']);
+    });
 
-    Route::resource('devices', BiometricDeviceController::class)->parameter('devices', 'device');
+    foreach ([
+        'branches' => BranchController::class,
+        'departments' => DepartmentController::class,
+        'positions' => PositionController::class,
+        'shifts' => ShiftController::class,
+    ] as $name => $controller) {
+        Route::middleware("can:{$name}.manage")->group(function () use ($name, $controller) {
+            Route::resource($name, $controller)->only(['create', 'store', 'edit', 'update', 'destroy']);
+        });
+        Route::middleware("can:{$name}.view")->group(function () use ($name, $controller) {
+            Route::resource($name, $controller)->only(['index']);
+        });
+    }
 
-    Route::get('attendance/matrix', [AttendanceController::class, 'matrix'])->name('attendance.matrix');
-    Route::get('attendance/report', [AttendanceController::class, 'report'])->name('attendance.report');
-    Route::get('attendance/exceptions', [AttendanceController::class, 'exceptions'])->name('attendance.exceptions');
-    Route::get('attendance/reconciliation', [AttendanceReconciliationController::class, 'index'])->name('attendance.reconciliation.index');
-    Route::put('attendance/reconciliation/approve', [AttendanceReconciliationController::class, 'approve'])->name('attendance.reconciliation.approve');
-    Route::put('attendance/reconciliation/reopen', [AttendanceReconciliationController::class, 'reopen'])->name('attendance.reconciliation.reopen');
-    Route::get('attendance/daily', [AttendanceController::class, 'daily'])->name('attendance.daily');
-    Route::get('attendance/corrections', [AttendanceCorrectionController::class, 'index'])->name('attendance.corrections.index');
-    Route::get('attendance/corrections/create', [AttendanceCorrectionController::class, 'create'])->name('attendance.corrections.create');
-    Route::post('attendance/corrections', [AttendanceCorrectionController::class, 'store'])->name('attendance.corrections.store');
-    Route::put('attendance/corrections/{correction}/approve', [AttendanceCorrectionController::class, 'approve'])->name('attendance.corrections.approve');
-    Route::put('attendance/corrections/{correction}/reject', [AttendanceCorrectionController::class, 'reject'])->name('attendance.corrections.reject');
-    Route::get('attendance/policies', [AttendancePolicyController::class, 'index'])->name('attendance.policies.index');
-    Route::get('attendance/policies/{company}/edit', [AttendancePolicyController::class, 'edit'])->name('attendance.policies.edit');
-    Route::put('attendance/policies/{company}', [AttendancePolicyController::class, 'update'])->name('attendance.policies.update');
-    Route::resource('attendance/holidays', AttendanceHolidayController::class)->except(['show'])->names('attendance.holidays');
-    Route::get('attendance/leaves', [EmployeeLeaveController::class, 'index'])->name('attendance.leaves.index');
-    Route::get('attendance/leaves/create', [EmployeeLeaveController::class, 'create'])->name('attendance.leaves.create');
-    Route::post('attendance/leaves', [EmployeeLeaveController::class, 'store'])->name('attendance.leaves.store');
-    Route::put('attendance/leaves/{leave}/approve', [EmployeeLeaveController::class, 'approve'])->name('attendance.leaves.approve');
-    Route::put('attendance/leaves/{leave}/reject', [EmployeeLeaveController::class, 'reject'])->name('attendance.leaves.reject');
-    Route::get('attendance/import', [AttendanceController::class, 'importForm'])->name('attendance.import.form');
-    Route::post('attendance/import', [AttendanceController::class, 'import'])->name('attendance.import');
-    Route::resource('attendance', AttendanceController::class)->only(['index', 'create', 'store', 'destroy']);
+    // ---- Employees (delete is a distinct, higher-risk ability) ----
+    Route::middleware('can:employees.manage')->group(function () {
+        Route::resource('employees', EmployeeController::class)->only(['create', 'store', 'edit', 'update']);
+    });
+    Route::middleware('can:employees.delete')->group(function () {
+        Route::put('employees/{employee}/restore', [EmployeeController::class, 'restore'])->name('employees.restore');
+        Route::delete('employees/{employee}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
+    });
+    Route::middleware('can:employees.view')->group(function () {
+        Route::resource('employees', EmployeeController::class)->only(['index', 'show']);
+    });
 
-    // Payroll periods: lock a company month and export payroll from attendance.
-    Route::get('payroll/periods', [PayrollPeriodController::class, 'index'])->name('payroll.periods.index');
-    Route::post('payroll/periods', [PayrollPeriodController::class, 'store'])->name('payroll.periods.store');
-    Route::put('payroll/periods/{period}/lock', [PayrollPeriodController::class, 'lock'])->name('payroll.periods.lock');
-    Route::put('payroll/periods/{period}/unlock', [PayrollPeriodController::class, 'unlock'])->name('payroll.periods.unlock');
-    Route::get('payroll/periods/{period}/export', [PayrollPeriodController::class, 'export'])->name('payroll.periods.export');
+    // ---- Biometric devices ----
+    // Provisioning writes user identity + fingerprint templates to real hardware.
+    Route::middleware('can:devices.provision')->group(function () {
+        Route::get('devices/{device}/provision', [BiometricProvisioningController::class, 'index'])->name('devices.provision');
+        Route::post('devices/{device}/provision/copy', [BiometricProvisioningController::class, 'copy'])->name('devices.provision.copy');
+        Route::post('devices/{device}/provision/move', [BiometricProvisioningController::class, 'move'])->name('devices.provision.move');
+        Route::post('devices/{device}/provision/delete', [BiometricProvisioningController::class, 'destroy'])->name('devices.provision.delete');
+    });
+    Route::middleware('can:devices.manage')->group(function () {
+        Route::post('devices/sync-all', [BiometricDeviceController::class, 'syncAll'])->name('devices.sync-all');
+        Route::post('devices/{device}/test', [BiometricDeviceController::class, 'testConnection'])->name('devices.test');
+        Route::post('devices/{device}/sync', [BiometricDeviceController::class, 'sync'])->name('devices.sync');
+        Route::get('devices/{device}/enrollments', [DeviceEnrollmentController::class, 'index'])->name('devices.enrollments.index');
+        Route::post('devices/{device}/enrollments', [DeviceEnrollmentController::class, 'store'])->name('devices.enrollments.store');
+        Route::delete('devices/{device}/enrollments/{enrollment}', [DeviceEnrollmentController::class, 'destroy'])->name('devices.enrollments.destroy');
+        Route::post('devices/{device}/enrollments/copy', [DeviceEnrollmentController::class, 'copy'])->name('devices.enrollments.copy');
+        Route::resource('devices', BiometricDeviceController::class)->parameter('devices', 'device')->only(['create', 'store', 'edit', 'update', 'destroy']);
+    });
+    Route::middleware('can:devices.view')->group(function () {
+        Route::resource('devices', BiometricDeviceController::class)->parameter('devices', 'device')->only(['index', 'show']);
+    });
+
+    // ---- Attendance ----
+    Route::middleware('can:attendance.view')->group(function () {
+        Route::get('attendance/matrix', [AttendanceController::class, 'matrix'])->name('attendance.matrix');
+        Route::get('attendance/report', [AttendanceController::class, 'report'])->name('attendance.report');
+        Route::get('attendance/exceptions', [AttendanceController::class, 'exceptions'])->name('attendance.exceptions');
+        Route::get('attendance/daily', [AttendanceController::class, 'daily'])->name('attendance.daily');
+        Route::get('attendance/corrections', [AttendanceCorrectionController::class, 'index'])->name('attendance.corrections.index');
+        Route::get('attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+    });
+    Route::middleware('can:attendance.manage')->group(function () {
+        Route::get('attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
+        Route::post('attendance', [AttendanceController::class, 'store'])->name('attendance.store');
+        Route::delete('attendance/{attendance}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
+        Route::get('attendance/corrections/create', [AttendanceCorrectionController::class, 'create'])->name('attendance.corrections.create');
+        Route::post('attendance/corrections', [AttendanceCorrectionController::class, 'store'])->name('attendance.corrections.store');
+        Route::get('attendance/policies', [AttendancePolicyController::class, 'index'])->name('attendance.policies.index');
+        Route::get('attendance/policies/{company}/edit', [AttendancePolicyController::class, 'edit'])->name('attendance.policies.edit');
+        Route::put('attendance/policies/{company}', [AttendancePolicyController::class, 'update'])->name('attendance.policies.update');
+        Route::resource('attendance/holidays', AttendanceHolidayController::class)->except(['show'])->names('attendance.holidays');
+        Route::get('attendance/import', [AttendanceController::class, 'importForm'])->name('attendance.import.form');
+        Route::post('attendance/import', [AttendanceController::class, 'import'])->name('attendance.import');
+    });
+    Route::middleware('can:attendance.reconcile')->group(function () {
+        Route::get('attendance/reconciliation', [AttendanceReconciliationController::class, 'index'])->name('attendance.reconciliation.index');
+        Route::put('attendance/reconciliation/approve', [AttendanceReconciliationController::class, 'approve'])->name('attendance.reconciliation.approve');
+        Route::put('attendance/reconciliation/reopen', [AttendanceReconciliationController::class, 'reopen'])->name('attendance.reconciliation.reopen');
+        Route::put('attendance/corrections/{correction}/approve', [AttendanceCorrectionController::class, 'approve'])->name('attendance.corrections.approve');
+        Route::put('attendance/corrections/{correction}/reject', [AttendanceCorrectionController::class, 'reject'])->name('attendance.corrections.reject');
+    });
+
+    // ---- Leaves ----
+    Route::middleware('can:leaves.view')->group(function () {
+        Route::get('attendance/leaves', [EmployeeLeaveController::class, 'index'])->name('attendance.leaves.index');
+    });
+    Route::middleware('can:leaves.manage')->group(function () {
+        Route::get('attendance/leaves/create', [EmployeeLeaveController::class, 'create'])->name('attendance.leaves.create');
+        Route::post('attendance/leaves', [EmployeeLeaveController::class, 'store'])->name('attendance.leaves.store');
+        Route::put('attendance/leaves/{leave}/approve', [EmployeeLeaveController::class, 'approve'])->name('attendance.leaves.approve');
+        Route::put('attendance/leaves/{leave}/reject', [EmployeeLeaveController::class, 'reject'])->name('attendance.leaves.reject');
+    });
+
+    // ---- Payroll periods ----
+    Route::middleware('can:payroll.view')->group(function () {
+        Route::get('payroll/periods', [PayrollPeriodController::class, 'index'])->name('payroll.periods.index');
+    });
+    Route::middleware('can:payroll.manage')->group(function () {
+        Route::post('payroll/periods', [PayrollPeriodController::class, 'store'])->name('payroll.periods.store');
+        Route::put('payroll/periods/{period}/lock', [PayrollPeriodController::class, 'lock'])->name('payroll.periods.lock');
+        Route::put('payroll/periods/{period}/unlock', [PayrollPeriodController::class, 'unlock'])->name('payroll.periods.unlock');
+        Route::get('payroll/periods/{period}/export', [PayrollPeriodController::class, 'export'])->name('payroll.periods.export');
+    });
 });

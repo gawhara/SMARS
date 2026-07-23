@@ -358,6 +358,11 @@ return [
         'sync_now_readonly' => 'Read attendance logs',
         'sync_ok' => 'Read-only synchronization completed: :count new punches.',
         'sync_failed' => 'Read-only synchronization failed',
+        'read_all' => 'Read all devices',
+        'confirm_sync_all' => 'Read attendance logs from all active devices now?',
+        'sync_all_summary' => 'Read :devices device(s): :count new punches added (duplicates skipped).',
+        'sync_all_failed' => ':count device(s) could not be reached: :names.',
+        'no_active_devices' => 'There are no active devices to read from.',
         // Stats
         'stat_total' => 'Total devices',
         'stat_active' => 'Active',
