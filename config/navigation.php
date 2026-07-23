@@ -79,7 +79,7 @@ return [
         ['title' => 'payroll', 'route' => 'payroll.periods.index', 'icon' => 'wallet', 'permission' => 'payroll.view'],
         ['title' => 'reports', 'route' => null, 'icon' => 'chart', 'permission' => 'reports.view'],
         ['title' => 'users_roles', 'route' => null, 'icon' => 'shield', 'permission' => 'users.view'],
-        ['title' => 'audit_logs', 'route' => null, 'icon' => 'history', 'permission' => 'audit.view'],
+        ['title' => 'audit_logs', 'route' => 'audit.logs.index', 'icon' => 'history', 'permission' => 'audit.view'],
         ['title' => 'settings', 'route' => null, 'icon' => 'settings', 'permission' => 'settings.view'],
     ],
 ];

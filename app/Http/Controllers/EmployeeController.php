@@ -10,6 +10,7 @@ use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Position;
 use App\Models\Shift;
+use App\Support\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -103,12 +104,21 @@ class EmployeeController extends Controller
     {
         $employee->delete();
 
+        AuditLogger::record('employee.deleted', $employee, $employee->localizedName(), [
+            'employee_code' => $employee->employee_code,
+        ]);
+
         return redirect()->route('employees.index')->with('status', __('app.deleted_successfully'));
     }
 
     public function restore(int $employee): RedirectResponse
     {
-        Employee::onlyTrashed()->findOrFail($employee)->restore();
+        $model = Employee::onlyTrashed()->findOrFail($employee);
+        $model->restore();
+
+        AuditLogger::record('employee.restored', $model, $model->localizedName(), [
+            'employee_code' => $model->employee_code,
+        ]);
 
         return redirect()->route('employees.index')->with('status', __('app.restored_successfully'));
     }

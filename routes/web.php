@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceCorrectionController;
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AttendancePolicyController;
 use App\Http\Controllers\AttendanceReconciliationController;
 use App\Http\Controllers\AttendanceHolidayController;
@@ -138,6 +139,11 @@ Route::middleware('auth')->group(function () {
         Route::post('attendance/leaves', [EmployeeLeaveController::class, 'store'])->name('attendance.leaves.store');
         Route::put('attendance/leaves/{leave}/approve', [EmployeeLeaveController::class, 'approve'])->name('attendance.leaves.approve');
         Route::put('attendance/leaves/{leave}/reject', [EmployeeLeaveController::class, 'reject'])->name('attendance.leaves.reject');
+    });
+
+    // ---- Audit log ----
+    Route::middleware('can:audit.view')->group(function () {
+        Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit.logs.index');
     });
 
     // ---- Payroll periods ----

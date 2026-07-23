@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AttendanceMachine;
 use App\Models\Employee;
 use App\Services\Biometric\BiometricProvisioningService;
+use App\Support\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -47,7 +48,7 @@ class BiometricProvisioningController extends Controller
 
         $result = $this->service->copy($device, $targets, $employees);
 
-        return $this->flash($device, $result, __('app.provision.copied_summary', [
+        return $this->flash($device, $result, 'biometric.copied', $employees, __('app.provision.copied_summary', [
             'written' => $result['written'] ?? 0,
             'templates' => $result['templates'] ?? 0,
             'devices' => $result['targets'] ?? 0,
@@ -60,7 +61,7 @@ class BiometricProvisioningController extends Controller
 
         $result = $this->service->move($device, $targets, $employees);
 
-        return $this->flash($device, $result, __('app.provision.moved_summary', [
+        return $this->flash($device, $result, 'biometric.moved', $employees, __('app.provision.moved_summary', [
             'written' => $result['written'] ?? 0,
             'templates' => $result['templates'] ?? 0,
             'devices' => $result['targets'] ?? 0,
@@ -74,7 +75,7 @@ class BiometricProvisioningController extends Controller
 
         $result = $this->service->delete($device, $employees);
 
-        return $this->flash($device, $result, __('app.provision.deleted_summary', [
+        return $this->flash($device, $result, 'biometric.deleted', $employees, __('app.provision.deleted_summary', [
             'deleted' => $result['deleted'] ?? 0,
         ]));
     }
@@ -110,8 +111,9 @@ class BiometricProvisioningController extends Controller
 
     /**
      * @param  array<string, mixed>  $result
+     * @param  Collection<int, Employee>  $employees
      */
-    private function flash(AttendanceMachine $device, array $result, string $success): RedirectResponse
+    private function flash(AttendanceMachine $device, array $result, string $action, Collection $employees, string $success): RedirectResponse
     {
         $redirect = redirect()->route('devices.provision', $device);
 
@@ -129,6 +131,13 @@ class BiometricProvisioningController extends Controller
         if (! empty($result['source_error'])) {
             return $redirect->with('error', __('app.provision.source_not_cleared', ['error' => $result['source_error']]));
         }
+
+        // A biometric write to real hardware succeeded — record who did what.
+        AuditLogger::record($action, $device, $device->device_name, [
+            'employees' => $employees->count(),
+            'written' => $result['written'] ?? $result['deleted'] ?? 0,
+            'templates' => $result['templates'] ?? null,
+        ]);
 
         if (! empty($result['missing'])) {
             $success .= ' '.__('app.provision.missing_note', ['count' => $result['missing']]);

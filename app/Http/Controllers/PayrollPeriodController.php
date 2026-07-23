@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use App\Models\PayrollPeriod;
 use App\Services\Attendance\PayrollPeriodService;
+use App\Support\AuditLogger;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -53,12 +54,20 @@ class PayrollPeriodController extends Controller
     {
         $period->update(['status' => 'locked', 'locked_at' => now(), 'locked_by' => request()->user()->id]);
 
+        AuditLogger::record('payroll.locked', $period, $period->label(), [
+            'company' => $period->company?->name_en,
+        ]);
+
         return back()->with('status', __('app.pay.locked_notice', ['period' => $period->label()]));
     }
 
     public function unlock(PayrollPeriod $period): RedirectResponse
     {
         $period->update(['status' => 'open', 'locked_at' => null, 'locked_by' => null]);
+
+        AuditLogger::record('payroll.unlocked', $period, $period->label(), [
+            'company' => $period->company?->name_en,
+        ]);
 
         return back()->with('status', __('app.pay.unlocked_notice', ['period' => $period->label()]));
     }
