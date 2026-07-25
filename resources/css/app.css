@@ -3773,3 +3773,133 @@ thead .matrix-name-col {
         min-height: 108px;
     }
 }
+
+/* ---- Employee attendance section ---- */
+.att-rate-card {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 20px 22px;
+    margin-bottom: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+}
+
+.att-rate-ring {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 96px;
+    height: 96px;
+    flex: 0 0 96px;
+    border-radius: 50%;
+    background: conic-gradient(var(--ring-color, #10b981) var(--rate, 0deg), var(--surface-soft) 0);
+}
+
+.att-rate-ring::before {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border-radius: 50%;
+    background: var(--card);
+}
+
+.att-rate-ring strong {
+    position: relative;
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+
+.att-rate-meta { min-width: 0; }
+.att-rate-meta .att-rate-label { display: block; color: var(--muted); font-size: .82rem; font-weight: 700; }
+.att-rate-meta h2 { margin: 4px 0 6px; font-size: 1.15rem; font-weight: 800; }
+.att-rate-meta p { margin: 0; color: var(--muted); font-size: .84rem; }
+
+.att-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.att-preset {
+    padding: 7px 14px;
+    color: var(--muted);
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: .82rem;
+    font-weight: 700;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.att-preset:hover { color: var(--text); border-color: var(--border-strong); }
+.att-preset.active { color: #fff; background: var(--primary); border-color: var(--primary); }
+
+.att-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.att-metric {
+    position: relative;
+    overflow: hidden;
+    padding: 16px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.att-metric:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+
+.att-metric::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 4px;
+    background: var(--m, #94a3b8);
+}
+
+.att-metric .att-metric-label { display: block; color: var(--muted); font-size: .78rem; font-weight: 700; }
+.att-metric .att-metric-value { display: block; margin-top: 8px; font-size: 1.9rem; font-weight: 800; line-height: 1; color: var(--m, var(--text)); }
+
+.att-avatar {
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border-radius: 50%;
+    color: #fff;
+    background: var(--primary);
+    font-size: .82rem;
+    font-weight: 800;
+}
+
+.att-print-form { display: flex; align-items: center; gap: 8px; }
+.att-print-form input[type='month'] {
+    min-height: 40px;
+    padding: 8px 12px;
+    color: var(--text);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font: inherit;
+    font-size: .88rem;
+}
+.att-print-form .primary-button { min-height: 40px; padding: 10px 18px; font-size: .9rem; }
+
+.att-name-cell { display: flex; align-items: center; gap: 11px; }
+.att-name-cell .cell-name { display: block; }
+.att-name-cell small { display: block; color: var(--muted); font-size: .74rem; }
+
+@media (max-width: 620px) {
+    .att-rate-card { flex-direction: column; align-items: flex-start; }
+}

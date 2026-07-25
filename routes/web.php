@@ -102,6 +102,8 @@ Route::middleware('auth')->group(function () {
 
     // ---- Attendance ----
     Route::middleware('can:attendance.view')->group(function () {
+        Route::get('attendance/employee/{employee}/print', [AttendanceController::class, 'printReport'])->name('attendance.employee.print');
+        Route::get('attendance/employee/{employee}', [AttendanceController::class, 'employee'])->name('attendance.employee');
         Route::get('attendance/matrix', [AttendanceController::class, 'matrix'])->name('attendance.matrix');
         Route::get('attendance/report', [AttendanceController::class, 'report'])->name('attendance.report');
         Route::get('attendance/exceptions', [AttendanceController::class, 'exceptions'])->name('attendance.exceptions');

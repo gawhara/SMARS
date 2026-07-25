@@ -35,77 +35,140 @@ class AttendanceController extends Controller
     {
     }
 
+    /**
+     * Punch log = an employee directory. Each row opens that employee's own
+     * attendance page (all punches + an absence/leave dashboard).
+     */
     public function index(Request $request): View|StreamedResponse
     {
         if ($request->input('export') === 'csv') {
             return $this->exportPunchesCsv($this->punchQuery($request)->with(['employee', 'machine'])->get());
         }
 
-        $dailyRows = AttendanceDailySummary::query()
-            ->with(['employee.company', 'employee.shift'])
-            ->whereHas('employee', function ($employeeQuery) use ($request): void {
-                $employeeQuery
-                    ->when($request->filled('employee_id'), fn ($q) => $q->whereKey($request->integer('employee_id')))
-                    ->when($request->filled('company_id'), fn ($q) => $q->where('company_id', $request->integer('company_id')))
-                    ->when($request->filled('search'), function ($q) use ($request): void {
-                        $search = trim((string) $request->string('search'));
-                        $q->where(fn ($names) => $names
-                            ->where('name_ar', 'like', "%{$search}%")
-                            ->orWhere('name_en', 'like', "%{$search}%")
-                            ->orWhere('employee_code', 'like', "%{$search}%")
-                            ->orWhere('hr_employee_id', 'like', "%{$search}%"));
-                    });
+        $employees = Employee::query()
+            ->with(['company', 'department'])
+            ->when($request->filled('company_id'), fn ($q) => $q->where('company_id', $request->integer('company_id')))
+            ->when($request->filled('search'), function ($q) use ($request): void {
+                $search = trim((string) $request->string('search'));
+                $q->where(fn ($names) => $names
+                    ->where('name_ar', 'like', "%{$search}%")
+                    ->orWhere('name_en', 'like', "%{$search}%")
+                    ->orWhere('employee_code', 'like', "%{$search}%")
+                    ->orWhere('hr_employee_id', 'like', "%{$search}%"));
             })
-            ->when($request->input('match') === 'unmatched', fn ($q) => $q->whereRaw('1 = 0'))
-            ->when($request->filled('date_from'), fn ($q) => $q->whereDate('attendance_date', '>=', $request->date('date_from')))
-            ->when($request->filled('date_to'), fn ($q) => $q->whereDate('attendance_date', '<=', $request->date('date_to')))
-            ->when($request->filled('machine_id') || $request->filled('time_from') || $request->filled('time_to'), function ($q) use ($request): void {
-                $q->whereExists(function ($records) use ($request): void {
-                    $records->selectRaw('1')
-                        ->from('attendance_records as filtered_punches')
-                        ->whereNull('filtered_punches.deleted_at')
-                        ->whereColumn('filtered_punches.employee_id', 'attendance_daily_summaries.employee_id')
-                        ->whereRaw('DATE(filtered_punches.punch_at) = attendance_daily_summaries.attendance_date')
-                        ->when($request->filled('machine_id'), fn ($p) => $p->where('filtered_punches.attendance_machine_id', $request->integer('machine_id')))
-                        ->when($request->filled('time_from'), fn ($p) => $p->whereTime('filtered_punches.punch_at', '>=', $request->input('time_from')))
-                        ->when($request->filled('time_to'), fn ($p) => $p->whereTime('filtered_punches.punch_at', '<=', $request->input('time_to')));
-                });
-            })
-            ->orderByDesc('attendance_date')
-            ->orderBy('employee_id')
-            ->paginate(20)
+            ->orderBy('name_en')
+            ->paginate(24)
             ->withQueryString();
 
-        $employeeIds = $dailyRows->getCollection()->pluck('employee_id')->unique();
-        $dates = $dailyRows->getCollection()->pluck('attendance_date');
-        $dayPunches = $dates->isEmpty() ? collect() : AttendanceRecord::query()
-            ->whereIn('employee_id', $employeeIds)
-            ->whereDate('punch_at', '>=', $dates->min())
-            ->whereDate('punch_at', '<=', $dates->max())
-            ->orderBy('punch_at')
-            ->get()
-            ->groupBy(fn (AttendanceRecord $record) => $record->employee_id.'|'.$record->punch_at->toDateString());
-
-        $dailyRows->getCollection()->transform(function (AttendanceDailySummary $summary) use ($dayPunches): AttendanceDailySummary {
-            $punches = $dayPunches->get($summary->employee_id.'|'.$summary->attendance_date->toDateString(), collect());
-            $summary->setAttribute('matched_periods', $this->shiftPunchMatcher->match($summary->employee, $summary->attendance_date, $punches));
-
-            return $summary;
-        });
-
-        $stats = [
-            'total' => AttendanceRecord::count(),
-            'matched' => AttendanceRecord::matched()->count(),
-            'unmatched' => AttendanceRecord::unmatched()->count(),
-            'today' => AttendanceRecord::whereDate('punch_at', today())->count(),
-        ];
-
         return view('attendance.index', [
-            'dailyRows' => $dailyRows,
-            'stats' => $stats,
+            'employees' => $employees,
             'companies' => Company::orderBy('name_en')->get(),
-            'machines' => AttendanceMachine::orderBy('device_name')->get(),
-            'employees' => Employee::orderBy('name_en')->get(['id', 'name_ar', 'name_en', 'employee_code', 'hr_employee_id']),
+            'stats' => [
+                'employees' => Employee::count(),
+                'total' => AttendanceRecord::count(),
+                'today' => AttendanceRecord::whereDate('punch_at', today())->count(),
+                'unmatched' => AttendanceRecord::unmatched()->count(),
+            ],
+        ]);
+    }
+
+    /**
+     * A single employee's attendance: an absence/leave dashboard for the selected
+     * period plus the day-by-day punch record, both driven by the date filter.
+     */
+    public function employee(Request $request, Employee $employee, AttendanceReportService $reportService): View
+    {
+        $employee->loadMissing(['company', 'department', 'shift']);
+
+        $defaultFrom = $employee->start_date ? Carbon::parse($employee->start_date) : Carbon::now()->startOfMonth();
+        $from = $this->resolveDate($request->input('date_from'), $defaultFrom);
+        $to = $this->resolveDate($request->input('date_to'), Carbon::now());
+
+        if ($from->gt($to)) {
+            [$from, $to] = [$to, $from];
+        }
+
+        $records = AttendanceRecord::query()
+            ->where('employee_id', $employee->id)
+            ->whereBetween('punch_at', [$from->copy()->startOfDay(), $to->copy()->endOfDay()])
+            ->get(['employee_id', 'punch_at', 'punch_type']);
+
+        $holidays = AttendanceHoliday::where('is_active', true)->whereBetween('holiday_date', [$from, $to])->get();
+        $leaves = EmployeeLeaveRequest::where('status', 'approved')
+            ->where('employee_id', $employee->id)
+            ->whereDate('start_date', '<=', $to)
+            ->whereDate('end_date', '>=', $from)
+            ->orderByDesc('start_date')
+            ->get();
+
+        $summary = $reportService->build($from, $to, collect([$employee]), $records, $holidays, $leaves)[0];
+
+        $days = AttendanceDailySummary::where('employee_id', $employee->id)
+            ->whereBetween('attendance_date', [$from, $to])
+            ->orderByDesc('attendance_date')
+            ->paginate(31)
+            ->withQueryString();
+
+        return view('attendance.employee', [
+            'employee' => $employee,
+            'from' => $from,
+            'to' => $to,
+            'summary' => $summary,
+            'days' => $days,
+            'leaves' => $leaves,
+        ]);
+    }
+
+    /**
+     * Printable monthly attendance sheet for one employee: every calendar day of
+     * the month with its status and in/out times, plus a summary.
+     */
+    public function printReport(Request $request, Employee $employee, AttendanceMatrixService $matrix): View
+    {
+        $employee->loadMissing(['company', 'department', 'shift']);
+
+        $month = $this->resolveMonth($request->input('month'));
+        $start = $month->copy()->startOfMonth();
+        $end = $month->copy()->endOfMonth();
+
+        $records = AttendanceRecord::query()
+            ->where('employee_id', $employee->id)
+            ->whereBetween('punch_at', [$start->copy()->startOfDay(), $end->copy()->endOfDay()])
+            ->get(['employee_id', 'punch_at', 'punch_type']);
+
+        $holidays = AttendanceHoliday::where('is_active', true)->whereBetween('holiday_date', [$start, $end])->get();
+        $leaves = EmployeeLeaveRequest::where('status', 'approved')
+            ->where('employee_id', $employee->id)
+            ->whereDate('start_date', '<=', $end)
+            ->whereDate('end_date', '>=', $start)
+            ->get();
+
+        $grid = $matrix->build($month, collect([$employee]), $records, $holidays, $leaves)[$employee->id];
+
+        $daily = AttendanceDailySummary::where('employee_id', $employee->id)
+            ->whereBetween('attendance_date', [$start, $end])
+            ->get()
+            ->keyBy(fn ($s) => $s->attendance_date->toDateString());
+
+        $rows = [];
+        for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+            $rows[] = [
+                'date' => $date->copy(),
+                'status' => $grid['days'][$date->day] ?? 'future',
+                'summary' => $daily->get($date->toDateString()),
+            ];
+        }
+
+        $counts = $grid['summary'];
+        $expected = $counts['present'] + $counts['late'] + $counts['absent'];
+
+        return view('attendance.employee-print', [
+            'employee' => $employee,
+            'month' => $start,
+            'rows' => $rows,
+            'summary' => $counts,
+            'workedHours' => round((int) $daily->sum('worked_minutes') / 60, 1),
+            'rate' => $expected > 0 ? (int) round(($counts['present'] + $counts['late']) / $expected * 100) : 100,
         ]);
     }
 
