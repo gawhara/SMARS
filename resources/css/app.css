@@ -3261,6 +3261,63 @@ thead .matrix-name-col {
     margin-top: 18px;
 }
 
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.pagination-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 13px;
+    color: var(--muted);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pagination-link:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow);
+}
+
+.pagination-link.active {
+    color: #fff;
+    background: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.12);
+}
+
+.pagination-link.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.pagination-link.dots {
+    background: transparent;
+    border-color: transparent;
+    pointer-events: none;
+}
+
+.pagination-nav {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+[dir='rtl'] .pagination-nav {
+    transform: scaleX(-1);
+}
+
 .stretched-link::after {
     position: absolute;
     inset: 0;
@@ -3899,6 +3956,8 @@ thead .matrix-name-col {
 .att-name-cell { display: flex; align-items: center; gap: 11px; }
 .att-name-cell .cell-name { display: block; }
 .att-name-cell small { display: block; color: var(--muted); font-size: .74rem; }
+.att-name-cell .device-icon { width: 34px; height: 34px; flex: 0 0 34px; border-radius: 9px; }
+.att-name-cell .device-icon-svg { width: 18px; height: 18px; }
 
 @media (max-width: 620px) {
     .att-rate-card { flex-direction: column; align-items: flex-start; }

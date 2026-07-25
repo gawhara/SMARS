@@ -97,6 +97,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('devices', BiometricDeviceController::class)->parameter('devices', 'device')->only(['create', 'store', 'edit', 'update', 'destroy']);
     });
     Route::middleware('can:devices.view')->group(function () {
+        Route::get('devices/{device}/punches', [BiometricDeviceController::class, 'punches'])->name('devices.punches');
         Route::resource('devices', BiometricDeviceController::class)->parameter('devices', 'device')->only(['index', 'show']);
     });
 

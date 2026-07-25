@@ -72,63 +72,68 @@
     </section>
 
     @if ($devices->count())
-        <div class="device-grid">
-            @foreach ($devices as $device)
-                @php $st = $device->displayStatus(); @endphp
-                <article class="device-card status-{{ $st }}">
-                    <div class="device-card-top">
-                        <span class="device-icon">@include('partials.icon', ['name' => 'fingerprint', 'class' => 'device-icon-svg'])</span>
-                        <div class="device-card-title">
-                            <a href="{{ route('devices.show', $device) }}">{{ $device->device_name }}</a>
-                            <small>{{ $device->device_model }}</small>
-                        </div>
-                        <span class="status-badge {{ $tone[$st] ?? 'muted' }}">
-                            <span class="status-dot" aria-hidden="true"></span>{{ __('app.device.status_'.$st) }}
-                        </span>
-                    </div>
-
-                    <dl class="device-meta">
-                        <div>
-                            <dt>{{ __('app.device.connection_type') }}</dt>
-                            <dd>{{ __('app.device.connection_'.$device->connection_type) }}</dd>
-                        </div>
-                        <div>
-                            <dt>{{ __('app.device.target') }}</dt>
-                            <dd dir="ltr">{{ $device->connectionTarget() }}</dd>
-                        </div>
-                        <div>
-                            <dt>{{ __('app.company') }}</dt>
-                            <dd>{{ $device->company?->localizedName() ?? __('app.none') }}</dd>
-                        </div>
-                        <div>
-                            <dt>{{ __('app.device.last_success') }}</dt>
-                            <dd>{{ optional($device->last_successful_connection_at)->format('Y-m-d H:i') ?? __('app.device.never') }}</dd>
-                        </div>
-                    </dl>
-
-                    <div class="device-card-actions">
-                        @can('devices.manage')
-                            <form method="POST" action="{{ route('devices.sync', $device) }}">
-                                @csrf
-                                <button class="primary-button" type="submit">{{ __('app.device.sync_now_readonly') }}</button>
-                            </form>
-                            <form method="POST" action="{{ route('devices.test', $device) }}">
-                                @csrf
-                                <button class="ghost-button" type="submit">{{ __('app.device.test_connection') }}</button>
-                            </form>
-                            <a class="ghost-button" href="{{ route('devices.edit', $device) }}">{{ __('app.edit') }}</a>
-                            <form method="POST" action="{{ route('devices.destroy', $device) }}" onsubmit="return confirm('{{ __('app.confirm_delete') }}')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="danger-button" type="submit">{{ __('app.delete') }}</button>
-                            </form>
-                        @else
-                            <a class="ghost-button" href="{{ route('devices.show', $device) }}">{{ __('app.view') }}</a>
-                        @endcan
-                    </div>
-                </article>
-            @endforeach
-        </div>
+        <section class="panel">
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>{{ __('app.device.device_name') }}</th>
+                            <th>{{ __('app.status') }}</th>
+                            <th>{{ __('app.device.connection_type') }}</th>
+                            <th>{{ __('app.device.target') }}</th>
+                            <th>{{ __('app.company') }}</th>
+                            <th>{{ __('app.device.last_success') }}</th>
+                            <th>{{ __('app.actions') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($devices as $device)
+                            @php $st = $device->displayStatus(); @endphp
+                            <tr>
+                                <td>
+                                    <div class="att-name-cell">
+                                        <span class="device-icon">@include('partials.icon', ['name' => 'fingerprint', 'class' => 'device-icon-svg'])</span>
+                                        <div>
+                                            <a class="cell-name" href="{{ route('devices.punches', $device) }}">{{ $device->device_name }}</a>
+                                            <small>{{ $device->device_model }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge {{ $tone[$st] ?? 'muted' }}">
+                                        <span class="status-dot" aria-hidden="true"></span>{{ __('app.device.status_'.$st) }}
+                                    </span>
+                                </td>
+                                <td>{{ __('app.device.connection_'.$device->connection_type) }}</td>
+                                <td dir="ltr">{{ $device->connectionTarget() }}</td>
+                                <td>{{ $device->company?->localizedName() ?? __('app.none') }}</td>
+                                <td><bdi dir="ltr">{{ optional($device->last_successful_connection_at)->format('Y-m-d H:i') ?? __('app.device.never') }}</bdi></td>
+                                <td class="table-actions">
+                                    @can('devices.manage')
+                                        <form method="POST" action="{{ route('devices.sync', $device) }}">
+                                            @csrf
+                                            <button class="ghost-button" type="submit">{{ __('app.device.sync_now_readonly') }}</button>
+                                        </form>
+                                        <form method="POST" action="{{ route('devices.test', $device) }}">
+                                            @csrf
+                                            <button class="ghost-button" type="submit">{{ __('app.device.test_connection') }}</button>
+                                        </form>
+                                        <a class="ghost-button" href="{{ route('devices.edit', $device) }}">{{ __('app.edit') }}</a>
+                                        <form method="POST" action="{{ route('devices.destroy', $device) }}" onsubmit="return confirm('{{ __('app.confirm_delete') }}')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="danger-button" type="submit">{{ __('app.delete') }}</button>
+                                        </form>
+                                    @else
+                                        <a class="ghost-button" href="{{ route('devices.show', $device) }}">{{ __('app.view') }}</a>
+                                    @endcan
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </section>
         <div class="company-grid-pagination">{{ $devices->links() }}</div>
     @else
         <section class="panel empty-state">

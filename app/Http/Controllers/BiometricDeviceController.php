@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AttendanceMachineRequest;
 use App\Models\AttendanceMachine;
+use App\Models\AttendanceRecord;
 use App\Models\Branch;
 use App\Models\Company;
 use Illuminate\Http\RedirectResponse;
@@ -48,7 +49,7 @@ class BiometricDeviceController extends Controller
 
     public function create(): View
     {
-        return view('devices.form', $this->formData(new AttendanceMachine(['is_active' => true, 'connection_type' => 'lan', 'port' => 4370, 'device_model' => 'ZKTeco MB1000', 'timezone' => 'Asia/Riyadh'])));
+        return view('devices.form', $this->formData(new AttendanceMachine(['is_active' => true, 'automatic_sync_enabled' => true, 'connection_type' => 'lan', 'port' => 4370, 'device_model' => 'ZKTeco MB1000', 'timezone' => 'Asia/Riyadh'])));
     }
 
     public function store(AttendanceMachineRequest $request): RedirectResponse
@@ -56,6 +57,44 @@ class BiometricDeviceController extends Controller
         $device = AttendanceMachine::create($this->payload($request));
 
         return redirect()->route('devices.show', $device)->with('status', __('app.saved_successfully'));
+    }
+
+    /**
+     * Raw punches read from this device, newest first, with filters.
+     */
+    public function punches(Request $request, AttendanceMachine $device): View
+    {
+        $base = AttendanceRecord::where('attendance_machine_id', $device->id);
+
+        $records = (clone $base)
+            ->with('employee')
+            ->when($request->input('match') === 'matched', fn ($q) => $q->matched())
+            ->when($request->input('match') === 'unmatched', fn ($q) => $q->unmatched())
+            ->when($request->filled('date_from'), fn ($q) => $q->whereDate('punch_at', '>=', $request->date('date_from')))
+            ->when($request->filled('date_to'), fn ($q) => $q->whereDate('punch_at', '<=', $request->date('date_to')))
+            ->when($request->filled('search'), function ($q) use ($request): void {
+                $search = trim((string) $request->string('search'));
+                $q->where(fn ($w) => $w
+                    ->where('device_user_id', 'like', "%{$search}%")
+                    ->orWhereHas('employee', fn ($e) => $e
+                        ->where('name_ar', 'like', "%{$search}%")
+                        ->orWhere('name_en', 'like', "%{$search}%")
+                        ->orWhere('employee_code', 'like', "%{$search}%")));
+            })
+            ->orderByDesc('punch_at')
+            ->paginate(50)
+            ->withQueryString();
+
+        return view('devices.punches', [
+            'device' => $device,
+            'records' => $records,
+            'stats' => [
+                'total' => (clone $base)->count(),
+                'matched' => (clone $base)->matched()->count(),
+                'unmatched' => (clone $base)->unmatched()->count(),
+                'last' => (clone $base)->max('punch_at'),
+            ],
+        ]);
     }
 
     public function show(AttendanceMachine $device): View

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\User;
 use App\Support\PermissionCatalog;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -23,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerAuthorization();
+
+        Paginator::defaultView('vendor.pagination.smars');
+        Paginator::defaultSimpleView('vendor.pagination.smars');
     }
 
     /**
