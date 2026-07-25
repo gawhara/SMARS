@@ -149,12 +149,15 @@ class ZktecoReadOnlySyncService
             return $batch;
         });
 
-        $records = AttendanceRecord::where('sync_batch_id', $batch->id)->matched()->get();
-        $this->summaries->rebuildForRecords($records);
+        $batchRecords = AttendanceRecord::where('sync_batch_id', $batch->id)->get();
+        // Only matched punches need a daily summary (rebuildForRecords ignores the rest).
+        $this->summaries->rebuildForRecords($batchRecords);
 
-        // Advance the high-water mark only when newer punches arrived, so a run that
-        // imports nothing never clears it (which would re-widen the next window).
-        $newMax = $records->max('punch_at');
+        // Advance the high-water mark to the newest punch imported — matched OR
+        // unmatched — so the next sync's window starts after everything already
+        // pulled and never re-fetches unmatched punches. A run that imports nothing
+        // leaves the mark untouched.
+        $newMax = $batchRecords->max('punch_at');
         $lastAttendance = ($newMax && (! $since || $newMax->gt($since))) ? $newMax : $device->last_attendance_at;
 
         $device->forceFill([
@@ -168,21 +171,32 @@ class ZktecoReadOnlySyncService
     }
 
     /**
-     * The incremental lower bound: the later of the device's last synced punch and
-     * the configured minimum date. On a first sync this is the minimum date; after
-     * that it advances to the last punch, so each sync only pulls what is new.
+     * The incremental lower bound — always the latest of:
+     *   - the last punch already stored for this device (self-correcting, so the
+     *     sync stays incremental even if the cached mark is missing/stale),
+     *   - the device's cached last-synced punch,
+     *   - the configured minimum date (first-ever sync only).
+     *
+     * Because it is never below the last stored punch, the sync always pulls only
+     * what is new and never re-imports the whole history.
      */
     private function syncFloor(AttendanceMachine $device): ?Carbon
     {
-        $since = $device->last_attendance_at ? Carbon::parse($device->last_attendance_at) : null;
-        $minDate = config('services.zkteco.min_punch_date')
-            ? Carbon::parse(config('services.zkteco.min_punch_date'))->startOfDay()
-            : null;
+        $candidates = collect();
 
-        if ($since && $minDate) {
-            return $since->gt($minDate) ? $since : $minDate;
+        $lastStored = AttendanceRecord::where('attendance_machine_id', $device->id)->max('punch_at');
+        if ($lastStored) {
+            $candidates->push(Carbon::parse($lastStored));
         }
 
-        return $since ?? $minDate;
+        if ($device->last_attendance_at) {
+            $candidates->push(Carbon::parse($device->last_attendance_at));
+        }
+
+        if (config('services.zkteco.min_punch_date')) {
+            $candidates->push(Carbon::parse(config('services.zkteco.min_punch_date'))->startOfDay());
+        }
+
+        return $candidates->isEmpty() ? null : $candidates->max();
     }
 }

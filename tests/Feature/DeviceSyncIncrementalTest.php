@@ -89,6 +89,49 @@ class DeviceSyncIncrementalTest extends TestCase
         );
     }
 
+    public function test_stays_incremental_from_stored_punches_when_mark_is_missing(): void
+    {
+        $employee = $this->employee();
+        // Device has NO cached high-water mark, but already holds a stored punch.
+        $device = $this->device(null);
+        AttendanceRecord::create([
+            'employee_id' => $employee->id,
+            'attendance_machine_id' => $device->id,
+            'device_user_id' => 'HR-1',
+            'punch_at' => now()->subDays(2),
+            'punch_type' => 'in',
+            'source' => 'device',
+        ]);
+
+        $batch = $this->service()->importRecords($device, [
+            $this->row(now()->subDays(10)->toDateTimeString()), // older than the stored punch -> skipped
+            $this->row(now()->subDay()->toDateTimeString()),    // newer -> imported
+        ]);
+
+        // Floor came from the stored punch, not the min-date, so it did not
+        // re-import the older row.
+        $this->assertSame(1, $batch->imported_count);
+    }
+
+    public function test_high_water_mark_advances_even_when_newest_punch_is_unmatched(): void
+    {
+        $this->employee(); // HR-1 exists (matched)
+        $device = $this->device(now()->subDays(5)->toDateTimeString());
+
+        $this->service()->importRecords($device, [
+            $this->row(now()->subDays(3)->toDateTimeString()), // matched, older
+            // Newest punch belongs to a device user with no employee record.
+            ['device_user_id' => 'GHOST-9', 'punch_at' => now()->subDay()->toDateTimeString(), 'punch_type' => '0', 'verification_type' => '1'],
+        ]);
+
+        // The mark must advance to the unmatched newest punch, so the next sync
+        // does not re-fetch it every time.
+        $this->assertSame(
+            now()->subDay()->toDateString(),
+            $device->fresh()->last_attendance_at->toDateString(),
+        );
+    }
+
     public function test_duplicate_punches_are_skipped_on_reimport(): void
     {
         $this->employee();
