@@ -16,8 +16,12 @@ Every response is a single JSON object on stdout: {"ok": bool, ...}.
 import argparse
 import base64
 import json
+import os
 import sys
 
+# Use the project-vendored pyzk so the import never depends on the interpreter's
+# site-packages (system, user, or service accounts all work).
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vendor'))
 from zk import ZK
 from zk.finger import Finger
 

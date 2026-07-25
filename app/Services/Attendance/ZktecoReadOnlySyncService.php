@@ -24,15 +24,26 @@ class ZktecoReadOnlySyncService
 
     public function sync(AttendanceMachine $device, ?int $userId = null): AttendanceSyncBatch
     {
-        $process = new Process([
-            config('services.zkteco.python'),
+        // Incremental: ask the device script to return only punches at/after the
+        // floor (last sync, or the minimum date on a first sync), so repeat syncs
+        // transfer a tiny payload instead of the whole history.
+        $floor = $this->syncFloor($device);
+
+        $args = [
+            \App\Support\PythonInterpreter::resolve(),
             base_path('scripts/zkteco_readonly_sync.py'),
             '--ip', (string) $device->host(),
             '--port', (string) $device->port,
             '--comm-key', (string) $device->comm_key,
             '--timeout', '8',
-        ]);
-        $process->setTimeout(30);
+        ];
+        if ($floor) {
+            $args[] = '--since';
+            $args[] = $floor->format('Y-m-d H:i:s');
+        }
+
+        $process = new Process($args, null, \App\Support\PythonInterpreter::processEnv());
+        $process->setTimeout(240); // a full device read of a busy device can take minutes
         $process->run();
         $data = json_decode($process->getOutput(), true);
 
@@ -56,8 +67,9 @@ class ZktecoReadOnlySyncService
     {
         $since = $device->last_attendance_at ? Carbon::parse($device->last_attendance_at) : null;
         $until = now();
+        $floor = $this->syncFloor($device);
 
-        $batch = DB::transaction(function () use ($rows, $device, $userId, $since, $until) {
+        $batch = DB::transaction(function () use ($rows, $device, $userId, $floor, $until) {
             $batch = AttendanceSyncBatch::create([
                 'source' => 'device',
                 'attendance_machine_id' => $device->id,
@@ -67,31 +79,51 @@ class ZktecoReadOnlySyncService
 
             $imported = $matched = $unmatched = $duplicate = 0;
 
-            foreach ($rows as $row) {
-                $at = Carbon::parse($row['punch_at']);
+            // Preload existing punch signatures for this device+window in one query
+            // so dedup is an in-memory lookup, and cache employee resolution so a
+            // large import hits the employees table once per user, not once per row.
+            $seen = [];
+            AttendanceRecord::where('attendance_machine_id', $device->id)
+                ->when($floor, fn ($q) => $q->where('punch_at', '>=', $floor))
+                ->where('punch_at', '<=', $until)
+                ->select('device_user_id', 'punch_at')
+                ->cursor()
+                ->each(function ($record) use (&$seen): void {
+                    $seen[$record->device_user_id.'|'.$record->punch_at->format('Y-m-d H:i:s')] = true;
+                });
 
-                // Incremental window: skip anything before the last sync or in the future.
-                if ($at->gt($until) || ($since && $at->lt($since))) {
+            $employeeCache = [];
+
+            foreach ($rows as $row) {
+                // Skip garbage rows the device sometimes reports (blank user id).
+                $deviceUserId = trim((string) ($row['device_user_id'] ?? ''));
+                if ($deviceUserId === '') {
                     continue;
                 }
 
-                $exists = AttendanceRecord::where('attendance_machine_id', $device->id)
-                    ->where('device_user_id', $row['device_user_id'])
-                    ->where('punch_at', $at)
-                    ->exists();
+                $at = Carbon::parse($row['punch_at']);
 
-                if ($exists) {
+                // Keep only punches within [floor .. now]; drop older/garbage/future.
+                if ($at->gt($until) || ($floor && $at->lt($floor))) {
+                    continue;
+                }
+
+                $key = $deviceUserId.'|'.$at->format('Y-m-d H:i:s');
+                if (isset($seen[$key])) {
                     $duplicate++;
 
                     continue;
                 }
 
-                $employee = $this->attendance->resolveEmployee($row['device_user_id']);
+                if (! array_key_exists($deviceUserId, $employeeCache)) {
+                    $employeeCache[$deviceUserId] = $this->attendance->resolveEmployee($deviceUserId);
+                }
+                $employee = $employeeCache[$deviceUserId];
 
                 AttendanceRecord::create([
                     'employee_id' => $employee?->id,
                     'attendance_machine_id' => $device->id,
-                    'device_user_id' => $row['device_user_id'],
+                    'device_user_id' => $deviceUserId,
                     'punch_at' => $at,
                     'punch_type' => $this->attendance->normalizePunchType($row['punch_type']),
                     'raw_punch_type' => $row['punch_type'],
@@ -102,6 +134,7 @@ class ZktecoReadOnlySyncService
                     'sync_batch_id' => $batch->id,
                 ]);
 
+                $seen[$key] = true;
                 $imported++;
                 $employee ? $matched++ : $unmatched++;
             }
@@ -132,5 +165,24 @@ class ZktecoReadOnlySyncService
         ])->save();
 
         return $batch;
+    }
+
+    /**
+     * The incremental lower bound: the later of the device's last synced punch and
+     * the configured minimum date. On a first sync this is the minimum date; after
+     * that it advances to the last punch, so each sync only pulls what is new.
+     */
+    private function syncFloor(AttendanceMachine $device): ?Carbon
+    {
+        $since = $device->last_attendance_at ? Carbon::parse($device->last_attendance_at) : null;
+        $minDate = config('services.zkteco.min_punch_date')
+            ? Carbon::parse(config('services.zkteco.min_punch_date'))->startOfDay()
+            : null;
+
+        if ($since && $minDate) {
+            return $since->gt($minDate) ? $since : $minDate;
+        }
+
+        return $since ?? $minDate;
     }
 }

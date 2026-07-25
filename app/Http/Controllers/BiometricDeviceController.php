@@ -113,6 +113,10 @@ class BiometricDeviceController extends Controller
 
     public function sync(AttendanceMachine $device, ZktecoReadOnlySyncService $service): RedirectResponse
     {
+        // A full device read can take a couple of minutes; don't let PHP kill it.
+        @set_time_limit(300);
+        ignore_user_abort(true);
+
         try { $batch=$service->sync($device,(int)request()->user()->id); return back()->with('status',__('app.device.sync_ok',['count'=>$batch->imported_count])); }
         catch (\Throwable $e) { return back()->with('error',__('app.device.sync_failed').': '.$e->getMessage()); }
     }
@@ -124,6 +128,10 @@ class BiometricDeviceController extends Controller
      */
     public function syncAll(ZktecoReadOnlySyncService $service): RedirectResponse
     {
+        // Reading several devices in a row can take minutes; keep the request alive.
+        @set_time_limit(0);
+        ignore_user_abort(true);
+
         $devices = AttendanceMachine::where('is_active', true)->get();
 
         if ($devices->isEmpty()) {

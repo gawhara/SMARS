@@ -43,6 +43,8 @@ return [
      */
     'zkteco' => [
         'python' => env('ZKTECO_PYTHON', 'python'),
+        // Ignore any device punch dated before this (drops garbage/old records).
+        'min_punch_date' => env('ZKTECO_MIN_PUNCH_DATE', '2025-01-01'),
     ],
 
 ];
