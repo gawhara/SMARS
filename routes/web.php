@@ -17,6 +17,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\PayrollDeductionController;
 use App\Http\Controllers\PayrollPeriodController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ShiftController;
@@ -149,9 +150,11 @@ Route::middleware('auth')->group(function () {
         Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit.logs.index');
     });
 
-    // ---- Payroll periods ----
+    // ---- Payroll periods + attendance deductions ----
     Route::middleware('can:payroll.view')->group(function () {
         Route::get('payroll/periods', [PayrollPeriodController::class, 'index'])->name('payroll.periods.index');
+        Route::get('payroll/deductions', [PayrollDeductionController::class, 'index'])->name('payroll.deductions.index');
+        Route::get('payroll/deductions/{employee}', [PayrollDeductionController::class, 'employee'])->name('payroll.deductions.employee');
     });
     Route::middleware('can:payroll.manage')->group(function () {
         Route::post('payroll/periods', [PayrollPeriodController::class, 'store'])->name('payroll.periods.store');

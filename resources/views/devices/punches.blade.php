@@ -20,6 +20,10 @@
                     @csrf
                     <button class="primary-button" type="submit">{{ __('app.device.sync_now_readonly') }}</button>
                 </form>
+                <form method="POST" action="{{ route('devices.test', $device) }}">
+                    @csrf
+                    <button class="ghost-button" type="submit">{{ __('app.device.test_connection') }}</button>
+                </form>
             @endcan
             <a class="ghost-button" href="{{ route('devices.show', $device) }}">{{ __('app.device.manage_device') }}</a>
             <a class="ghost-button" href="{{ route('devices.index') }}">{{ __('app.device.back_to_devices') }}</a>
@@ -73,7 +77,9 @@
                             <th>{{ __('app.enroll.device_user_id') }}</th>
                             <th>{{ __('app.device.punch_time') }}</th>
                             <th>{{ __('app.device.punch_type') }}</th>
+                            <th>{{ __('app.device.raw_code') }}</th>
                             <th>{{ __('app.device.verification') }}</th>
+                            <th>{{ __('app.device.source') }}</th>
                             <th>{{ __('app.status') }}</th>
                         </tr>
                     </thead>
@@ -90,7 +96,9 @@
                                 <td dir="ltr">{{ $record->device_user_id }}</td>
                                 <td><bdi dir="ltr">{{ $record->punch_at->format('Y-m-d H:i:s') }}</bdi></td>
                                 <td><span class="status-badge {{ $typeTone[$record->punch_type] ?? 'muted' }}">{{ __('app.att.punch_'.$record->punch_type) }}</span></td>
-                                <td dir="ltr">{{ $record->verification_type ?: __('app.none') }}</td>
+                                <td dir="ltr"><code class="raw-code">{{ $record->raw_punch_type ?? '—' }}</code></td>
+                                <td dir="ltr"><code class="raw-code">{{ $record->verification_type !== null && $record->verification_type !== '' ? $record->verification_type : '—' }}</code></td>
+                                <td dir="ltr">{{ $record->source ?: __('app.none') }}</td>
                                 <td>
                                     <span class="status-badge {{ $record->isMatched() ? 'success' : 'warning' }}">
                                         {{ $record->isMatched() ? __('app.att.matched') : __('app.att.unmatched') }}

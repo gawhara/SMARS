@@ -8,6 +8,8 @@
         <a class="pt-back" href="{{ route('attendance.employee', $employee) }}">{{ __('app.att.back_to_directory') }}</a>
     </div>
 
+    <div class="print-watermark" aria-hidden="true"><span>{{ $employee->localizedName() }}</span></div>
+
     <div class="print-sheet">
         <div class="print-head">
             <div>

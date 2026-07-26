@@ -9,13 +9,12 @@
             <h1>{{ __('app.att.directory_title') }}</h1>
             <p>{{ __('app.att.directory_intro') }}</p>
         </div>
-        <div class="table-actions">
-            <a class="ghost-button" href="{{ route('attendance.daily') }}">{{ __('app.att.open_daily') }}</a>
-            <a class="ghost-button" href="{{ route('attendance.matrix') }}">{{ __('app.att.open_matrix') }}</a>
-            <a class="ghost-button" href="{{ route('attendance.report') }}">{{ __('app.att.open_report') }}</a>
-            <a class="ghost-button" href="{{ route('attendance.exceptions') }}">{{ __('app.att.open_exceptions') }}</a>
-            <a class="primary-button" href="{{ route('attendance.create') }}">{{ __('app.att.add_manual') }}</a>
-        </div>
+        @can('attendance.manage')
+            <div class="table-actions">
+                <a class="ghost-button" href="{{ route('attendance.import.form') }}">{{ __('app.att.import') }}</a>
+                <a class="primary-button" href="{{ route('attendance.create') }}">{{ __('app.att.add_manual') }}</a>
+            </div>
+        @endcan
     </section>
 
     @include('partials.flash')

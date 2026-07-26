@@ -37,11 +37,30 @@
         .print-sign { display: flex; justify-content: space-between; margin-top: 40px; }
         .print-sign div { width: 40%; border-top: 1px solid #111827; padding-top: 6px; text-align: center; font-size: .82rem; color: #374151; }
         .print-foot { margin-top: 18px; color: #9ca3af; font-size: .72rem; text-align: center; }
+        .print-watermark {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .print-watermark span {
+            transform: rotate(-38deg);
+            white-space: nowrap;
+            font-size: 4.6rem;
+            font-weight: 900;
+            letter-spacing: 5px;
+            color: rgba(79, 70, 229, 0.07);
+            text-transform: uppercase;
+        }
         @media print {
             body.print-body { background: #fff; }
             .no-print { display: none !important; }
             .print-sheet { margin: 0; max-width: none; box-shadow: none; padding: 0; }
-            table.print-days th, .st { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            table.print-days th, .st, .print-watermark span { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             @page { size: A4; margin: 14mm; }
         }
     </style>

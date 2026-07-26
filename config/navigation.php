@@ -76,7 +76,16 @@ return [
         ],
         ['title' => 'biometric_devices', 'route' => 'devices.index', 'icon' => 'fingerprint', 'permission' => 'devices.view'],
         ['title' => 'leaves', 'route' => 'attendance.leaves.index', 'icon' => 'calendar', 'permission' => 'leaves.view', 'active' => 'attendance.leaves.*'],
-        ['title' => 'payroll', 'route' => 'payroll.periods.index', 'icon' => 'wallet', 'permission' => 'payroll.view'],
+        [
+            'title' => 'payroll',
+            'route' => null,
+            'icon' => 'wallet',
+            'permission' => 'payroll.view',
+            'children' => [
+                ['title' => 'deduct.periods', 'route' => 'payroll.periods.index', 'active' => 'payroll.periods.*', 'permission' => 'payroll.view'],
+                ['title' => 'deduct.title', 'route' => 'payroll.deductions.index', 'active' => 'payroll.deductions.*', 'permission' => 'payroll.view'],
+            ],
+        ],
         ['title' => 'reports', 'route' => null, 'icon' => 'chart', 'permission' => 'reports.view'],
         ['title' => 'users_roles', 'route' => null, 'icon' => 'shield', 'permission' => 'users.view'],
         ['title' => 'audit_logs', 'route' => 'audit.logs.index', 'icon' => 'history', 'permission' => 'audit.view'],

@@ -114,10 +114,6 @@
                                             @csrf
                                             <button class="ghost-button" type="submit">{{ __('app.device.sync_now_readonly') }}</button>
                                         </form>
-                                        <form method="POST" action="{{ route('devices.test', $device) }}">
-                                            @csrf
-                                            <button class="ghost-button" type="submit">{{ __('app.device.test_connection') }}</button>
-                                        </form>
                                         <a class="ghost-button" href="{{ route('devices.edit', $device) }}">{{ __('app.edit') }}</a>
                                         <form method="POST" action="{{ route('devices.destroy', $device) }}" onsubmit="return confirm('{{ __('app.confirm_delete') }}')">
                                             @csrf
@@ -125,7 +121,7 @@
                                             <button class="danger-button" type="submit">{{ __('app.delete') }}</button>
                                         </form>
                                     @else
-                                        <a class="ghost-button" href="{{ route('devices.show', $device) }}">{{ __('app.view') }}</a>
+                                        <a class="ghost-button" href="{{ route('devices.punches', $device) }}">{{ __('app.view') }}</a>
                                     @endcan
                                 </td>
                             </tr>

@@ -3940,6 +3940,9 @@ thead .matrix-name-col {
     font-weight: 800;
 }
 
+.shift-line { font-size: 0.82rem; color: var(--muted); white-space: nowrap; }
+.shift-line + .shift-line { margin-top: 3px; }
+
 .att-print-form { display: flex; align-items: center; gap: 8px; }
 .att-print-form input[type='month'] {
     min-height: 40px;
@@ -3952,6 +3955,19 @@ thead .matrix-name-col {
     font-size: .88rem;
 }
 .att-print-form .primary-button { min-height: 40px; padding: 10px 18px; font-size: .9rem; }
+
+.raw-code {
+    display: inline-block;
+    min-width: 26px;
+    padding: 2px 8px;
+    text-align: center;
+    color: var(--text);
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.82rem;
+}
 
 .att-name-cell { display: flex; align-items: center; gap: 11px; }
 .att-name-cell .cell-name { display: block; }
