@@ -17,7 +17,7 @@
                 <div class="muted">{{ __('app.att.monthly_report_title') }}</div>
             </div>
             <div style="text-align:end">
-                <h1><bdi dir="ltr">{{ $month->format('Y-m') }}</bdi></h1>
+                <h1><bdi dir="ltr">{{ $from->format('Y-m-d') }} → {{ $to->format('Y-m-d') }}</bdi></h1>
                 <div class="muted">{{ __('app.att.generated_at') }}: <bdi dir="ltr">{{ now()->format('Y-m-d H:i') }}</bdi></div>
             </div>
         </div>

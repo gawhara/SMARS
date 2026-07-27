@@ -89,11 +89,11 @@ class PayrollDeductionTest extends TestCase
             }
         }
 
-        $this->assertSame($workingDays * 540, $this->svc()->monthlyScheduledMinutes($e, $month, collect(), collect()));
+        $this->assertSame($workingDays * 540, $this->svc()->scheduledMinutes($e, $month->copy()->startOfMonth(), $month->copy()->endOfMonth(), collect(), collect()));
 
         // Add a holiday on a working day (2026-07-01 is a Wednesday) → one fewer day.
         $holiday = collect([AttendanceHoliday::create(['company_id' => null, 'name_ar' => 'ع', 'name_en' => 'H', 'holiday_date' => '2026-07-01', 'is_active' => true, 'is_paid' => true])]);
-        $this->assertSame(($workingDays - 1) * 540, $this->svc()->monthlyScheduledMinutes($e, $month, $holiday, collect()));
+        $this->assertSame(($workingDays - 1) * 540, $this->svc()->scheduledMinutes($e, $month->copy()->startOfMonth(), $month->copy()->endOfMonth(), $holiday, collect()));
     }
 
     public function test_scheduled_minutes_respect_join_date(): void
@@ -110,6 +110,6 @@ class PayrollDeductionTest extends TestCase
             }
         }
 
-        $this->assertSame($daysAfterJoin * 540, $this->svc()->monthlyScheduledMinutes($e, $month, collect(), collect()));
+        $this->assertSame($daysAfterJoin * 540, $this->svc()->scheduledMinutes($e, $month->copy()->startOfMonth(), $month->copy()->endOfMonth(), collect(), collect()));
     }
 }

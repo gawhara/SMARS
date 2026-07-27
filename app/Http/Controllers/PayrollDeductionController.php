@@ -19,18 +19,19 @@ class PayrollDeductionController extends Controller
 
     public function index(Request $request): View
     {
-        $month = $this->resolveMonth($request->input('month'));
+        [$from, $to] = $this->resolveRange($request);
         $companies = Company::orderBy('name_en')->get();
         $company = $request->filled('company_id')
             ? $companies->firstWhere('id', $request->integer('company_id'))
             : $companies->first();
 
-        $rows = $company ? $this->report->forCompany($company, $month) : collect();
+        $rows = $company ? $this->report->forCompany($company, $from, $to) : collect();
 
         return view('payroll.deductions.index', [
             'companies' => $companies,
             'company' => $company,
-            'month' => $month,
+            'from' => $from,
+            'to' => $to,
             'rows' => $rows,
             'totals' => [
                 'employees' => $rows->count(),
@@ -42,29 +43,46 @@ class PayrollDeductionController extends Controller
 
     public function employee(Request $request, Employee $employee): View
     {
-        $month = $this->resolveMonth($request->input('month'));
-        $start = $month->copy()->startOfMonth();
-        $end = $month->copy()->endOfMonth();
+        [$from, $to] = $this->resolveRange($request);
 
-        $holidays = AttendanceHoliday::where('is_active', true)->whereBetween('holiday_date', [$start, $end])->get();
+        $holidays = AttendanceHoliday::where('is_active', true)->whereBetween('holiday_date', [$from, $to])->get();
         $leaves = EmployeeLeaveRequest::where('status', 'approved')
             ->where('employee_id', $employee->id)
-            ->whereDate('start_date', '<=', $end)->whereDate('end_date', '>=', $start)
+            ->whereDate('start_date', '<=', $to)->whereDate('end_date', '>=', $from)
             ->get();
 
         return view('payroll.deductions.employee', [
-            'month' => $month,
-            'report' => $this->report->forEmployee($employee, $month, $holidays, $leaves),
+            'from' => $from,
+            'to' => $to,
+            'report' => $this->report->forEmployee($employee, $from, $to, $holidays, $leaves),
             'employee' => $employee,
         ]);
     }
 
-    private function resolveMonth(?string $value): Carbon
+    /**
+     * Resolve the pay period from date_from/date_to (any custom range, e.g. the
+     * 22nd to the 22nd), falling back to the current calendar month.
+     *
+     * @return array{0: Carbon, 1: Carbon}
+     */
+    private function resolveRange(Request $request): array
+    {
+        $from = $this->date($request->input('date_from'), Carbon::now()->startOfMonth());
+        $to = $this->date($request->input('date_to'), Carbon::now()->endOfMonth());
+
+        if ($from->gt($to)) {
+            [$from, $to] = [$to, $from];
+        }
+
+        return [$from->startOfDay(), $to->endOfDay()];
+    }
+
+    private function date(?string $value, Carbon $default): Carbon
     {
         try {
-            return $value ? Carbon::createFromFormat('Y-m', $value)->startOfMonth() : Carbon::now()->startOfMonth();
+            return $value ? Carbon::parse($value) : $default->copy();
         } catch (\Throwable) {
-            return Carbon::now()->startOfMonth();
+            return $default->copy();
         }
     }
 }

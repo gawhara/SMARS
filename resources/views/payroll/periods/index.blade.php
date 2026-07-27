@@ -67,6 +67,7 @@
                             </td>
                             <td>{{ optional($period->exported_at)->format('Y-m-d H:i') ?? __('app.pay.never') }}</td>
                             <td class="table-actions">
+                                <a class="ghost-button" href="{{ route('payroll.deductions.index', ['company_id' => $period->company_id, 'date_from' => \Carbon\Carbon::parse($period->period_month)->startOfMonth()->format('Y-m-d'), 'date_to' => \Carbon\Carbon::parse($period->period_month)->endOfMonth()->format('Y-m-d')]) }}">{{ __('app.deduct.title') }}</a>
                                 @can('payroll.manage')
                                     <a class="ghost-button" href="{{ route('payroll.periods.export', $period) }}">{{ __('app.pay.export') }}</a>
                                     @if ($period->isLocked())
@@ -80,8 +81,6 @@
                                             <button class="danger-button" type="submit">{{ __('app.pay.lock') }}</button>
                                         </form>
                                     @endif
-                                @else
-                                    <span class="muted-note">{{ __('app.none') }}</span>
                                 @endcan
                             </td>
                         </tr>

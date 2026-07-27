@@ -20,9 +20,11 @@
                     <option value="{{ $c->id }}" @selected($company && $company->id === $c->id)>{{ $c->localizedName() }}</option>
                 @endforeach
             </select>
-            <input type="month" name="month" value="{{ $month->format('Y-m') }}">
+            <input type="date" name="date_from" value="{{ $from->format('Y-m-d') }}" aria-label="{{ __('app.att.date_from') }}">
+            <input type="date" name="date_to" value="{{ $to->format('Y-m-d') }}" aria-label="{{ __('app.att.date_to') }}">
             <button class="primary-button" type="submit">{{ __('app.filters') }}</button>
         </form>
+        <p class="muted-note" style="margin:12px 0 0">{{ __('app.att.period_range', ['from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d')]) }}</p>
     </section>
 
     <div class="mini-stats">
@@ -61,7 +63,7 @@
                         @foreach ($rows as $row)
                             <tr>
                                 <td>
-                                    <a class="cell-name" href="{{ route('payroll.deductions.employee', [$row['employee'], 'month' => $month->format('Y-m')]) }}">{{ $row['employee']->localizedName() }}</a>
+                                    <a class="cell-name" href="{{ route('payroll.deductions.employee', [$row['employee'], 'date_from' => $from->format('Y-m-d'), 'date_to' => $to->format('Y-m-d')]) }}">{{ $row['employee']->localizedName() }}</a>
                                     <small>{{ $row['employee']->employee_code }}
                                         @if ($row['review_count'] > 0)· <span class="tone-warning">{{ $row['review_count'] }} {{ __('app.deduct.needs_review') }}</span>@endif
                                     </small>
@@ -74,7 +76,7 @@
                                 <td dir="ltr"><strong class="{{ $row['total_deduction'] > 0 ? 'text-danger' : '' }}">{{ number_format($row['total_deduction'], 2) }}</strong></td>
                                 <td dir="ltr"><strong>{{ number_format($row['net_salary'], 2) }}</strong></td>
                                 <td class="table-actions">
-                                    <a class="ghost-button" href="{{ route('payroll.deductions.employee', [$row['employee'], 'month' => $month->format('Y-m')]) }}">{{ __('app.deduct.view_detail') }}</a>
+                                    <a class="ghost-button" href="{{ route('payroll.deductions.employee', [$row['employee'], 'date_from' => $from->format('Y-m-d'), 'date_to' => $to->format('Y-m-d')]) }}">{{ __('app.deduct.view_detail') }}</a>
                                 </td>
                             </tr>
                         @endforeach

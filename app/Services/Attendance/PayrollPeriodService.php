@@ -13,8 +13,10 @@ use Carbon\Carbon;
 
 class PayrollPeriodService
 {
-    public function __construct(private readonly AttendanceReportService $report)
-    {
+    public function __construct(
+        private readonly AttendanceReportService $report,
+        private readonly PayrollDeductionReportService $deductions,
+    ) {
     }
 
     /**
@@ -78,9 +80,13 @@ class PayrollPeriodService
             ->get()
             ->keyBy('employee_id');
 
-        return $employees->map(function (Employee $employee) use ($reportRows, $metrics, $company) {
+        // Policy attendance deductions (late/early/missing/absence → amounts) per employee.
+        $deductions = $this->deductions->forCompany($company, $from, $to)->keyBy(fn ($r) => $r['employee']->id);
+
+        return $employees->map(function (Employee $employee) use ($reportRows, $metrics, $company, $deductions) {
             $row = $reportRows[$employee->id] ?? [];
             $m = $metrics[$employee->id] ?? null;
+            $d = $deductions[$employee->id] ?? [];
 
             return [
                 'employee' => $employee,
@@ -96,6 +102,14 @@ class PayrollPeriodService
                 'overtime_hours' => round(((int) ($m->ot ?? 0)) / 60, 1),
                 'late_minutes' => (int) ($m->late ?? 0),
                 'basic_salary' => $employee->basic_salary,
+                // Attendance-deduction figures (policy sections 26–35).
+                'salary_basis' => $d['salary_basis'] ?? 0,
+                'late_amount' => $d['late_amount'] ?? 0,
+                'early_amount' => $d['early_amount'] ?? 0,
+                'missing_amount' => $d['missing_amount'] ?? 0,
+                'absence_amount' => $d['absence_amount'] ?? 0,
+                'total_deduction' => $d['total_deduction'] ?? 0,
+                'net_salary' => $d['net_salary'] ?? ($employee->basic_salary),
             ];
         })->all();
     }

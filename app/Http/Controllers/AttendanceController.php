@@ -13,6 +13,7 @@ use App\Models\Company;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Services\Attendance\AttendanceMatrixService;
+use App\Services\Attendance\AttendancePolicyService;
 use App\Services\Attendance\AttendanceDailySummaryService;
 use App\Services\Attendance\AttendanceReportService;
 use App\Services\Attendance\AttendanceService;
@@ -123,53 +124,92 @@ class AttendanceController extends Controller
      * Printable monthly attendance sheet for one employee: every calendar day of
      * the month with its status and in/out times, plus a summary.
      */
-    public function printReport(Request $request, Employee $employee, AttendanceMatrixService $matrix): View
+    public function printReport(Request $request, Employee $employee, AttendanceMatrixService $matrix, AttendancePolicyService $policyService): View
     {
         $employee->loadMissing(['company', 'department', 'shift']);
 
-        $month = $this->resolveMonth($request->input('month'));
-        $start = $month->copy()->startOfMonth();
-        $end = $month->copy()->endOfMonth();
+        // Any from–to pay period (falls back to a calendar month, then this month).
+        [$from, $to] = $this->resolveReportRange($request);
 
         $records = AttendanceRecord::query()
             ->where('employee_id', $employee->id)
-            ->whereBetween('punch_at', [$start->copy()->startOfDay(), $end->copy()->endOfDay()])
+            ->whereBetween('punch_at', [$from->copy()->startOfDay(), $to->copy()->endOfDay()])
             ->get(['employee_id', 'punch_at', 'punch_type']);
 
-        $holidays = AttendanceHoliday::where('is_active', true)->whereBetween('holiday_date', [$start, $end])->get();
+        $holidays = AttendanceHoliday::where('is_active', true)->whereBetween('holiday_date', [$from, $to])->get();
         $leaves = EmployeeLeaveRequest::where('status', 'approved')
             ->where('employee_id', $employee->id)
-            ->whereDate('start_date', '<=', $end)
-            ->whereDate('end_date', '>=', $start)
+            ->whereDate('start_date', '<=', $to)
+            ->whereDate('end_date', '>=', $from)
             ->get();
 
-        $grid = $matrix->build($month, collect([$employee]), $records, $holidays, $leaves)[$employee->id];
-
+        $punchesByDay = $records->groupBy(fn (AttendanceRecord $r) => $r->punch_at->toDateString());
         $daily = AttendanceDailySummary::where('employee_id', $employee->id)
-            ->whereBetween('attendance_date', [$start, $end])
+            ->whereBetween('attendance_date', [$from, $to])
             ->get()
             ->keyBy(fn ($s) => $s->attendance_date->toDateString());
 
+        $policy = $policyService->forEmployee($employee);
+        $shiftStart = $matrix->shiftStart($employee);
+        $today = Carbon::today();
+
+        // Iterate the period day by day (works across month boundaries, e.g. 22→22).
+        $counts = ['present' => 0, 'late' => 0, 'absent' => 0, 'rest' => 0, 'holiday' => 0, 'leave' => 0];
         $rows = [];
-        for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+        for ($date = $from->copy(); $date->lte($to); $date->addDay()) {
+            $dayPunches = $punchesByDay->get($date->toDateString(), collect());
+            $status = $matrix->dayStatus(
+                $date, $today, $dayPunches, $shiftStart,
+                $policy->grace_minutes, $policy->weekend_days ?? [5],
+                $matrix->calendarStatus($employee, $date, $holidays, $leaves),
+            );
+
+            if (isset($counts[$status])) {
+                $counts[$status]++;
+            }
+
             $rows[] = [
                 'date' => $date->copy(),
-                'status' => $grid['days'][$date->day] ?? 'future',
+                'status' => $status,
                 'summary' => $daily->get($date->toDateString()),
             ];
         }
 
-        $counts = $grid['summary'];
         $expected = $counts['present'] + $counts['late'] + $counts['absent'];
 
         return view('attendance.employee-print', [
             'employee' => $employee,
-            'month' => $start,
+            'from' => $from,
+            'to' => $to,
             'rows' => $rows,
             'summary' => $counts,
             'workedHours' => round((int) $daily->sum('worked_minutes') / 60, 1),
             'rate' => $expected > 0 ? (int) round(($counts['present'] + $counts['late']) / $expected * 100) : 100,
         ]);
+    }
+
+    /**
+     * Resolve the report period from date_from/date_to, falling back to a month,
+     * then the current month.
+     *
+     * @return array{0: Carbon, 1: Carbon}
+     */
+    private function resolveReportRange(Request $request): array
+    {
+        if ($request->filled('date_from') || $request->filled('date_to')) {
+            $from = $this->resolveDate($request->input('date_from'), Carbon::now()->startOfMonth());
+            $to = $this->resolveDate($request->input('date_to'), Carbon::now()->endOfMonth());
+        } else {
+            $month = $this->resolveMonth($request->input('month'));
+            $from = $month->copy()->startOfMonth();
+            $to = $month->copy()->endOfMonth();
+        }
+
+        if ($from->gt($to)) {
+            [$from, $to] = [$to, $from];
+        }
+
+        return [$from->startOfDay(), $to->endOfDay()];
     }
 
     /**

@@ -31,10 +31,10 @@ class PayrollDeductionReportService
     /**
      * @return Collection<int, array<string, mixed>>
      */
-    public function forCompany(Company $company, Carbon $month): Collection
+    public function forCompany(Company $company, Carbon $from, Carbon $to): Collection
     {
-        $start = $month->copy()->startOfMonth();
-        $end = $month->copy()->endOfMonth();
+        $start = $from->copy()->startOfDay();
+        $end = $to->copy()->endOfDay();
 
         $employees = Employee::where('company_id', $company->id)->with('shift')->orderBy('name_en')->get();
         $holidays = AttendanceHoliday::where('is_active', true)->whereBetween('holiday_date', [$start, $end])->get();
@@ -43,19 +43,21 @@ class PayrollDeductionReportService
             ->whereDate('start_date', '<=', $end)->whereDate('end_date', '>=', $start)
             ->get();
 
-        return $employees->map(fn (Employee $e) => $this->forEmployee($e, $month, $holidays, $leaves));
+        return $employees->map(fn (Employee $e) => $this->forEmployee($e, $from, $to, $holidays, $leaves));
     }
 
     /**
+     * Deduction report for one employee over any from–to pay period.
+     *
      * @param  Collection<int, AttendanceHoliday>  $holidays
      * @param  Collection<int, EmployeeLeaveRequest>  $leaves
      * @return array<string, mixed>
      */
-    public function forEmployee(Employee $employee, Carbon $month, Collection $holidays, Collection $leaves): array
+    public function forEmployee(Employee $employee, Carbon $from, Carbon $to, Collection $holidays, Collection $leaves): array
     {
         $employee->loadMissing('shift');
-        $start = $month->copy()->startOfMonth();
-        $end = $month->copy()->endOfMonth()->min(Carbon::today()->endOfDay());
+        $start = $from->copy()->startOfDay();
+        $end = $to->copy()->endOfDay()->min(Carbon::today()->endOfDay());
 
         $weekend = $this->policies->forEmployee($employee)->weekend_days ?? [5];
 
@@ -66,7 +68,8 @@ class PayrollDeductionReportService
             ->groupBy(fn (AttendanceRecord $r) => $r->punch_at->toDateString());
 
         $salaryBasis = $this->money->salaryBasis($employee);
-        $scheduledMinutes = $this->money->monthlyScheduledMinutes($employee, $month, $holidays, $leaves);
+        // Scheduled hours span the whole planned period (not just elapsed days).
+        $scheduledMinutes = $this->money->scheduledMinutes($employee, $from->copy(), $to->copy(), $holidays, $leaves);
         $hourlyRate = $this->money->hourlyRate($salaryBasis, $scheduledMinutes);
         $dailyRate = $this->money->dailyRate($salaryBasis);
 

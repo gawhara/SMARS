@@ -13,7 +13,8 @@
         </div>
         <div class="table-actions">
             <form method="GET" action="{{ route('attendance.employee.print', $employee) }}" target="_blank" class="att-print-form">
-                <input type="month" name="month" value="{{ $to->format('Y-m') }}" aria-label="{{ __('app.att.report_month') }}">
+                <input type="hidden" name="date_from" value="{{ $from->format('Y-m-d') }}">
+                <input type="hidden" name="date_to" value="{{ $to->format('Y-m-d') }}">
                 <button class="primary-button" type="submit">{{ __('app.att.print_report') }}</button>
             </form>
             <a class="ghost-button" href="{{ route('attendance.index') }}">{{ __('app.att.back_to_directory') }}</a>

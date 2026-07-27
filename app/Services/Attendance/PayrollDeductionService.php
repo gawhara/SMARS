@@ -51,14 +51,15 @@ class PayrollDeductionService
     }
 
     /**
-     * Scheduled paid minutes for the payroll month (section 27): daily shift
-     * minutes summed over the month's working days, excluding weekly rest days,
-     * holidays, approved leaves, and days outside employment.
+     * Scheduled paid minutes for the payroll period (section 27): daily shift
+     * minutes summed over the period's working days, excluding weekly rest days,
+     * holidays, approved leaves, and days outside employment. The period can be any
+     * from–to range (e.g. the 22nd of one month to the 22nd of the next).
      *
      * @param  Collection<int, \App\Models\AttendanceHoliday>  $holidays
      * @param  Collection<int, \App\Models\EmployeeLeaveRequest>  $leaves
      */
-    public function monthlyScheduledMinutes(Employee $employee, Carbon $month, Collection $holidays, Collection $leaves): int
+    public function scheduledMinutes(Employee $employee, Carbon $from, Carbon $to, Collection $holidays, Collection $leaves): int
     {
         $policy = $this->policies->forEmployee($employee);
         $weekend = $policy->weekend_days ?? [5];
@@ -68,9 +69,9 @@ class PayrollDeductionService
             return 0;
         }
 
-        $start = $month->copy()->startOfMonth();
-        $end = $month->copy()->endOfMonth();
-        $joined = $employee->start_date ? Carbon::parse($employee->start_date) : null;
+        $start = $from->copy()->startOfDay();
+        $end = $to->copy()->startOfDay();
+        $joined = $employee->start_date ? Carbon::parse($employee->start_date)->startOfDay() : null;
 
         $minutes = 0;
         for ($date = $start->copy(); $date->lte($end); $date->addDay()) {

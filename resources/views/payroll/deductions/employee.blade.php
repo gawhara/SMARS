@@ -14,11 +14,11 @@
 @section('content')
     <section class="page-heading compact">
         <div>
-            <span class="eyebrow">{{ __('app.deduct.title') }} · <bdi dir="ltr">{{ $month->format('Y-m') }}</bdi></span>
+            <span class="eyebrow">{{ __('app.deduct.title') }} · <bdi dir="ltr">{{ $from->format('Y-m-d') }} → {{ $to->format('Y-m-d') }}</bdi></span>
             <h1>{{ $employee->localizedName() }}</h1>
             <p>{{ $employee->employee_code }} · {{ $employee->company?->localizedName() ?? __('app.none') }}</p>
         </div>
-        <a class="ghost-button" href="{{ route('payroll.deductions.index', ['company_id' => $employee->company_id, 'month' => $month->format('Y-m')]) }}">{{ __('app.att.back_to_directory') }}</a>
+        <a class="ghost-button" href="{{ route('payroll.deductions.index', ['company_id' => $employee->company_id, 'date_from' => $from->format('Y-m-d'), 'date_to' => $to->format('Y-m-d')]) }}">{{ __('app.att.back_to_directory') }}</a>
     </section>
 
     @include('partials.flash')

@@ -101,6 +101,9 @@ class PayrollPeriodTest extends TestCase
         $content = $response->streamedContent();
         $this->assertStringContainsString('Overtime hours', $content);
         $this->assertStringContainsString('EMP-1', $content);
+        // Attendance deductions are folded into the payroll export.
+        $this->assertStringContainsString('Total deductions', $content);
+        $this->assertStringContainsString('Net salary', $content);
         $this->assertNotNull($period->refresh()->exported_at);
     }
 }

@@ -85,7 +85,12 @@ class PayrollPeriodController extends Controller
         return response()->streamDownload(function () use ($rows): void {
             $out = fopen('php://output', 'w');
             fwrite($out, "\xEF\xBB\xBF");
-            fputcsv($out, ['Employee', 'Code', 'Department', 'Present', 'Late', 'Absent', 'Leave', 'Holiday', 'Rest', 'Worked days', 'Worked hours', 'Overtime hours', 'Late minutes', 'Basic salary']);
+            fputcsv($out, [
+                'Employee', 'Code', 'Department', 'Present', 'Late', 'Absent', 'Leave', 'Holiday', 'Rest',
+                'Worked days', 'Worked hours', 'Overtime hours', 'Late minutes', 'Basic salary',
+                'Salary basis', 'Late deduction', 'Early deduction', 'Missing-punch deduction', 'Absence deduction',
+                'Total deductions', 'Net salary',
+            ]);
 
             foreach ($rows as $row) {
                 $employee = $row['employee'];
@@ -96,6 +101,8 @@ class PayrollPeriodController extends Controller
                     $row['present'], $row['late'], $row['absent'], $row['leave'], $row['holiday'], $row['rest'],
                     $row['worked_days'], $row['worked_hours'], $row['overtime_hours'], $row['late_minutes'],
                     $row['basic_salary'],
+                    $row['salary_basis'], $row['late_amount'], $row['early_amount'], $row['missing_amount'],
+                    $row['absence_amount'], $row['total_deduction'], $row['net_salary'],
                 ]);
             }
 
