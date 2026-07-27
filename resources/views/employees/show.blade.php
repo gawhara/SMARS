@@ -110,6 +110,34 @@
                         <div><dt>{{ __('app.emp.'.$field) }}</dt><dd class="money-value">{{ number_format((float) $employee->$field, 2) }} <small>{{ __('app.currency') }}</small></dd></div>
                     @endforeach
                 </dl>
+
+                {{-- GOSI (social insurance) auto-calculated contribution --}}
+                <div class="gosi-card">
+                    <div class="gosi-card-head">
+                        <h3>{{ __('app.gosi.title') }}</h3>
+                        <span class="status-badge {{ $gosi['is_saudi'] ? 'success' : 'info' }}">{{ $gosi['is_saudi'] ? __('app.emp.saudi') : __('app.emp.non_saudi') }}</span>
+                    </div>
+                    <p class="gosi-basis">
+                        {{ __('app.gosi.contribution_wage') }}:
+                        <strong>{{ number_format($gosi['contribution_wage'], 2) }} {{ __('app.currency') }}</strong>
+                        @if ($gosi['capped'])<span class="gosi-flag">{{ __('app.gosi.capped') }}</span>@endif
+                    </p>
+                    <div class="gosi-grid">
+                        <div class="gosi-cell">
+                            <span>{{ __('app.gosi.employee_share') }} ({{ rtrim(rtrim(number_format($gosi['employee_rate'] * 100, 2), '0'), '.') }}%)</span>
+                            <strong>{{ number_format($gosi['employee_share'], 2) }}</strong>
+                        </div>
+                        <div class="gosi-cell">
+                            <span>{{ __('app.gosi.employer_share') }} ({{ rtrim(rtrim(number_format($gosi['employer_rate'] * 100, 2), '0'), '.') }}%)</span>
+                            <strong>{{ number_format($gosi['employer_share'], 2) }}</strong>
+                        </div>
+                        <div class="gosi-cell total">
+                            <span>{{ __('app.gosi.total') }}</span>
+                            <strong>{{ number_format($gosi['total'], 2) }}</strong>
+                        </div>
+                    </div>
+                    <p class="gosi-note">{{ __('app.gosi.note') }}</p>
+                </div>
             </div>
 
             <div class="tab-panel" data-panel="documents"><div class="profile-empty-state"><strong>{{ __('app.emp.tab_documents') }}</strong><p>{{ __('app.emp.tab_placeholder') }}</p></div></div>

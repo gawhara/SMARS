@@ -100,6 +100,7 @@ class EmployeeController extends Controller
                 ->orderByDesc('penalty_date')->orderByDesc('id')
                 ->get(),
             'leaves' => $leaves,
+            'gosi' => app(\App\Services\Payroll\GosiService::class)->forEmployee($employee),
             'attendanceMonth' => $from,
             'attendanceSummary' => app(AttendanceReportService::class)
                 ->build($from, $to, collect([$employee]), $records, $holidays, $leaves->where('status', 'approved')->values())[0] ?? null,

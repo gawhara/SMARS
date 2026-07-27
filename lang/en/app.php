@@ -95,7 +95,6 @@ return [
     'login_intro' => 'Sign in to manage the SMARS HR foundation.',
     'foundation_ready' => 'Foundation ready',
     'foundation_note' => 'Phase 1 establishes authentication, bilingual layout, local assets, company seed data, roles, and settings.',
-    'foundation_subtitle' => 'Enterprise HRMS foundation for the four-company Saudi organization.',
     'stitch_aligned' => 'Stitch-aligned interface',
     'offline_ready' => 'Offline-ready assets',
     'local_font' => 'Local Cairo font',
@@ -152,6 +151,15 @@ return [
     'none' => '—',
     'currency' => 'SAR',
     'select_placeholder' => '— Select —',
+    'gosi' => [
+        'title' => 'GOSI social insurance',
+        'contribution_wage' => 'Contribution wage',
+        'employee_share' => 'Employee share',
+        'employer_share' => 'Employer share',
+        'total' => 'Total contribution',
+        'capped' => 'Capped at ceiling',
+        'note' => 'Auto-calculated from the GOSI-registered wage (basic + housing) at current statutory rates.',
+    ],
     'company_info' => [
         'profile' => 'Company profile',
         'overview' => 'Company details',

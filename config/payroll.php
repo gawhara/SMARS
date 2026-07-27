@@ -18,4 +18,29 @@ return [
     // (policy section 32): daily rate = salary basis ÷ day_divisor.
     'day_divisor' => (int) env('PAYROLL_DAY_DIVISOR', 30),
 
+    /*
+    |--------------------------------------------------------------------------
+    | GOSI (General Organization for Social Insurance) contributions
+    |--------------------------------------------------------------------------
+    | Contribution wage = GOSI-registered basic + GOSI housing, clamped to the
+    | statutory floor/ceiling, then multiplied by the nationality-class rate.
+    | Standard current rates; overridable via env for the 2024 phased reform.
+    */
+    'gosi' => [
+        'wage_floor' => (float) env('GOSI_WAGE_FLOOR', 1500),
+        'wage_ceiling' => (float) env('GOSI_WAGE_CEILING', 45000),
+
+        // Saudi nationals: 9% annuities + 0.75% SANED (+2% occupational hazard on employer).
+        'saudi' => [
+            'employee_rate' => (float) env('GOSI_SAUDI_EMPLOYEE_RATE', 0.0975),
+            'employer_rate' => (float) env('GOSI_SAUDI_EMPLOYER_RATE', 0.1175),
+        ],
+
+        // Non-Saudi: occupational-hazard branch only, employer-paid.
+        'non_saudi' => [
+            'employee_rate' => (float) env('GOSI_NON_SAUDI_EMPLOYEE_RATE', 0.0),
+            'employer_rate' => (float) env('GOSI_NON_SAUDI_EMPLOYER_RATE', 0.02),
+        ],
+    ],
+
 ];

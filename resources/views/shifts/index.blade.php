@@ -57,14 +57,14 @@
                             <td><strong>{{ ($firstShift ?? $secondShift)->localizedName() }}</strong></td>
                             <td>
                                 @if ($firstShift)
-                                    <span class="shift-time-range">{{ $firstShift->localizedTime('start_time') }} – {{ $firstShift->localizedTime('end_time') }}</span>
+                                    <span class="shift-time-range"><bdi dir="ltr">{{ $firstShift->localizedTime('start_time') }}</bdi><span class="range-sep">–</span><bdi dir="ltr">{{ $firstShift->localizedTime('end_time') }}</bdi></span>
                                 @else
                                     {{ __('app.none') }}
                                 @endif
                             </td>
                             <td>
                                 @if ($secondShift)
-                                    <span class="shift-time-range">{{ $secondShift->localizedTime('start_time') }} – {{ $secondShift->localizedTime('end_time') }}</span>
+                                    <span class="shift-time-range"><bdi dir="ltr">{{ $secondShift->localizedTime('start_time') }}</bdi><span class="range-sep">–</span><bdi dir="ltr">{{ $secondShift->localizedTime('end_time') }}</bdi></span>
                                 @else
                                     {{ __('app.none') }}
                                 @endif

@@ -18,7 +18,6 @@
                 <div class="brand-mark">S</div>
                 <div>
                     <strong>{{ __('app.app_name') }}</strong>
-                    <span>{{ __('app.foundation_subtitle') }}</span>
                 </div>
             </div>
             <div>

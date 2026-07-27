@@ -1115,7 +1115,12 @@ tbody tr:last-child td {
 
 .shift-time-range {
     display: inline-flex;
-    direction: ltr;
+    align-items: baseline;
+    gap: 6px;
+    /* Inherit page direction: RTL (Arabic) puts the start time on the right so
+       the morning ص reads first; LTR (English) keeps start on the left. Each
+       time token is isolated (dir=ltr bdi) so numbers/meridiems stay intact. */
+    unicode-bidi: isolate;
     padding: 7px 11px;
     color: #4338ca;
     background: #eff6ff;
@@ -1123,6 +1128,12 @@ tbody tr:last-child td {
     border-radius: 8px;
     font-weight: 800;
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.shift-time-range .range-sep {
+    color: #94a3b8;
+    font-weight: 700;
 }
 
 .hours-total {
@@ -2932,6 +2943,67 @@ thead .matrix-name-col {
     font-size: 1.65rem;
     font-variant-numeric: tabular-nums;
 }
+
+/* GOSI (social insurance) contribution card */
+.gosi-card {
+    margin-top: 20px;
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface-soft);
+}
+
+.gosi-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.gosi-card-head h3 { margin: 0; font-size: 1rem; font-weight: 800; }
+
+.gosi-basis {
+    margin: 0 0 14px;
+    color: var(--muted);
+    font-size: .88rem;
+}
+
+.gosi-basis strong { color: var(--text); font-variant-numeric: tabular-nums; }
+
+.gosi-flag {
+    display: inline-block;
+    margin-inline-start: 8px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(245, 158, 11, .15);
+    color: #b45309;
+    font-size: .72rem;
+    font-weight: 700;
+}
+
+.gosi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.gosi-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.gosi-cell span { color: var(--muted); font-size: .76rem; font-weight: 700; }
+.gosi-cell strong { font-size: 1.25rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.gosi-cell.total { background: var(--primary-soft); border-color: transparent; }
+.gosi-cell.total strong { color: var(--primary); }
+
+.gosi-note { margin: 12px 0 0; color: var(--muted); font-size: .78rem; }
 
 .money-value {
     font-variant-numeric: tabular-nums;
