@@ -108,6 +108,7 @@ class PayrollPeriodService
                 'early_amount' => $d['early_amount'] ?? 0,
                 'missing_amount' => $d['missing_amount'] ?? 0,
                 'absence_amount' => $d['absence_amount'] ?? 0,
+                'penalty_amount' => $d['penalty_amount'] ?? 0,
                 'total_deduction' => $d['total_deduction'] ?? 0,
                 'net_salary' => $d['net_salary'] ?? ($employee->basic_salary),
             ];

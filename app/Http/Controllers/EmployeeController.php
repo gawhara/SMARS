@@ -3,14 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EmployeeRequest;
+use App\Models\AdministrativePenalty;
+use App\Models\AttendanceHoliday;
+use App\Models\AttendanceRecord;
 use App\Models\Bank;
 use App\Models\Company;
 use App\Models\Country;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\EmployeeLeaveRequest;
 use App\Models\Position;
 use App\Models\Shift;
+use App\Services\Attendance\AttendanceReportService;
 use App\Support\AuditLogger;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -77,8 +83,26 @@ class EmployeeController extends Controller
     {
         $employee->load(['company', 'orgBranch', 'department', 'position', 'shift', 'creator', 'updater']);
 
+        // Attendance summary for the current month (for the employee-file report).
+        $from = Carbon::now()->startOfMonth();
+        $to = Carbon::now();
+        $records = AttendanceRecord::matched()
+            ->where('employee_id', $employee->id)
+            ->whereBetween('punch_at', [$from, $to->copy()->endOfDay()])
+            ->get(['employee_id', 'punch_at', 'punch_type']);
+        $holidays = AttendanceHoliday::where('is_active', true)->whereBetween('holiday_date', [$from, $to])->get();
+        $leaves = EmployeeLeaveRequest::where('employee_id', $employee->id)->orderByDesc('start_date')->get();
+
         return view('employees.show', [
             'employee' => $employee,
+            'penalties' => AdministrativePenalty::with('creator')
+                ->where('employee_id', $employee->id)
+                ->orderByDesc('penalty_date')->orderByDesc('id')
+                ->get(),
+            'leaves' => $leaves,
+            'attendanceMonth' => $from,
+            'attendanceSummary' => app(AttendanceReportService::class)
+                ->build($from, $to, collect([$employee]), $records, $holidays, $leaves->where('status', 'approved')->values())[0] ?? null,
             'country' => $employee->nationality
                 ? Country::where('iso2', $employee->nationality)->first()
                 : null,

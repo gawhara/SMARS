@@ -39,7 +39,7 @@
                     @forelse($summaries as $summary)
                         <tr>
                             <td><a class="cell-name" href="{{ route('employees.show', $summary->employee) }}">{{ $summary->employee->localizedName() }}</a><small>{{ $summary->employee->employee_code }} · {{ $summary->employee->company?->localizedName() }}</small></td>
-                            <td>{{ $summary->attendance_date->format('Y-m-d') }}</td>
+                            <td>{{ $summary->attendance_date->format('d/m/Y') }}</td>
                             <td dir="ltr">{{ $summary->localizedTime('first_in_at') }}</td>
                             <td dir="ltr">{{ $summary->localizedTime('last_out_at') }}</td>
                             <td><strong>{{ number_format($summary->worked_minutes / 60, 2) }}</strong></td>

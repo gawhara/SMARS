@@ -14,7 +14,7 @@
 @section('content')
     <section class="page-heading compact">
         <div>
-            <span class="eyebrow">{{ __('app.deduct.title') }} · <bdi dir="ltr">{{ $from->format('Y-m-d') }} → {{ $to->format('Y-m-d') }}</bdi></span>
+            <span class="eyebrow">{{ __('app.deduct.title') }} · <bdi dir="ltr">{{ $from->format('d/m/Y') }} → {{ $to->format('d/m/Y') }}</bdi></span>
             <h1>{{ $employee->localizedName() }}</h1>
             <p>{{ $employee->employee_code }} · {{ $employee->company?->localizedName() ?? __('app.none') }}</p>
         </div>
@@ -60,6 +60,10 @@
         <div class="att-metric" style="--m: #ef4444">
             <span class="att-metric-label">{{ __('app.deduct.absence_days') }}</span>
             <span class="att-metric-value">{{ $report['penalty_days'] }}<small style="font-size:.7rem;color:var(--muted)"> · {{ number_format($report['absence_amount'], 2) }}</small></span>
+        </div>
+        <div class="att-metric" style="--m: #db2777">
+            <span class="att-metric-label">{{ __('app.penalty.title') }}</span>
+            <span class="att-metric-value">{{ $report['penalty_count'] ?? 0 }}<small style="font-size:.7rem;color:var(--muted)"> · {{ number_format($report['penalty_amount'] ?? 0, 2) }}</small></span>
         </div>
         <div class="att-metric" style="--m: #dc2626">
             <span class="att-metric-label">{{ __('app.deduct.total_deduction') }}</span>

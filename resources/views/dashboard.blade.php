@@ -24,7 +24,7 @@
         </div>
         <div class="dashboard-date-chip">
             <span>{{ __('app.dash.latest_attendance_day') }}</span>
-            <strong dir="ltr">{{ $latestDate?->format('Y-m-d') ?? '—' }}</strong>
+            <strong dir="ltr">{{ $latestDate?->format('d/m/Y') ?? '—' }}</strong>
         </div>
     </section>
 
@@ -59,7 +59,7 @@
     <section class="dashboard-live-grid">
         <article class="panel dashboard-overview-panel">
             <div class="panel-header">
-                <div><h2>{{ __('app.dash.attendance_overview') }}</h2><p>{{ __('app.dash.overview_for', ['date' => $latestDate?->format('Y-m-d') ?? '—']) }}</p></div>
+                <div><h2>{{ __('app.dash.attendance_overview') }}</h2><p>{{ __('app.dash.overview_for', ['date' => $latestDate?->format('d/m/Y') ?? '—']) }}</p></div>
                 <span class="dashboard-coverage-ring" style="--coverage: {{ $stats['attendance_coverage'] * 3.6 }}deg"><strong>{{ $stats['attendance_coverage'] }}%</strong></span>
             </div>
             <div class="dashboard-status-list">

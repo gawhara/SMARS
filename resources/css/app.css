@@ -1262,10 +1262,17 @@ tbody tr:last-child td {
 .filter-bar {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 12px;
-    padding: 18px 20px;
-    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    align-items: flex-end;
+    gap: 10px;
+    padding: 14px 16px;
+    background: #ffffff;
+}
+
+.filter-panel .filter-bar input,
+.filter-panel .filter-bar select {
+    min-height: 40px;
+    padding: 9px 12px;
+    font-size: 0.9rem;
 }
 
 .filter-bar input[type='search'] {
@@ -1276,6 +1283,39 @@ tbody tr:last-child td {
 .filter-bar select {
     flex: 0 1 180px;
     min-width: 150px;
+}
+
+.filter-bar input[type='date'],
+.filter-bar input[type='month'],
+.filter-bar input[type='time'],
+.filter-bar input.flatpickr-alt {
+    flex: 0 1 165px;
+    min-width: 140px;
+    width: auto;
+}
+
+/* Flatpickr — match the app theme (indigo). */
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+.flatpickr-day.today { border-color: var(--primary); }
+.flatpickr-day:hover { background: var(--primary-soft); }
+span.flatpickr-weekday { color: var(--muted); }
+.flatpickr-months .flatpickr-month,
+.flatpickr-current-month { color: var(--text); }
+
+.filter-bar label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 0 1 auto;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--muted);
 }
 
 /* Compact status filter (short options) */
@@ -2768,16 +2808,21 @@ thead .matrix-name-col {
 }
 
 .tab-link:hover {
-    color: var(--text);
-    background: #ffffff;
-    border-color: var(--border);
+    color: var(--primary);
+    background: var(--primary-soft);
+    border-color: transparent;
+}
+
+.tab-link.active:hover {
+    color: #ffffff;
+    background: linear-gradient(135deg, #6366f1, var(--primary));
 }
 
 .tab-link.active {
-    color: var(--primary);
-    background: var(--card);
-    border-color: var(--border);
-    box-shadow: var(--shadow);
+    color: #ffffff;
+    background: linear-gradient(135deg, #6366f1, var(--primary));
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.28);
     font-weight: 800;
 }
 
@@ -3832,25 +3877,91 @@ thead .matrix-name-col {
 }
 
 /* ---- Employee attendance section ---- */
-.att-rate-card {
-    display: flex;
-    align-items: center;
-    gap: 22px;
-    padding: 20px 22px;
+/* Compact console: rate hero + period filter in one band */
+.att-console {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 14px;
     margin-bottom: 16px;
+}
+
+.att-console-rate,
+.att-console-filter {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 16px;
     box-shadow: var(--shadow);
+    padding: 16px 18px;
+}
+
+.att-console-rate {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.att-console-filter {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+}
+
+.att-field-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.att-field {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+}
+
+.att-field > span {
+    padding-inline: 3px;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.att-field input,
+.att-field input.flatpickr-alt {
+    box-sizing: border-box;
+    flex: 0 1 150px;
+    width: 100%;
+    height: 40px;
+    min-width: 120px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface-soft);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.att-field input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.att-console-filter .primary-button {
+    height: 40px;
+    align-self: flex-end;
+    padding-inline: 20px;
 }
 
 .att-rate-ring {
     position: relative;
     display: grid;
     place-items: center;
-    width: 96px;
-    height: 96px;
-    flex: 0 0 96px;
+    width: 84px;
+    height: 84px;
+    flex: 0 0 84px;
     border-radius: 50%;
     background: conic-gradient(var(--ring-color, #10b981) var(--rate, 0deg), var(--surface-soft) 0);
 }
@@ -3858,36 +3969,35 @@ thead .matrix-name-col {
 .att-rate-ring::before {
     content: '';
     position: absolute;
-    inset: 10px;
+    inset: 9px;
     border-radius: 50%;
     background: var(--card);
 }
 
 .att-rate-ring strong {
     position: relative;
-    font-size: 1.35rem;
+    font-size: 1.2rem;
     font-weight: 800;
 }
 
 .att-rate-meta { min-width: 0; }
-.att-rate-meta .att-rate-label { display: block; color: var(--muted); font-size: .82rem; font-weight: 700; }
-.att-rate-meta h2 { margin: 4px 0 6px; font-size: 1.15rem; font-weight: 800; }
-.att-rate-meta p { margin: 0; color: var(--muted); font-size: .84rem; }
+.att-rate-meta .att-rate-label { display: block; color: var(--muted); font-size: .78rem; font-weight: 700; }
+.att-rate-meta h2 { margin: 3px 0 5px; font-size: 1.05rem; font-weight: 800; }
+.att-rate-meta p { margin: 0; color: var(--muted); font-size: .82rem; }
 
 .att-presets {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
+    gap: 7px;
 }
 
 .att-preset {
-    padding: 7px 14px;
+    padding: 6px 13px;
     color: var(--muted);
     background: var(--surface-soft);
     border: 1px solid var(--border);
     border-radius: 999px;
-    font-size: .82rem;
+    font-size: .8rem;
     font-weight: 700;
     transition: background .15s ease, color .15s ease, border-color .15s ease;
 }
@@ -3895,20 +4005,58 @@ thead .matrix-name-col {
 .att-preset:hover { color: var(--text); border-color: var(--border-strong); }
 .att-preset.active { color: #fff; background: var(--primary); border-color: var(--primary); }
 
+@media (max-width: 860px) {
+    .att-console { grid-template-columns: 1fr; }
+}
+
+/* Range-picker dialog (choose period before printing) */
+.range-dialog {
+    width: min(440px, calc(100vw - 32px));
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--card);
+    color: var(--text);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, .28);
+}
+
+.range-dialog::backdrop {
+    background: rgba(15, 23, 42, .45);
+    backdrop-filter: blur(2px);
+}
+
+.range-dialog > form {
+    padding: 22px 24px 20px;
+}
+
+.range-dialog h3 { margin: 0 0 4px; font-size: 1.1rem; font-weight: 800; }
+.range-dialog > form > p { margin: 0 0 16px; color: var(--muted); font-size: .86rem; }
+
+.range-dialog .att-field-row { margin-bottom: 20px; }
+.range-dialog .att-field { flex: 1 1 140px; }
+.range-dialog .att-field input,
+.range-dialog .att-field input.flatpickr-alt { width: 100%; flex: 1 1 auto; }
+
+.range-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
 .att-metrics {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(124px, 1fr));
+    gap: 12px;
     margin-bottom: 18px;
 }
 
 .att-metric {
     position: relative;
     overflow: hidden;
-    padding: 16px 18px;
+    padding: 13px 16px;
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 13px;
     box-shadow: var(--shadow);
     transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
 }
@@ -3924,8 +4072,8 @@ thead .matrix-name-col {
     background: var(--m, #94a3b8);
 }
 
-.att-metric .att-metric-label { display: block; color: var(--muted); font-size: .78rem; font-weight: 700; }
-.att-metric .att-metric-value { display: block; margin-top: 8px; font-size: 1.9rem; font-weight: 800; line-height: 1; color: var(--m, var(--text)); }
+.att-metric .att-metric-label { display: block; color: var(--muted); font-size: .74rem; font-weight: 700; }
+.att-metric .att-metric-value { display: block; margin-top: 6px; font-size: 1.55rem; font-weight: 800; line-height: 1; color: var(--m, var(--text)); }
 
 .att-avatar {
     display: inline-grid;
@@ -3939,6 +4087,17 @@ thead .matrix-name-col {
     font-size: .82rem;
     font-weight: 800;
 }
+
+.penalty-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+    padding: 18px 20px;
+}
+.penalty-form label { display: flex; flex-direction: column; gap: 5px; flex: 0 1 180px; font-size: 0.82rem; font-weight: 700; color: var(--muted); }
+.penalty-form label.penalty-reason { flex: 1 1 260px; }
+.penalty-form input, .penalty-form select { min-height: 44px; padding: 10px 12px; border: 1px solid var(--border-strong); border-radius: 10px; font: inherit; font-weight: 500; color: var(--text); background: #fff; }
 
 .shift-line { font-size: 0.82rem; color: var(--muted); white-space: nowrap; }
 .shift-line + .shift-line { margin-top: 3px; }
@@ -3977,4 +4136,42 @@ thead .matrix-name-col {
 
 @media (max-width: 620px) {
     .att-rate-card { flex-direction: column; align-items: flex-start; }
+}
+
+/* ---- Print an app page (e.g. the full employee file with every tab) ---- */
+@media print {
+    .sidebar,
+    .topbar,
+    .sidebar-backdrop,
+    .menu-toggle,
+    .page-heading .table-actions,
+    .tab-nav {
+        display: none !important;
+    }
+
+    body { background: #fff; }
+    .app-shell,
+    .content-shell { display: block; }
+    .main-content { padding: 0 !important; }
+    .tabs,
+    .panel { box-shadow: none !important; }
+
+    /* Reveal every tab so the whole file prints, each under its own heading. */
+    .tab-panel {
+        display: block !important;
+        break-inside: avoid;
+        margin-bottom: 20px;
+    }
+    .tab-panel[data-title]::before {
+        content: attr(data-title);
+        display: block;
+        margin: 10px 0 12px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid #111827;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #111827;
+    }
+
+    @page { margin: 14mm; }
 }

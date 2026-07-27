@@ -89,7 +89,7 @@ class PayrollPeriodController extends Controller
                 'Employee', 'Code', 'Department', 'Present', 'Late', 'Absent', 'Leave', 'Holiday', 'Rest',
                 'Worked days', 'Worked hours', 'Overtime hours', 'Late minutes', 'Basic salary',
                 'Salary basis', 'Late deduction', 'Early deduction', 'Missing-punch deduction', 'Absence deduction',
-                'Total deductions', 'Net salary',
+                'Administrative penalties', 'Total deductions', 'Net salary',
             ]);
 
             foreach ($rows as $row) {
@@ -102,7 +102,7 @@ class PayrollPeriodController extends Controller
                     $row['worked_days'], $row['worked_hours'], $row['overtime_hours'], $row['late_minutes'],
                     $row['basic_salary'],
                     $row['salary_basis'], $row['late_amount'], $row['early_amount'], $row['missing_amount'],
-                    $row['absence_amount'], $row['total_deduction'], $row['net_salary'],
+                    $row['absence_amount'], $row['penalty_amount'], $row['total_deduction'], $row['net_salary'],
                 ]);
             }
 

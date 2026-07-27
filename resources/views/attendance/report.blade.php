@@ -7,7 +7,7 @@
         <div>
             <span class="eyebrow">{{ __('app.attendance') }}</span>
             <h1>{{ __('app.att.report_title') }}</h1>
-            <p>{{ __('app.att.report_range', ['from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d')]) }}</p>
+            <p>{{ __('app.att.report_range', ['from' => $from->format('d/m/Y'), 'to' => $to->format('d/m/Y')]) }}</p>
         </div>
         <div class="table-actions">
             <a class="primary-button" href="{{ route('attendance.report', array_merge(request()->query(), ['export' => 'csv'])) }}">{{ __('app.att.export_csv') }}</a>

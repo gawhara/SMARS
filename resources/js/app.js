@@ -1,6 +1,35 @@
 import './bootstrap';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Day/month/year date pickers everywhere: flatpickr shows d/m/Y while the real
+    // field still submits Y-m-d, so no backend changes are needed.
+    document.querySelectorAll('input[type="date"]').forEach((input) => {
+        // Inside a <dialog> (top layer) the calendar must live in the dialog and
+        // render statically, otherwise it appears behind the dialog backdrop.
+        const dialog = input.closest('dialog');
+        flatpickr(input, {
+            altInput: true,
+            altFormat: 'd/m/Y',
+            altInputClass: 'flatpickr-alt',
+            dateFormat: 'Y-m-d',
+            allowInput: true,
+            disableMobile: true,
+            ...(dialog ? { appendTo: dialog, static: true } : {}),
+        });
+    });
+
+    // Range-picker dialogs (e.g. print monthly report): open/close controls.
+    document.querySelectorAll('[data-dialog-open]').forEach((button) => {
+        button.addEventListener('click', () => {
+            document.getElementById(button.dataset.dialogOpen)?.showModal();
+        });
+    });
+    document.querySelectorAll('[data-dialog-close]').forEach((button) => {
+        button.addEventListener('click', () => button.closest('dialog')?.close());
+    });
+
     const sidebar = document.getElementById('sidebar');
     const toggle = document.querySelector('[data-sidebar-toggle]');
     const backdrop = document.querySelector('[data-sidebar-close]');

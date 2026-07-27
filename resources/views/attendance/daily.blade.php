@@ -25,7 +25,7 @@
             <thead><tr><th>{{ __('app.att.employee') }}</th><th>{{ __('app.att.date') }}</th><th>{{ __('app.att.first_in') }}</th><th>{{ __('app.att.last_out') }}</th><th>{{ __('app.att.actual_scheduled') }}</th><th>{{ __('app.att.late_minutes') }}</th><th>{{ __('app.att.early_minutes') }}</th><th>{{ __('app.att.overtime_minutes') }}</th><th>{{ __('app.status') }}</th></tr></thead>
             <tbody>@forelse($summaries as $summary)<tr>
                 <td><a class="cell-name" href="{{ route('employees.show', $summary->employee) }}">{{ $summary->employee->localizedName() }}</a><small>{{ $summary->employee->employee_code }} · {{ $summary->employee->company?->localizedName() }}</small></td>
-                <td>{{ $summary->attendance_date->format('Y-m-d') }}</td><td dir="ltr">{{ $summary->localizedTime('first_in_at') }}</td><td dir="ltr">{{ $summary->localizedTime('last_out_at') }}</td>
+                <td>{{ $summary->attendance_date->format('d/m/Y') }}</td><td dir="ltr">{{ $summary->localizedTime('first_in_at') }}</td><td dir="ltr">{{ $summary->localizedTime('last_out_at') }}</td>
                 <td><strong>{{ number_format($summary->worked_minutes / 60, 2) }}</strong> / {{ number_format($summary->scheduled_minutes / 60, 2) }}</td>
                 <td>{{ $summary->late_minutes }}</td><td>{{ $summary->early_leave_minutes }}</td><td>{{ $summary->overtime_minutes }}</td>
                 <td><span class="status-badge {{ $summary->has_exception ? 'warning' : ($summary->status === 'late' ? 'info' : 'success') }}">{{ __('app.att.summary_'.$summary->status) }}</span></td>

@@ -24,7 +24,7 @@
             <input type="date" name="date_to" value="{{ $to->format('Y-m-d') }}" aria-label="{{ __('app.att.date_to') }}">
             <button class="primary-button" type="submit">{{ __('app.filters') }}</button>
         </form>
-        <p class="muted-note" style="margin:12px 0 0">{{ __('app.att.period_range', ['from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d')]) }}</p>
+        <p class="muted-note" style="margin:12px 0 0">{{ __('app.att.period_range', ['from' => $from->format('d/m/Y'), 'to' => $to->format('d/m/Y')]) }}</p>
     </section>
 
     <div class="mini-stats">

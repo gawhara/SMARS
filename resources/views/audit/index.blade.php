@@ -50,7 +50,7 @@
                 <tbody>
                     @forelse ($logs as $log)
                         <tr>
-                            <td dir="ltr">{{ optional($log->created_at)->format('Y-m-d H:i') }}</td>
+                            <td dir="ltr">{{ optional($log->created_at)->format('d/m/Y H:i') }}</td>
                             <td>{{ $log->user?->name ?? __('app.audit.system') }}</td>
                             <td><span class="status-badge info">{{ $log->actionLabel() }}</span></td>
                             <td>{{ $log->description ?: __('app.none') }}</td>

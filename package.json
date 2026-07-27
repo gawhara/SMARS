@@ -15,6 +15,7 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
-        "@fontsource/cairo": "^5.2.7"
+        "@fontsource/cairo": "^5.2.7",
+        "flatpickr": "^4.6.13"
     }
 }

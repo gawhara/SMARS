@@ -12,15 +12,33 @@
             </p>
         </div>
         <div class="table-actions">
-            <form method="GET" action="{{ route('attendance.employee.print', $employee) }}" target="_blank" class="att-print-form">
-                <input type="hidden" name="date_from" value="{{ $from->format('Y-m-d') }}">
-                <input type="hidden" name="date_to" value="{{ $to->format('Y-m-d') }}">
-                <button class="primary-button" type="submit">{{ __('app.att.print_report') }}</button>
-            </form>
+            <button type="button" class="primary-button" data-dialog-open="print-range-dialog">{{ __('app.att.print_report') }}</button>
             <a class="ghost-button" href="{{ route('attendance.index') }}">{{ __('app.att.back_to_directory') }}</a>
             <a class="ghost-button" href="{{ route('employees.show', $employee) }}">{{ __('app.att.employee_profile') }}</a>
         </div>
     </section>
+
+    {{-- Pick the report period before printing --}}
+    <dialog id="print-range-dialog" class="range-dialog">
+        <form method="GET" action="{{ route('attendance.employee.print', $employee) }}" target="_blank">
+            <h3>{{ __('app.att.print_report') }}</h3>
+            <p>{{ __('app.att.choose_print_range') }}</p>
+            <div class="att-field-row">
+                <label class="att-field">
+                    <span>{{ __('app.att.date_from') }}</span>
+                    <input type="date" name="date_from" value="{{ $from->format('Y-m-d') }}" required>
+                </label>
+                <label class="att-field">
+                    <span>{{ __('app.att.date_to') }}</span>
+                    <input type="date" name="date_to" value="{{ $to->format('Y-m-d') }}" required>
+                </label>
+            </div>
+            <div class="range-dialog-actions">
+                <button type="button" class="ghost-button" data-dialog-close>{{ __('app.cancel') }}</button>
+                <button type="submit" class="primary-button" data-dialog-close>{{ __('app.att.print_report') }}</button>
+            </div>
+        </form>
+    </dialog>
 
     @include('partials.flash')
 
@@ -37,41 +55,41 @@
         ];
     @endphp
 
-    {{-- Period filter + quick presets --}}
-    <section class="panel filter-panel">
-        <form class="filter-bar" method="GET">
-            <label class="attendance-filter-field">
-                <span>{{ __('app.att.date_from') }}</span>
-                <input type="date" name="date_from" value="{{ $from->format('Y-m-d') }}">
-            </label>
-            <label class="attendance-filter-field">
-                <span>{{ __('app.att.date_to') }}</span>
-                <input type="date" name="date_to" value="{{ $to->format('Y-m-d') }}">
-            </label>
-            <button class="primary-button" type="submit">{{ __('app.filters') }}</button>
+    {{-- Compact console: attendance rate + period filter + quick presets --}}
+    <section class="att-console">
+        <div class="att-console-rate">
+            <span class="att-rate-ring" style="--rate: {{ $rate * 3.6 }}deg; --ring-color: {{ $ringColor }}">
+                <strong>{{ $rate }}%</strong>
+            </span>
+            <div class="att-rate-meta">
+                <span class="att-rate-label">{{ __('app.att.attendance_rate') }}</span>
+                <h2>{{ __('app.att.worked_of_expected', ['worked' => $summary['worked_days'], 'expected' => $expected]) }}</h2>
+                <p><bdi dir="ltr">{{ $from->format('d/m/Y') }}</bdi> — <bdi dir="ltr">{{ $to->format('d/m/Y') }}</bdi></p>
+            </div>
+        </div>
+        <form class="att-console-filter" method="GET">
+            <div class="att-field-row">
+                <label class="att-field">
+                    <span>{{ __('app.att.date_from') }}</span>
+                    <input type="date" name="date_from" value="{{ $from->format('Y-m-d') }}">
+                </label>
+                <label class="att-field">
+                    <span>{{ __('app.att.date_to') }}</span>
+                    <input type="date" name="date_to" value="{{ $to->format('Y-m-d') }}">
+                </label>
+                <button class="primary-button" type="submit">{{ __('app.filters') }}</button>
+            </div>
+            <div class="att-presets">
+                @foreach ($presets as $key => [$pFrom, $pTo])
+                    @php $isActive = $from->isSameDay($pFrom) && $to->isSameDay($pTo); @endphp
+                    <a class="att-preset {{ $isActive ? 'active' : '' }}"
+                       href="{{ route('attendance.employee', ['employee' => $employee->id, 'date_from' => $pFrom->format('Y-m-d'), 'date_to' => $pTo->format('Y-m-d')]) }}">
+                        {{ __('app.att.preset_'.$key) }}
+                    </a>
+                @endforeach
+            </div>
         </form>
-        <div class="att-presets">
-            @foreach ($presets as $key => [$pFrom, $pTo])
-                @php $isActive = $from->isSameDay($pFrom) && $to->isSameDay($pTo); @endphp
-                <a class="att-preset {{ $isActive ? 'active' : '' }}"
-                   href="{{ route('attendance.employee', ['employee' => $employee->id, 'date_from' => $pFrom->format('Y-m-d'), 'date_to' => $pTo->format('Y-m-d')]) }}">
-                    {{ __('app.att.preset_'.$key) }}
-                </a>
-            @endforeach
-        </div>
     </section>
-
-    {{-- Attendance rate hero --}}
-    <div class="att-rate-card">
-        <span class="att-rate-ring" style="--rate: {{ $rate * 3.6 }}deg; --ring-color: {{ $ringColor }}">
-            <strong>{{ $rate }}%</strong>
-        </span>
-        <div class="att-rate-meta">
-            <span class="att-rate-label">{{ __('app.att.attendance_rate') }}</span>
-            <h2>{{ __('app.att.worked_of_expected', ['worked' => $summary['worked_days'], 'expected' => $expected]) }}</h2>
-            <p>{{ __('app.att.period_range', ['from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d')]) }}</p>
-        </div>
-    </div>
 
     {{-- Dashboard: attendance / absence / leaves over the period --}}
     <div class="att-metrics">
@@ -122,8 +140,8 @@
                     <tbody>
                         @foreach ($leaves as $leave)
                             <tr>
-                                <td><bdi dir="ltr">{{ $leave->start_date->format('Y-m-d') }}</bdi></td>
-                                <td><bdi dir="ltr">{{ $leave->end_date->format('Y-m-d') }}</bdi></td>
+                                <td><bdi dir="ltr">{{ $leave->start_date->format('d/m/Y') }}</bdi></td>
+                                <td><bdi dir="ltr">{{ $leave->end_date->format('d/m/Y') }}</bdi></td>
                                 <td>{{ $leave->start_date->diffInDays($leave->end_date) + 1 }}</td>
                                 <td><span class="status-badge success">{{ __('app.att.summary_leave') }}</span></td>
                             </tr>
@@ -152,7 +170,7 @@
                 <tbody>
                     @forelse ($days as $day)
                         <tr>
-                            <td><strong><bdi dir="ltr">{{ $day->attendance_date->format('Y-m-d') }}</bdi></strong></td>
+                            <td><strong><bdi dir="ltr">{{ $day->attendance_date->format('d/m/Y') }}</bdi></strong></td>
                             <td><bdi dir="ltr">{{ $day->localizedTime('first_in_at') }}</bdi></td>
                             <td><bdi dir="ltr">{{ $day->localizedTime('last_out_at') }}</bdi></td>
                             <td><bdi dir="ltr"><strong>{{ number_format($day->worked_minutes / 60, 2) }}</strong> / {{ number_format($day->scheduled_minutes / 60, 2) }}</bdi></td>

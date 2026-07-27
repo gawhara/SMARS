@@ -126,7 +126,7 @@
                                 <td>
                                     @php $end = $employee->end_date; @endphp
                                     @if ($end)
-                                        <span class="{{ $end->isPast() ? 'text-danger' : ($end->lte(now()->addDays(30)) ? 'text-warning' : '') }}">{{ $end->format('Y-m-d') }}</span>
+                                        <span class="{{ $end->isPast() ? 'text-danger' : ($end->lte(now()->addDays(30)) ? 'text-warning' : '') }}">{{ $end->format('d/m/Y') }}</span>
                                     @else
                                         {{ __('app.none') }}
                                     @endif

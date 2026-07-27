@@ -94,7 +94,7 @@
                                     @endif
                                 </td>
                                 <td dir="ltr">{{ $record->device_user_id }}</td>
-                                <td><bdi dir="ltr">{{ $record->punch_at->format('Y-m-d H:i:s') }}</bdi></td>
+                                <td><bdi dir="ltr">{{ $record->punch_at->format('d/m/Y H:i:s') }}</bdi></td>
                                 <td><span class="status-badge {{ $typeTone[$record->punch_type] ?? 'muted' }}">{{ __('app.att.punch_'.$record->punch_type) }}</span></td>
                                 <td dir="ltr"><code class="raw-code">{{ $record->raw_punch_type ?? '—' }}</code></td>
                                 <td dir="ltr"><code class="raw-code">{{ $record->verification_type !== null && $record->verification_type !== '' ? $record->verification_type : '—' }}</code></td>

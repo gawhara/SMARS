@@ -17,8 +17,8 @@
                 <div class="muted">{{ __('app.att.monthly_report_title') }}</div>
             </div>
             <div style="text-align:end">
-                <h1><bdi dir="ltr">{{ $from->format('Y-m-d') }} → {{ $to->format('Y-m-d') }}</bdi></h1>
-                <div class="muted">{{ __('app.att.generated_at') }}: <bdi dir="ltr">{{ now()->format('Y-m-d H:i') }}</bdi></div>
+                <h1><bdi dir="ltr">{{ $from->format('d/m/Y') }} → {{ $to->format('d/m/Y') }}</bdi></h1>
+                <div class="muted">{{ __('app.att.generated_at') }}: <bdi dir="ltr">{{ now()->format('d/m/Y H:i') }}</bdi></div>
             </div>
         </div>
 
@@ -54,7 +54,7 @@
                 @foreach ($rows as $row)
                     @php $s = $row['summary']; $status = $row['status']; @endphp
                     <tr class="{{ in_array($status, ['rest', 'holiday']) ? 'row-weekend' : '' }}">
-                        <td><bdi dir="ltr">{{ $row['date']->format('Y-m-d') }}</bdi></td>
+                        <td><bdi dir="ltr">{{ $row['date']->format('d/m/Y') }}</bdi></td>
                         <td>{{ $row['date']->locale(app()->getLocale())->dayName }}</td>
                         <td><bdi dir="ltr">{{ $s ? $s->localizedTime('first_in_at') : '—' }}</bdi></td>
                         <td><bdi dir="ltr">{{ $s ? $s->localizedTime('last_out_at') : '—' }}</bdi></td>

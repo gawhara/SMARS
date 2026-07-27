@@ -100,7 +100,7 @@
                             </td>
                             <td dir="ltr">{{ $enrollment->device_user_id }}</td>
                             <td>{{ $enrollment->employee?->company?->localizedName() ?? __('app.none') }}</td>
-                            <td>{{ optional($enrollment->enrolled_at)->format('Y-m-d') ?? __('app.none') }}</td>
+                            <td>{{ optional($enrollment->enrolled_at)->format('d/m/Y') ?? __('app.none') }}</td>
                             <td>{{ $enrollment->source_machine_id ? optional($enrollment->sourceMachine)->device_name : __('app.none') }}</td>
                             <td class="table-actions">
                                 <form method="POST" action="{{ route('devices.enrollments.destroy', [$device, $enrollment]) }}" onsubmit="return confirm('{{ __('app.confirm_delete') }}')">

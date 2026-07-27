@@ -78,7 +78,7 @@
                             <tr class="{{ ($row['locked'] || $row['pending_correction']) ? 'reconciliation-row-locked' : '' }}">
                                 <td class="select-column"><input type="checkbox" name="summary_ids[]" value="{{ $summary->id }}" data-row-select @disabled($row['locked'] || $row['pending_correction']) aria-label="{{ __('app.recon.select_record', ['name' => $summary->employee->localizedName()]) }}"></td>
                                 <td><a class="cell-name" href="{{ route('employees.show', $summary->employee) }}">{{ $summary->employee->localizedName() }}</a><small>{{ $summary->employee->hr_employee_id }} · {{ $summary->employee->company?->localizedName() }}</small></td>
-                                <td><strong dir="ltr">{{ $summary->attendance_date->format('Y-m-d') }}</strong><small>{{ $summary->employee->shift?->localizedName() ?? __('app.none') }}</small></td>
+                                <td><strong dir="ltr">{{ $summary->attendance_date->format('d/m/Y') }}</strong><small>{{ $summary->employee->shift?->localizedName() ?? __('app.none') }}</small></td>
                                 <td>
                                     <div class="reconciliation-periods">
                                         @forelse($row['periods'] as $period)
@@ -92,7 +92,7 @@
                                 <td>
                                     @if($row['locked'])<span class="status-badge muted">{{ __('app.recon.locked') }}</span>
                                     @elseif($row['pending_correction'])<span class="status-badge info">{{ __('app.recon.correction_pending') }}</span>
-                                    @elseif($summary->reconciliation_status === 'approved')<span class="status-badge success">{{ __('app.recon.approved') }}</span><small>{{ $summary->reconciler?->name }} · {{ $summary->reconciled_at?->format('Y-m-d') }}</small>
+                                    @elseif($summary->reconciliation_status === 'approved')<span class="status-badge success">{{ __('app.recon.approved') }}</span><small>{{ $summary->reconciler?->name }} · {{ $summary->reconciled_at?->format('d/m/Y') }}</small>
                                     @else<span class="status-badge warning">{{ __('app.recon.open') }}</span>@endif
                                 </td>
                                 <td class="table-actions"><a class="ghost-button" href="{{ route('attendance.index', ['employee_id' => $summary->employee_id, 'date_from' => $summary->attendance_date->format('Y-m-d'), 'date_to' => $summary->attendance_date->format('Y-m-d')]) }}">{{ __('app.recon.view_day') }}</a><a class="primary-button" href="{{ route('attendance.corrections.create', ['employee_id' => $summary->employee_id, 'date' => $summary->attendance_date->format('Y-m-d')]) }}">{{ __('app.att.add_correction') }}</a></td>

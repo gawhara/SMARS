@@ -118,7 +118,15 @@ class PayrollDeductionReportService
         $earlyAmount = $this->money->hourAmount($earlyHours, $hourlyRate);
         $missingAmount = $this->money->hourAmount($missingHours, $hourlyRate);
         $absenceAmount = $this->money->absenceAmount($penaltyDays, $dailyRate);
-        $totalDeduction = round($lateAmount + $earlyAmount + $missingAmount + $absenceAmount, 2);
+
+        // Administrative penalties recorded in the period also reduce net pay.
+        $penalties = \App\Models\AdministrativePenalty::active()
+            ->where('employee_id', $employee->id)
+            ->whereBetween('penalty_date', [$from->copy()->startOfDay(), $to->copy()->endOfDay()])
+            ->get();
+        $penaltyAmount = round((float) $penalties->sum('amount'), 2);
+
+        $totalDeduction = round($lateAmount + $earlyAmount + $missingAmount + $absenceAmount + $penaltyAmount, 2);
 
         return [
             'employee' => $employee,
@@ -134,6 +142,8 @@ class PayrollDeductionReportService
             'early_amount' => $earlyAmount,
             'missing_amount' => $missingAmount,
             'absence_amount' => $absenceAmount,
+            'penalty_count' => $penalties->count(),
+            'penalty_amount' => $penaltyAmount,
             'total_deduction' => $totalDeduction,
             'net_salary' => round($salaryBasis - $totalDeduction, 2),
             'review_count' => $reviewCount,

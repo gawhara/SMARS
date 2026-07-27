@@ -58,7 +58,7 @@ class AttendanceEmployeeTest extends TestCase
             ->assertOk()
             ->assertSee(__('app.att.absent_days'))
             ->assertSee(__('app.att.present_days'))
-            ->assertSee('2026-07-12');
+            ->assertSee('12/07/2026');
     }
 
     public function test_printable_monthly_report_lists_every_day(): void
@@ -81,7 +81,7 @@ class AttendanceEmployeeTest extends TestCase
 
         $response->assertOk()
             ->assertSee(__('app.att.monthly_report_title'))
-            ->assertSee('2026-07-12')   // the worked day
-            ->assertSee('2026-07-31');  // last day of the month is still listed
+            ->assertSee('12/07/2026')   // the worked day
+            ->assertSee('31/07/2026');  // last day of the month is still listed
     }
 }

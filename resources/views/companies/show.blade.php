@@ -41,7 +41,7 @@
                     <div><dt>{{ __('app.company_info.legal_name_en') }}</dt><dd>{{ $company->legal_name_en ?: __('app.none') }}</dd></div>
                     <div><dt>{{ __('app.company_info.cr_number') }}</dt><dd>{{ $company->cr_number ?: __('app.none') }}</dd></div>
                     <div><dt>{{ __('app.company_info.vat_number') }}</dt><dd>{{ $company->vat_number ?: __('app.none') }}</dd></div>
-                    <div><dt>{{ __('app.company_info.established_date') }}</dt><dd>{{ optional($company->established_date)->format('Y-m-d') ?: __('app.none') }}</dd></div>
+                    <div><dt>{{ __('app.company_info.established_date') }}</dt><dd>{{ optional($company->established_date)->format('d/m/Y') ?: __('app.none') }}</dd></div>
                 </dl>
             </div>
         </section>

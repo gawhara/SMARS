@@ -84,6 +84,7 @@ return [
             'children' => [
                 ['title' => 'deduct.periods', 'route' => 'payroll.periods.index', 'active' => 'payroll.periods.*', 'permission' => 'payroll.view'],
                 ['title' => 'deduct.title', 'route' => 'payroll.deductions.index', 'active' => 'payroll.deductions.*', 'permission' => 'payroll.view'],
+                ['title' => 'penalty.title', 'route' => 'penalties.index', 'active' => 'penalties.*', 'permission' => 'penalties.view'],
             ],
         ],
         ['title' => 'reports', 'route' => null, 'icon' => 'chart', 'permission' => 'reports.view'],

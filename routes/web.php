@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdministrativePenaltyController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendanceCorrectionController;
 use App\Http\Controllers\AuditLogController;
@@ -155,6 +156,15 @@ Route::middleware('auth')->group(function () {
         Route::get('payroll/periods', [PayrollPeriodController::class, 'index'])->name('payroll.periods.index');
         Route::get('payroll/deductions', [PayrollDeductionController::class, 'index'])->name('payroll.deductions.index');
         Route::get('payroll/deductions/{employee}', [PayrollDeductionController::class, 'employee'])->name('payroll.deductions.employee');
+    });
+
+    // ---- Administrative penalties ----
+    Route::middleware('can:penalties.view')->group(function () {
+        Route::get('penalties', [AdministrativePenaltyController::class, 'index'])->name('penalties.index');
+    });
+    Route::middleware('can:penalties.manage')->group(function () {
+        Route::post('penalties', [AdministrativePenaltyController::class, 'store'])->name('penalties.store');
+        Route::put('penalties/{penalty}/cancel', [AdministrativePenaltyController::class, 'cancel'])->name('penalties.cancel');
     });
     Route::middleware('can:payroll.manage')->group(function () {
         Route::post('payroll/periods', [PayrollPeriodController::class, 'store'])->name('payroll.periods.store');

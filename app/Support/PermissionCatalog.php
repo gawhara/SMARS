@@ -57,6 +57,8 @@ class PermissionCatalog
             // Payroll
             'payroll.view' => 'payroll',
             'payroll.manage' => 'payroll',
+            'penalties.view' => 'payroll',
+            'penalties.manage' => 'payroll',
 
             // Cross-cutting
             'reports.view' => 'reports',
@@ -99,6 +101,7 @@ class PermissionCatalog
                 'devices.view', 'devices.manage', 'devices.provision',
                 'leaves.view', 'leaves.manage',
                 'payroll.view', 'payroll.manage',
+                'penalties.view', 'penalties.manage',
                 'reports.view',
             ],
 
@@ -108,6 +111,7 @@ class PermissionCatalog
                 'attendance.view', 'attendance.manage',
                 'devices.view',
                 'leaves.view', 'leaves.manage',
+                'penalties.view', 'penalties.manage',
                 'reports.view',
             ],
 
@@ -116,6 +120,7 @@ class PermissionCatalog
                 'employees.view',
                 'attendance.view',
                 'payroll.view', 'payroll.manage',
+                'penalties.view',
                 'reports.view',
             ],
 

@@ -60,7 +60,7 @@
                             <td>
                                 @if ($period->isLocked())
                                     {{ $period->lockedBy?->name ?? __('app.none') }}
-                                    <small>{{ optional($period->locked_at)->format('Y-m-d H:i') }}</small>
+                                    <small>{{ optional($period->locked_at)->format('d/m/Y H:i') }}</small>
                                 @else
                                     {{ __('app.none') }}
                                 @endif
