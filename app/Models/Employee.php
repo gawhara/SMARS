@@ -80,6 +80,22 @@ class Employee extends Model
         return $this->belongsTo(Shift::class);
     }
 
+    public function latencyPolicy(): BelongsTo
+    {
+        return $this->belongsTo(LatencyPolicy::class);
+    }
+
+    /**
+     * The late-entry policy that applies to this employee: their assigned one,
+     * or the organisation default when none is assigned.
+     */
+    public function effectiveLatencyPolicy(): LatencyPolicy
+    {
+        return $this->latencyPolicy && $this->latencyPolicy->is_active
+            ? $this->latencyPolicy
+            : LatencyPolicy::defaultPolicy();
+    }
+
     public function attendanceDailySummaries(): HasMany
     {
         return $this->hasMany(AttendanceDailySummary::class);

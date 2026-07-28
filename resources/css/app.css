@@ -3005,6 +3005,42 @@ thead .matrix-name-col {
 
 .gosi-note { margin: 12px 0 0; color: var(--muted); font-size: .78rem; }
 
+/* Latency policy forms */
+.latency-policy-form { padding: 4px 2px; }
+.latency-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px 18px;
+    align-items: start;
+}
+.latency-fields .att-field input {
+    box-sizing: border-box;
+    height: 40px;
+    width: 100%;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface-soft);
+    font-size: .9rem;
+}
+.latency-fields .field-hint,
+.field-hint { display: block; margin-top: 4px; color: var(--muted); font-size: .72rem; font-weight: 600; }
+.checkbox-field {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 4px 8px;
+}
+.checkbox-field input { grid-row: 1; }
+.checkbox-field > span { font-size: .82rem; font-weight: 700; }
+.checkbox-field .field-hint { grid-column: 2; }
+.latency-policy-form .form-actions { margin-top: 16px; }
+.row-editor { margin-bottom: 6px; }
+.row-editor > summary { display: inline-block; cursor: pointer; list-style: none; }
+.row-editor[open] > summary { margin-bottom: 10px; }
+.ghost-button.danger { color: #b91c1c; border-color: #fecaca; }
+.ghost-button.danger:hover { background: #fef2f2; }
+
 .money-value {
     font-variant-numeric: tabular-nums;
 }

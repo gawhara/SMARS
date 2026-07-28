@@ -18,6 +18,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\LatencyCalculatorController;
+use App\Http\Controllers\LatencyPolicyController;
 use App\Http\Controllers\PayrollDeductionController;
 use App\Http\Controllers\PayrollPeriodController;
 use App\Http\Controllers\PositionController;
@@ -156,6 +158,15 @@ Route::middleware('auth')->group(function () {
         Route::get('payroll/periods', [PayrollPeriodController::class, 'index'])->name('payroll.periods.index');
         Route::get('payroll/deductions', [PayrollDeductionController::class, 'index'])->name('payroll.deductions.index');
         Route::get('payroll/deductions/{employee}', [PayrollDeductionController::class, 'employee'])->name('payroll.deductions.employee');
+        Route::get('latency/calculator', [LatencyCalculatorController::class, 'index'])->name('latency.calculator');
+        Route::get('latency/policies', [LatencyPolicyController::class, 'index'])->name('latency.policies.index');
+    });
+
+    // ---- Latency (late-entry) policy management ----
+    Route::middleware('can:payroll.manage')->group(function () {
+        Route::post('latency/policies', [LatencyPolicyController::class, 'store'])->name('latency.policies.store');
+        Route::put('latency/policies/{latencyPolicy}', [LatencyPolicyController::class, 'update'])->name('latency.policies.update');
+        Route::delete('latency/policies/{latencyPolicy}', [LatencyPolicyController::class, 'destroy'])->name('latency.policies.destroy');
     });
 
     // ---- Administrative penalties ----

@@ -121,6 +121,15 @@
                     </select>
                 </label>
                 <label>
+                    <span>{{ __('app.latency.assign_label') }}</span>
+                    <select name="latency_policy_id">
+                        <option value="">{{ __('app.latency.assign_default_option') }}</option>
+                        @foreach ($latencyPolicies as $policy)
+                            <option value="{{ $policy->id }}" @selected((string) old('latency_policy_id', $employee->latency_policy_id) === (string) $policy->id)>{{ $policy->name }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label>
                     <span>{{ __('app.status') }}</span>
                     <select name="status">
                         <option value="active" @selected(old('status', $employee->status) === 'active')>{{ __('app.active') }}</option>

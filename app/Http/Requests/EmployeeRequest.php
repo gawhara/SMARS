@@ -58,6 +58,7 @@ class EmployeeRequest extends FormRequest
             'department_id' => ['nullable', 'integer', Rule::exists('departments', 'id')->whereNull('deleted_at')],
             'position_id' => ['nullable', 'integer', Rule::exists('positions', 'id')->whereNull('deleted_at')],
             'shift_id' => ['nullable', 'integer', Rule::exists('shifts', 'id')->whereNull('deleted_at')],
+            'latency_policy_id' => ['nullable', 'integer', Rule::exists('latency_policies', 'id')],
 
             // Identity
             'name_ar' => ['required', 'string', 'max:255'],

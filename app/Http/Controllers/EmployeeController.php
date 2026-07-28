@@ -164,6 +164,7 @@ class EmployeeController extends Controller
                 ->orderBy('name_en')->get(),
             'banks' => Bank::where('is_active', true)->orderBy('name_en')->get(),
             'countries' => Country::ordered()->get(),
+            'latencyPolicies' => \App\Models\LatencyPolicy::active()->orderBy('name')->get(['id', 'name']),
         ];
     }
 }
