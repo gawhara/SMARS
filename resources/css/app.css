@@ -3043,21 +3043,61 @@ thead .matrix-name-col {
 .link-button { background: none; border: none; color: var(--primary); font: inherit; font-weight: 700; cursor: pointer; padding: 0; }
 
 /* ---- Latency Calculator: filter, presets ---- */
-.calc-filter form { display: flex; flex-direction: column; gap: 12px; }
-.calc-filter-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
-.calc-field-grow { flex: 1 1 240px; min-width: 200px; }
-.calc-filter .att-field { display: grid; gap: 5px; }
-.calc-filter .att-field > span { color: var(--muted); font-size: .72rem; font-weight: 800; line-height: 1; padding-inline: 2px; }
-.calc-filter .att-field input,
-.calc-filter .att-field input.flatpickr-alt,
-.calc-filter .att-field select {
-    box-sizing: border-box; height: 42px; min-width: 150px; padding: 0 12px;
-    border: 1px solid var(--border); border-radius: 10px; background: var(--surface-soft);
-    font-size: .9rem; font-weight: 600;
+.calc-filter { padding: 0; overflow: hidden; }
+.calc-filter-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 15px 18px; border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--primary-soft), transparent);
 }
-.calc-filter .att-field select { min-width: 170px; }
-.calc-run { height: 42px; padding-inline: 24px; }
-.calc-presets { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; }
+.calc-filter-badge {
+    display: inline-grid; place-items: center; width: 38px; height: 38px; flex: 0 0 38px;
+    border-radius: 11px; color: #fff; background: linear-gradient(135deg, var(--primary), var(--primary-2, #6366f1));
+    box-shadow: 0 4px 12px rgba(79, 70, 229, .3);
+}
+.calc-filter-badge svg { width: 19px; height: 19px; }
+.calc-filter-head strong { display: block; font-size: .95rem; font-weight: 800; }
+.calc-filter-head small { color: var(--muted); font-size: .8rem; }
+
+.calc-filter form { display: flex; flex-direction: column; gap: 14px; padding: 16px 18px; }
+.calc-filter-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px; }
+.calc-field-grow { flex: 1 1 260px; min-width: 220px; }
+.calc-filter .att-field { display: grid; gap: 6px; min-width: 160px; }
+.calc-filter .att-field > span:not(.field-control) { color: var(--muted); font-size: .72rem; font-weight: 800; line-height: 1; padding-inline: 2px; }
+
+.field-control { position: relative; display: block; }
+.field-control .fc-ic {
+    position: absolute; inset-inline-start: 12px; top: 50%; transform: translateY(-50%);
+    width: 17px; height: 17px; color: var(--muted); pointer-events: none;
+}
+.calc-filter .field-control input,
+.calc-filter .field-control input.flatpickr-alt,
+.calc-filter .field-control select {
+    box-sizing: border-box; width: 100%; height: 44px; min-width: 0;
+    padding-inline-start: 38px; padding-inline-end: 14px;
+    border: 1px solid var(--border); border-radius: 11px; background: var(--surface-soft);
+    color: var(--text); font-size: .9rem; font-weight: 600;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.calc-filter .field-control input:focus,
+.calc-filter .field-control select:focus {
+    outline: none; background: var(--card);
+    border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.calc-daterange { display: flex; align-items: flex-end; gap: 8px; flex: 1 1 320px; }
+.calc-daterange .att-field { flex: 1 1 140px; }
+.calc-daterange-sep { color: var(--muted); font-weight: 800; padding-bottom: 12px; }
+
+.calc-run {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 44px; padding-inline: 22px; white-space: nowrap;
+}
+.calc-run svg { width: 18px; height: 18px; }
+
+.calc-presets {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0;
+    padding-top: 14px; border-top: 1px dashed var(--border);
+}
 .calc-presets-label { color: var(--muted); font-size: .74rem; font-weight: 800; }
 .att-preset.active { color: #fff; background: var(--primary); border-color: var(--primary); }
 

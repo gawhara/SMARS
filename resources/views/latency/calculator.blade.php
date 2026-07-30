@@ -17,37 +17,64 @@
     @include('partials.flash')
 
     <section class="panel filter-panel calc-filter">
+        <div class="calc-filter-head">
+            <span class="calc-filter-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
+            </span>
+            <div>
+                <strong>{{ __('app.latency.filter_title') }}</strong>
+                <small>{{ __('app.latency.filter_hint') }}</small>
+            </div>
+        </div>
         <form method="GET">
             <div class="calc-filter-row">
                 <label class="att-field calc-field-grow">
                     <span>{{ __('app.latency.select_employee') }}</span>
-                    <select name="employee_id" required>
-                        <option value="">{{ __('app.select_placeholder') }}</option>
-                        @foreach ($employees as $emp)
-                            <option value="{{ $emp->id }}" @selected($selectedEmployee && $selectedEmployee->id === $emp->id)>
-                                {{ $emp->localizedName() }} · {{ $emp->employee_code }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <span class="field-control">
+                        <svg class="fc-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+                        <select name="employee_id" required>
+                            <option value="">{{ __('app.select_placeholder') }}</option>
+                            @foreach ($employees as $emp)
+                                <option value="{{ $emp->id }}" @selected($selectedEmployee && $selectedEmployee->id === $emp->id)>
+                                    {{ $emp->localizedName() }} · {{ $emp->employee_code }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </span>
                 </label>
-                <label class="att-field">
-                    <span>{{ __('app.att.date_from') }}</span>
-                    <input type="date" name="date_from" value="{{ $from }}">
-                </label>
-                <label class="att-field">
-                    <span>{{ __('app.att.date_to') }}</span>
-                    <input type="date" name="date_to" value="{{ $to }}">
-                </label>
+                <div class="calc-daterange">
+                    <label class="att-field">
+                        <span>{{ __('app.att.date_from') }}</span>
+                        <span class="field-control">
+                            <svg class="fc-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+                            <input type="date" name="date_from" value="{{ $from }}">
+                        </span>
+                    </label>
+                    <span class="calc-daterange-sep" aria-hidden="true">←</span>
+                    <label class="att-field">
+                        <span>{{ __('app.att.date_to') }}</span>
+                        <span class="field-control">
+                            <svg class="fc-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+                            <input type="date" name="date_to" value="{{ $to }}">
+                        </span>
+                    </label>
+                </div>
                 <label class="att-field">
                     <span>{{ __('app.latency.override_policy') }}</span>
-                    <select name="policy_id">
-                        <option value="">{{ __('app.latency.employee_default_policy') }}</option>
-                        @foreach ($policies as $p)
-                            <option value="{{ $p->id }}" @selected(request('policy_id') == $p->id)>{{ $p->name }}</option>
-                        @endforeach
-                    </select>
+                    <span class="field-control">
+                        <svg class="fc-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2" fill="var(--surface-soft)"/><circle cx="15" cy="12" r="2" fill="var(--surface-soft)"/><circle cx="8" cy="18" r="2" fill="var(--surface-soft)"/></svg>
+                        <select name="policy_id">
+                            <option value="">{{ __('app.latency.employee_default_policy') }}</option>
+                            @foreach ($policies as $p)
+                                <option value="{{ $p->id }}" @selected(request('policy_id') == $p->id)>{{ $p->name }}</option>
+                            @endforeach
+                        </select>
+                    </span>
                 </label>
-                <button class="primary-button calc-run" type="submit">{{ __('app.latency.run') }}</button>
+                <button class="primary-button calc-run" type="submit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    {{ __('app.latency.run') }}
+                </button>
             </div>
             <div class="att-presets calc-presets">
                 <span class="calc-presets-label">{{ __('app.latency.quick_range') }}</span>

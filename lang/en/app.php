@@ -206,6 +206,8 @@ return [
         'late' => 'Late',
         'absence' => 'Absence',
         'quick_range' => 'Quick range',
+        'filter_title' => 'Employee & period',
+        'filter_hint' => 'Choose who to calculate for and over which dates.',
     ],
     'gosi' => [
         'title' => 'GOSI social insurance',
