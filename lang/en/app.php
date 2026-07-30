@@ -199,6 +199,13 @@ return [
         'day' => 'Day',
         'no_deductions' => 'No late or absence deductions in this period.',
         'pick_prompt' => 'Pick an employee and a date range, then calculate.',
+        'preset_this_month' => 'This month',
+        'preset_last_month' => 'Last month',
+        'preset_last_3_months' => 'Last 3 months',
+        'preset_this_year' => 'This year',
+        'late' => 'Late',
+        'absence' => 'Absence',
+        'quick_range' => 'Quick range',
     ],
     'gosi' => [
         'title' => 'GOSI social insurance',

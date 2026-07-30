@@ -30,6 +30,40 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', () => button.closest('dialog')?.close());
     });
 
+    // Quick date-range presets: fill the from/to date inputs (and their
+    // flatpickr instances) within the same form.
+    const pad = (n) => String(n).padStart(2, '0');
+    const fmt = (dt) => `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
+    const rangeFor = (key) => {
+        const d = new Date();
+        const today = new Date();
+        switch (key) {
+            case 'this_month': return [fmt(new Date(d.getFullYear(), d.getMonth(), 1)), fmt(today)];
+            case 'last_month': return [fmt(new Date(d.getFullYear(), d.getMonth() - 1, 1)), fmt(new Date(d.getFullYear(), d.getMonth(), 0))];
+            case 'last_3_months': return [fmt(new Date(d.getFullYear(), d.getMonth() - 2, 1)), fmt(today)];
+            case 'this_year': return [fmt(new Date(d.getFullYear(), 0, 1)), fmt(today)];
+            default: return [fmt(today), fmt(today)];
+        }
+    };
+    const setDateInput = (input, value) => {
+        if (!input) return;
+        if (input._flatpickr) {
+            input._flatpickr.setDate(value, true);
+        } else {
+            input.value = value;
+        }
+    };
+    document.querySelectorAll('[data-range]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const form = button.closest('form');
+            if (!form) return;
+            const [from, to] = rangeFor(button.dataset.range);
+            setDateInput(form.querySelector('input[name="date_from"]'), from);
+            setDateInput(form.querySelector('input[name="date_to"]'), to);
+            form.querySelectorAll('[data-range]').forEach((b) => b.classList.toggle('active', b === button));
+        });
+    });
+
     const sidebar = document.getElementById('sidebar');
     const toggle = document.querySelector('[data-sidebar-toggle]');
     const backdrop = document.querySelector('[data-sidebar-close]');

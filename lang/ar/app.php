@@ -197,6 +197,13 @@ return [
         'day' => 'اليوم',
         'no_deductions' => 'لا توجد خصومات تأخير أو غياب في هذه الفترة.',
         'pick_prompt' => 'اختر موظفاً وفترة زمنية ثم احسب.',
+        'preset_this_month' => 'هذا الشهر',
+        'preset_last_month' => 'الشهر الماضي',
+        'preset_last_3_months' => 'آخر ٣ أشهر',
+        'preset_this_year' => 'هذا العام',
+        'late' => 'التأخير',
+        'absence' => 'الغياب',
+        'quick_range' => 'فترة سريعة',
     ],
     'gosi' => [
         'title' => 'التأمينات الاجتماعية (GOSI)',

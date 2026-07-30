@@ -3040,6 +3040,123 @@ thead .matrix-name-col {
 .row-editor[open] > summary { margin-bottom: 10px; }
 .ghost-button.danger { color: #b91c1c; border-color: #fecaca; }
 .ghost-button.danger:hover { background: #fef2f2; }
+.link-button { background: none; border: none; color: var(--primary); font: inherit; font-weight: 700; cursor: pointer; padding: 0; }
+
+/* ---- Latency Calculator: filter, presets ---- */
+.calc-filter form { display: flex; flex-direction: column; gap: 12px; }
+.calc-filter-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
+.calc-field-grow { flex: 1 1 240px; min-width: 200px; }
+.calc-filter .att-field { display: grid; gap: 5px; }
+.calc-filter .att-field > span { color: var(--muted); font-size: .72rem; font-weight: 800; line-height: 1; padding-inline: 2px; }
+.calc-filter .att-field input,
+.calc-filter .att-field input.flatpickr-alt,
+.calc-filter .att-field select {
+    box-sizing: border-box; height: 42px; min-width: 150px; padding: 0 12px;
+    border: 1px solid var(--border); border-radius: 10px; background: var(--surface-soft);
+    font-size: .9rem; font-weight: 600;
+}
+.calc-filter .att-field select { min-width: 170px; }
+.calc-run { height: 42px; padding-inline: 24px; }
+.calc-presets { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; }
+.calc-presets-label { color: var(--muted); font-size: .74rem; font-weight: 800; }
+.att-preset.active { color: #fff; background: var(--primary); border-color: var(--primary); }
+
+/* ---- Money summary hero ---- */
+.calc-summary {
+    display: grid;
+    grid-template-columns: minmax(180px, 0.9fr) minmax(180px, 1fr) minmax(220px, 1.4fr);
+    gap: 18px;
+    align-items: stretch;
+    margin-bottom: 16px;
+    padding: 22px 24px;
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: #fff;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(79, 70, 229, .28);
+}
+.calc-summary-total { display: flex; flex-direction: column; justify-content: center; }
+.calc-summary-label { font-size: .82rem; font-weight: 700; opacity: .85; }
+.calc-summary-total strong { font-size: 2.4rem; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.calc-summary-total small { font-size: .8rem; opacity: .8; }
+.calc-summary-split { display: grid; grid-template-rows: 1fr 1fr; gap: 10px; }
+.calc-split-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-radius: 12px; background: rgba(255, 255, 255, .14);
+}
+.calc-split-item span { font-size: .82rem; font-weight: 700; opacity: .9; }
+.calc-split-item strong { font-size: 1.15rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.calc-split-item.late { border-inline-start: 3px solid #fbbf24; }
+.calc-split-item.absence { border-inline-start: 3px solid #fb7185; }
+.calc-summary-meta {
+    display: flex; flex-direction: column; gap: 8px; justify-content: center;
+    padding-inline-start: 18px; border-inline-start: 1px solid rgba(255, 255, 255, .22);
+}
+.calc-meta-emp strong { display: block; font-size: 1rem; font-weight: 800; }
+.calc-meta-emp span { font-size: .82rem; opacity: .85; }
+.calc-policy-chip {
+    align-self: flex-start; padding: 5px 12px; border-radius: 999px;
+    background: rgba(255, 255, 255, .18); font-size: .78rem; font-weight: 700;
+}
+.calc-rates { display: flex; flex-wrap: wrap; gap: 12px; font-size: .76rem; opacity: .9; }
+.calc-rates b { font-variant-numeric: tabular-nums; }
+
+@media (max-width: 820px) {
+    .calc-summary { grid-template-columns: 1fr; }
+    .calc-summary-meta { padding-inline-start: 0; border-inline-start: 0; border-top: 1px solid rgba(255,255,255,.22); padding-top: 12px; }
+}
+
+/* ---- Empty state ---- */
+.calc-empty {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 48px 24px; text-align: center;
+    background: var(--card); border: 1px dashed var(--border); border-radius: 16px;
+}
+.calc-empty-icon { font-size: 2.4rem; }
+.calc-empty strong { font-size: 1.05rem; font-weight: 800; }
+.calc-empty p { margin: 0; color: var(--muted); font-size: .88rem; }
+
+/* ---- Policy cards ---- */
+.policy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.policy-card {
+    display: flex; flex-direction: column; gap: 14px;
+    padding: 18px 20px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow);
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.policy-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+.policy-card.is-default { border-color: color-mix(in srgb, var(--primary) 45%, var(--border)); }
+.policy-card.is-inactive { opacity: .7; }
+.policy-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.policy-card-head h3 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+.policy-badges { display: flex; gap: 6px; }
+.policy-rule { display: flex; flex-wrap: wrap; gap: 8px; }
+.rule-pill {
+    padding: 6px 12px; border-radius: 999px; background: var(--surface-soft);
+    border: 1px solid var(--border); font-size: .8rem; font-weight: 700; color: var(--muted);
+}
+.rule-pill b { color: var(--text); font-variant-numeric: tabular-nums; }
+.rule-pill.accent { background: var(--primary-soft); border-color: transparent; color: var(--primary); }
+.rule-pill.accent b { color: var(--primary); }
+.policy-card-foot {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border);
+}
+.policy-assigned { color: var(--muted); font-size: .82rem; }
+.policy-assigned b { color: var(--text); }
+.policy-actions { display: flex; align-items: center; gap: 6px; }
+.policy-actions .ghost-button { padding: 6px 12px; font-size: .8rem; }
+
+/* ---- Form dialog (new / edit policy) ---- */
+.form-dialog {
+    width: min(560px, calc(100vw - 32px));
+    padding: 0; border: 1px solid var(--border); border-radius: 18px;
+    background: var(--card); color: var(--text); box-shadow: 0 24px 60px rgba(15, 23, 42, .3);
+}
+.form-dialog::backdrop { background: rgba(15, 23, 42, .45); backdrop-filter: blur(2px); }
+.form-dialog > form { padding: 22px 24px 20px; }
+.form-dialog-head { margin-bottom: 16px; }
+.form-dialog-head h3 { margin: 0; font-size: 1.15rem; font-weight: 800; }
+.form-dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 
 .money-value {
     font-variant-numeric: tabular-nums;
