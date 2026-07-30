@@ -17,6 +17,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EosbCalculatorController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\LatencyCalculatorController;
 use App\Http\Controllers\LatencyPolicyController;
@@ -160,6 +161,7 @@ Route::middleware('auth')->group(function () {
         Route::get('payroll/deductions/{employee}', [PayrollDeductionController::class, 'employee'])->name('payroll.deductions.employee');
         Route::get('latency/calculator', [LatencyCalculatorController::class, 'index'])->name('latency.calculator');
         Route::get('latency/policies', [LatencyPolicyController::class, 'index'])->name('latency.policies.index');
+        Route::get('eosb/calculator', [EosbCalculatorController::class, 'index'])->name('eosb.calculator');
     });
 
     // ---- Latency (late-entry) policy management ----
@@ -182,5 +184,6 @@ Route::middleware('auth')->group(function () {
         Route::put('payroll/periods/{period}/lock', [PayrollPeriodController::class, 'lock'])->name('payroll.periods.lock');
         Route::put('payroll/periods/{period}/unlock', [PayrollPeriodController::class, 'unlock'])->name('payroll.periods.unlock');
         Route::get('payroll/periods/{period}/export', [PayrollPeriodController::class, 'export'])->name('payroll.periods.export');
+        Route::get('payroll/periods/{period}/wps', [PayrollPeriodController::class, 'wps'])->name('payroll.periods.wps');
     });
 });

@@ -43,4 +43,19 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | End-of-Service Benefit (مكافأة نهاية الخدمة) — Labor Law arts. 84–85
+    |--------------------------------------------------------------------------
+    | Wage = sum of these employee columns (the full last wage). Award is
+    | ½ month per year for the first N years, 1 month per year thereafter,
+    | prorated for partial years, then scaled for resignation.
+    */
+    'eosb' => [
+        'wage_components' => ['basic_salary', 'housing_allowance', 'transportation_allowance', 'other_allowances'],
+        'first_years_threshold' => 5,
+        'first_years_rate' => 0.5,
+        'later_years_rate' => 1.0,
+    ],
+
 ];

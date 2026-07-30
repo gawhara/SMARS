@@ -32,6 +32,10 @@ class CompanyRequest extends FormRequest
             'address' => ['nullable', 'string', 'max:500'],
             'established_date' => ['nullable', 'date', 'before_or_equal:today'],
             'is_active' => ['nullable', 'boolean'],
+            // Wage Protection System (Mudad) establishment details.
+            'wps_establishment_id' => ['nullable', 'string', 'max:40'],
+            'employer_bank_code' => ['nullable', 'string', 'max:4'],
+            'employer_iban' => ['nullable', 'string', 'max:34'],
         ];
     }
 }

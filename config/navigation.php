@@ -86,6 +86,7 @@ return [
                 ['title' => 'deduct.title', 'route' => 'payroll.deductions.index', 'active' => 'payroll.deductions.*', 'permission' => 'payroll.view'],
                 ['title' => 'latency.calculator', 'route' => 'latency.calculator', 'active' => 'latency.calculator', 'permission' => 'payroll.view'],
                 ['title' => 'latency.policies', 'route' => 'latency.policies.index', 'active' => 'latency.policies.*', 'permission' => 'payroll.view'],
+                ['title' => 'eosb.calculator', 'route' => 'eosb.calculator', 'active' => 'eosb.calculator', 'permission' => 'payroll.view'],
                 ['title' => 'penalty.title', 'route' => 'penalties.index', 'active' => 'penalties.*', 'permission' => 'penalties.view'],
             ],
         ],

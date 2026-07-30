@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use App\Models\PayrollPeriod;
 use App\Services\Attendance\PayrollPeriodService;
+use App\Services\Payroll\WpsExportService;
 use App\Support\AuditLogger;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -106,6 +107,44 @@ class PayrollPeriodController extends Controller
                 ]);
             }
 
+            fclose($out);
+        }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    /**
+     * WPS / Mudad Salary Information File (SIF): EDR header + one SDR per employee.
+     */
+    public function wps(PayrollPeriod $period, WpsExportService $wps): StreamedResponse
+    {
+        $period->loadMissing('company');
+        $month = Carbon::parse($period->period_month);
+        $data = $wps->build($period->company, $month);
+
+        AuditLogger::record('payroll.wps_exported', $period, $period->company->localizedName(), [
+            'month' => $month->format('Y-m'),
+            'records' => $data['header']['record_count'],
+        ]);
+
+        $filename = 'wps_'.$period->company->code.'_'.$month->format('Y_m').'.sif.csv';
+
+        return response()->streamDownload(function () use ($data): void {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+            $h = $data['header'];
+            // EDR — Employer Detail Record.
+            fputcsv($out, [
+                $h['record_type'], $h['establishment_id'], $h['employer_bank_code'], $h['employer_iban'],
+                $h['month'], $h['file_date'], $h['record_count'], number_format($h['total_net'], 2, '.', ''), $h['currency'],
+            ]);
+            // SDR — Salary Detail Record per employee.
+            foreach ($data['records'] as $r) {
+                fputcsv($out, [
+                    $r['record_type'], $r['national_id'], $r['reference'], $r['name'], $r['bank_code'], $r['iban'],
+                    number_format($r['basic'], 2, '.', ''), number_format($r['housing'], 2, '.', ''),
+                    number_format($r['other'], 2, '.', ''), number_format($r['deductions'], 2, '.', ''),
+                    number_format($r['net'], 2, '.', ''),
+                ]);
+            }
             fclose($out);
         }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
     }

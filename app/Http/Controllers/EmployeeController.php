@@ -101,6 +101,7 @@ class EmployeeController extends Controller
                 ->get(),
             'leaves' => $leaves,
             'gosi' => app(\App\Services\Payroll\GosiService::class)->forEmployee($employee),
+            'eosb' => app(\App\Services\Payroll\EosbService::class)->forEmployee($employee, Carbon::today(), \App\Services\Payroll\EosbService::REASON_TERMINATION),
             'attendanceMonth' => $from,
             'attendanceSummary' => app(AttendanceReportService::class)
                 ->build($from, $to, collect([$employee]), $records, $holidays, $leaves->where('status', 'approved')->values())[0] ?? null,

@@ -28,6 +28,9 @@ class Company extends Model
         'address',
         'established_date',
         'is_active',
+        'wps_establishment_id',
+        'employer_bank_code',
+        'employer_iban',
     ];
 
     protected function casts(): array

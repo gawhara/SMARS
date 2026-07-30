@@ -138,6 +138,29 @@
                     </div>
                     <p class="gosi-note">{{ __('app.gosi.note') }}</p>
                 </div>
+
+                {{-- Accrued end-of-service benefit (as if service ended today) --}}
+                <div class="gosi-card eosb-file-card">
+                    <div class="gosi-card-head">
+                        <h3>{{ __('app.eosb.file_label') }}</h3>
+                        <a class="ghost-button" href="{{ route('eosb.calculator', ['employee_id' => $employee->id]) }}">{{ __('app.eosb.calculator') }}</a>
+                    </div>
+                    <div class="gosi-grid">
+                        <div class="gosi-cell">
+                            <span>{{ __('app.eosb.service') }}</span>
+                            <strong>{{ $eosb['service']['years'] }}{{ __('app.eosb.y') }} {{ $eosb['service']['months'] }}{{ __('app.eosb.m') }} {{ $eosb['service']['days'] }}{{ __('app.eosb.d') }}</strong>
+                        </div>
+                        <div class="gosi-cell">
+                            <span>{{ __('app.eosb.wage') }}</span>
+                            <strong>{{ number_format($eosb['wage'], 2) }}</strong>
+                        </div>
+                        <div class="gosi-cell total">
+                            <span>{{ __('app.eosb.award') }}</span>
+                            <strong>{{ number_format($eosb['award'], 2) }}</strong>
+                        </div>
+                    </div>
+                    <p class="gosi-note">{{ __('app.eosb.file_hint') }}</p>
+                </div>
             </div>
 
             <div class="tab-panel" data-panel="documents"><div class="profile-empty-state"><strong>{{ __('app.emp.tab_documents') }}</strong><p>{{ __('app.emp.tab_placeholder') }}</p></div></div>

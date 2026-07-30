@@ -3234,6 +3234,12 @@ thead .matrix-name-col {
 .calc-breakdown .money-late { color: #d97706; font-weight: 700; }
 .calc-breakdown .money-absence { color: #e11d48; font-weight: 700; }
 
+/* ---- EOSB ---- */
+.eosb-total-row td { background: var(--primary-soft); font-size: 1.02rem; }
+.eosb-total-row td strong { color: var(--primary); }
+.eosb-warn { color: #b45309; font-weight: 700; }
+.eosb-file-card { margin-top: 16px; }
+
 .money-value {
     font-variant-numeric: tabular-nums;
 }

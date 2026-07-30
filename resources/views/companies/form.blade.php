@@ -99,6 +99,25 @@
                 </label>
             </div>
 
+            <h3 class="form-section-title">{{ __('app.wps.section') }}</h3>
+            <div class="form-grid">
+                <label>
+                    <span>{{ __('app.wps.establishment_id') }}</span>
+                    <input name="wps_establishment_id" value="{{ old('wps_establishment_id', $company->wps_establishment_id) }}" placeholder="1-XXXXXXX">
+                    @error('wps_establishment_id')<small>{{ $message }}</small>@enderror
+                </label>
+                <label>
+                    <span>{{ __('app.wps.employer_bank_code') }}</span>
+                    <input name="employer_bank_code" value="{{ old('employer_bank_code', $company->employer_bank_code) }}" maxlength="4" placeholder="80">
+                    @error('employer_bank_code')<small>{{ $message }}</small>@enderror
+                </label>
+                <label>
+                    <span>{{ __('app.wps.employer_iban') }}</span>
+                    <input name="employer_iban" value="{{ old('employer_iban', $company->employer_iban) }}" maxlength="34" placeholder="SA...">
+                    @error('employer_iban')<small>{{ $message }}</small>@enderror
+                </label>
+            </div>
+
             <div class="form-actions">
                 <button class="primary-button" type="submit">{{ __('app.save') }}</button>
                 <a class="ghost-button" href="{{ route('companies.index') }}">{{ __('app.cancel') }}</a>
