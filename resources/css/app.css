@@ -3158,6 +3158,42 @@ thead .matrix-name-col {
 .form-dialog-head h3 { margin: 0; font-size: 1.15rem; font-weight: 800; }
 .form-dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 
+/* ---- Colorful count metrics (calculator) ---- */
+.calc-metrics { grid-template-columns: repeat(auto-fit, minmax(158px, 1fr)); gap: 14px; }
+.calc-metrics .att-metric {
+    padding: 15px 16px;
+    background: linear-gradient(150deg, color-mix(in srgb, var(--m) 16%, var(--card)) 0%, var(--card) 72%);
+    border: 1px solid color-mix(in srgb, var(--m) 34%, var(--border));
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--m) 15%, transparent);
+}
+.calc-metrics .att-metric::before { display: none; }
+.calc-metrics .att-metric:hover { box-shadow: 0 10px 22px color-mix(in srgb, var(--m) 24%, transparent); }
+.calc-metric-ico {
+    display: inline-grid; place-items: center; width: 36px; height: 36px; margin-bottom: 10px;
+    border-radius: 11px; font-size: 1.05rem; line-height: 1;
+    background: color-mix(in srgb, var(--m) 22%, var(--card));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--m) 30%, transparent);
+}
+.calc-metrics .att-metric-label { color: color-mix(in srgb, var(--m) 55%, var(--muted)); font-weight: 800; }
+.calc-metrics .att-metric-value { color: var(--m); font-size: 1.7rem; }
+
+/* ---- Livelier quick-range chips ---- */
+.calc-presets .att-preset {
+    transition: transform .12s ease, background .15s ease, color .15s ease, border-color .15s ease;
+}
+.calc-presets .att-preset:hover { color: var(--primary); border-color: color-mix(in srgb, var(--primary) 40%, var(--border)); background: var(--primary-soft); }
+.calc-presets .att-preset.active {
+    background: linear-gradient(135deg, var(--primary), var(--primary-2, #6366f1));
+    color: #fff; border-color: transparent; box-shadow: 0 3px 10px rgba(79, 70, 229, .3);
+}
+
+/* ---- Colorful breakdown table ---- */
+.calc-breakdown thead th { background: var(--surface-soft); }
+.calc-breakdown tbody tr.is-absent { background: color-mix(in srgb, #ef4444 7%, transparent); }
+.calc-breakdown tbody tr:hover { background: var(--primary-soft); }
+.calc-breakdown .money-late { color: #d97706; font-weight: 700; }
+.calc-breakdown .money-absence { color: #e11d48; font-weight: 700; }
+
 .money-value {
     font-variant-numeric: tabular-nums;
 }

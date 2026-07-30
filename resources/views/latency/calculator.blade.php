@@ -100,18 +100,18 @@
 
         {{-- Count metrics --}}
         <div class="att-metrics calc-metrics">
-            <div class="att-metric" style="--m:#f59e0b"><span class="att-metric-label">{{ __('app.latency.late_days') }}</span><span class="att-metric-value">{{ number_format($r['late_days']) }}</span></div>
-            <div class="att-metric" style="--m:#f97316"><span class="att-metric-label">{{ __('app.latency.late_minutes_total') }}</span><span class="att-metric-value">{{ number_format($r['late_minutes_total']) }}</span></div>
-            <div class="att-metric" style="--m:#8b5cf6"><span class="att-metric-label">{{ __('app.latency.late_hours') }}</span><span class="att-metric-value">{{ number_format($r['late_hours'], 1) }}</span></div>
-            <div class="att-metric" style="--m:#ef4444"><span class="att-metric-label">{{ __('app.latency.absent_days') }}</span><span class="att-metric-value">{{ number_format($r['absent_days']) }}</span></div>
-            <div class="att-metric" style="--m:#e11d48"><span class="att-metric-label">{{ __('app.latency.penalty_days') }}</span><span class="att-metric-value">{{ number_format($r['penalty_days']) }}</span></div>
+            <div class="att-metric" style="--m:#f59e0b"><span class="calc-metric-ico">⏰</span><span class="att-metric-label">{{ __('app.latency.late_days') }}</span><span class="att-metric-value">{{ number_format($r['late_days']) }}</span></div>
+            <div class="att-metric" style="--m:#f97316"><span class="calc-metric-ico">⏱️</span><span class="att-metric-label">{{ __('app.latency.late_minutes_total') }}</span><span class="att-metric-value">{{ number_format($r['late_minutes_total']) }}</span></div>
+            <div class="att-metric" style="--m:#8b5cf6"><span class="calc-metric-ico">🕐</span><span class="att-metric-label">{{ __('app.latency.late_hours') }}</span><span class="att-metric-value">{{ number_format($r['late_hours'], 1) }}</span></div>
+            <div class="att-metric" style="--m:#ef4444"><span class="calc-metric-ico">🚫</span><span class="att-metric-label">{{ __('app.latency.absent_days') }}</span><span class="att-metric-value">{{ number_format($r['absent_days']) }}</span></div>
+            <div class="att-metric" style="--m:#e11d48"><span class="calc-metric-ico">📅</span><span class="att-metric-label">{{ __('app.latency.penalty_days') }}</span><span class="att-metric-value">{{ number_format($r['penalty_days']) }}</span></div>
         </div>
 
         {{-- Day-by-day breakdown --}}
         <section class="panel">
             <div class="panel-header"><div><h2>{{ __('app.latency.breakdown') }}</h2><p>{{ count($r['days']) }}</p></div></div>
             <div class="table-wrap">
-                <table>
+                <table class="calc-breakdown">
                     <thead>
                         <tr>
                             <th>{{ __('app.latency.day') }}</th>
@@ -125,13 +125,13 @@
                     </thead>
                     <tbody>
                         @forelse ($r['days'] as $day)
-                            <tr>
+                            <tr class="{{ $day['penalty_days'] > 0 ? 'is-absent' : '' }}">
                                 <td><strong><bdi dir="ltr">{{ $day['date']->format('d/m/Y') }}</bdi></strong></td>
                                 <td>{{ $day['late_minutes'] ? number_format($day['late_minutes']) : '—' }}</td>
                                 <td>{{ $day['late_hours'] ? number_format($day['late_hours'], 2) : '—' }}</td>
-                                <td class="money-value">{{ $day['late_amount'] ? number_format($day['late_amount'], 2) : '—' }}</td>
+                                <td class="money-value money-late">{{ $day['late_amount'] ? number_format($day['late_amount'], 2) : '—' }}</td>
                                 <td>{{ $day['penalty_days'] ? number_format($day['penalty_days']) : '—' }}</td>
-                                <td class="money-value">{{ $day['absence_amount'] ? number_format($day['absence_amount'], 2) : '—' }}</td>
+                                <td class="money-value money-absence">{{ $day['absence_amount'] ? number_format($day['absence_amount'], 2) : '—' }}</td>
                                 <td><span class="status-badge {{ $day['penalty_days'] > 0 ? 'warning' : 'info' }}">{{ __('app.att.summary_'.$day['status']) }}</span></td>
                             </tr>
                         @empty
