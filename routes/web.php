@@ -18,6 +18,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EosbCalculatorController;
+use App\Http\Controllers\OvertimeCalculatorController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\LatencyCalculatorController;
 use App\Http\Controllers\LatencyPolicyController;
@@ -162,6 +163,7 @@ Route::middleware('auth')->group(function () {
         Route::get('latency/calculator', [LatencyCalculatorController::class, 'index'])->name('latency.calculator');
         Route::get('latency/policies', [LatencyPolicyController::class, 'index'])->name('latency.policies.index');
         Route::get('eosb/calculator', [EosbCalculatorController::class, 'index'])->name('eosb.calculator');
+        Route::get('overtime/calculator', [OvertimeCalculatorController::class, 'index'])->name('overtime.calculator');
     });
 
     // ---- Latency (late-entry) policy management ----

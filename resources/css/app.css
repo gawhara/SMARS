@@ -3234,6 +3234,15 @@ thead .matrix-name-col {
 .calc-breakdown .money-late { color: #d97706; font-weight: 700; }
 .calc-breakdown .money-absence { color: #e11d48; font-weight: 700; }
 
+/* ---- Overtime: manual adjustment row ---- */
+.ot-adjust {
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px;
+    margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--border);
+}
+.ot-adjust-label { color: var(--muted); font-size: .74rem; font-weight: 800; padding-bottom: 12px; }
+.ot-adjust .att-field { flex: 0 1 190px; }
+.ot-reset { height: 44px; display: inline-flex; align-items: center; }
+
 /* ---- EOSB ---- */
 .eosb-total-row td { background: var(--primary-soft); font-size: 1.02rem; }
 .eosb-total-row td strong { color: var(--primary); }

@@ -58,4 +58,14 @@ return [
         'later_years_rate' => 1.0,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Overtime (العمل الإضافي) — Labor Law art. 107
+    |--------------------------------------------------------------------------
+    | Overtime is paid at the hourly wage plus 50% (i.e. ×1.5).
+    */
+    'overtime' => [
+        'rate_multiplier' => (float) env('OVERTIME_MULTIPLIER', 1.5),
+    ],
+
 ];
